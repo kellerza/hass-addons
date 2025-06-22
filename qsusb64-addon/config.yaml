@@ -1,0 +1,42 @@
+---
+name: QSUSB64 Add-on
+version: "0.0.1"
+image: ghcr.io/kellerza/qsusb64
+slug: hass-addon-qsusb64
+description: Add-on for a Qwikswitch USB
+startup: services
+boot: auto
+url: "https://github.com/kellerza/qsusb64"
+uart: true
+init: false
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+ports: {}
+ports_description: {}
+host_network: false
+# map:
+#   - share:rw
+options:
+# - string: "@30e2e0/rel/TV"
+# - string: "@30e170/rel/Pool pump"
+# - string: "@30e270/rel/Dining"
+# - string: "@288400/dim/Bed"
+  DEVICES:
+    - ID: "@30e170"
+      KIND: "rel"
+      NAME: "Pool pump"
+  MQTT_HOST: core-mosquitto
+  MQTT_PORT: 1883
+  MQTT_USERNAME: hass
+  MQTT_PASSWORD: ""
+schema:
+  DEVICES:
+    - ID: str
+      KIND: str
+      NAME: int(1,16)
+  DEBUG: int(0,5)?
+  DEBUG_DEVICE: device(subsystem=tty)?

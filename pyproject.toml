@@ -1,0 +1,25 @@
+[project]
+name = "qsusb64"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiohttp>=3.12.13",
+    "cattrs>=25.1.1",
+    "colorama>=0.4.6",
+    "hidapi>=0.14.0.post4",
+    "icecream>=2.1.4",
+    "mqtt-entity[options]>=0.1.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+    "mypy",
+    "types-colorama>=0.4.15.20240311",
+]
+
+[build-system]
+requires = ["uv-build"]
+build-backend = "uv_build"
