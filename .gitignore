@@ -145,3 +145,5 @@ dmypy.json
 .ruff_cache/
 .venv/
 cov.xml
+
+src/qsusb64/test.py

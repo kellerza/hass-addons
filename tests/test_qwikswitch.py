@@ -20,8 +20,8 @@ def test_id() -> None:
 
 def test_encode() -> None:
     """Test the encoding."""
-    assert qs_encode("TOGGLE", "@123456", 5) == [1, 8, 18, 52, 86, 0, 0, 5]
     assert qs_encode("TOGGLE", "@123456", 5) == [1, 8, 18, 52, 86, 0, 1, 5]
+    assert qs_encode("TOGGLE", "@123456", 5) == [1, 8, 18, 52, 86, 0, 2, 5]
 
-    assert qs_encode("SET", "@123457", 7) == [1, 9, 18, 52, 87, 0, 0, 7]
+    assert qs_encode("SET", "@123457", 7) == [1, 9, 18, 52, 87, 0, 1, 7, 7]
     assert qs_encode("SETTINGS", "@123458", 10) == [1, 10, 18, 52, 88, 0, 0, 0, 0, 10]

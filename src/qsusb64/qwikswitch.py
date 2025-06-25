@@ -4,15 +4,16 @@ from typing import Any
 from collections import defaultdict
 
 
-type QSID = tuple[int, int, int]
+type QsId = tuple[int, int, int]
+type QsMsg = list[int]
 
 
-def l2s(data: list[int] | QSID, sep: str = " ") -> str:
+def l2s(data: QsMsg | QsId, sep: str = " ") -> str:
     """Return a string representation of the current state."""
     return sep.join([f"{d:02X}" for d in data])
 
 
-def s2l(data: str, sep=" ") -> list[int]:
+def s2l(data: str, sep=" ") -> QsMsg:
     """Convert a string representation to a list of integers."""
     if sep == "":
         # group in 2s, add spaces
@@ -20,7 +21,7 @@ def s2l(data: str, sep=" ") -> list[int]:
     return [int(d, 16) for d in data.split() if d.strip()]
 
 
-def parse_id(data: str) -> QSID:
+def parse_id(data: str) -> QsId:
     """Parse a QwikSwitch ID string into a tuple of integers."""
     data = data.strip()
     if not data.startswith("@") or len(data) != 7:
@@ -31,24 +32,24 @@ def parse_id(data: str) -> QSID:
         raise ValueError(f"Invalid ID format: {data}") from None
 
 
-def string_id(data: list[int] | QSID) -> str:
+def string_id(data: QsMsg | QsId) -> str:
     """Convert a list of integers to a QwikSwitch ID string."""
     if len(data) != 3:
         raise ValueError(f"Invalid ID data length: {len(data)}")
     return "@" + l2s(data, sep="").lower()
 
 
-COUNT: dict[QSID, int] = defaultdict(int)
+COUNT: dict[QsId, int] = defaultdict(int)
 
 
-def qs_encode(cmd: str, id: str, val: int) -> list[int]:
+def qs_encode(cmd: str, id: str, val: int) -> QsMsg:
     """Encode a command for QwikSwitch USB HID protocol."""
     idint = parse_id(id)
     count = COUNT[idint] + 1
     # Increment the count for this device. max 7
     COUNT[idint] = 0 if count > 6 else count
     cmdint = 0
-    data: list[int] = []
+    data: QsMsg = []
     match cmd:
         case "TOGGLE":
             cmdint = 8
@@ -65,8 +66,7 @@ def qs_encode(cmd: str, id: str, val: int) -> list[int]:
     return data
 
 
-def qs_decode(data: list[int]) -> dict[str, Any]:
-    data = data[:12]
+def qs_decode(data: QsMsg) -> dict[str, Any]:
     if data[0] != 0x01 or data[5] != 0x00:
         print("Error: ", l2s(data))
     res = {

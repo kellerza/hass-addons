@@ -1,16 +1,17 @@
 """Addon options."""
 
 import logging
-from mqtt_entity.options import Options
-from qsusb64.qwikswitch import parse_id, string_id
+from mqtt_entity.options import MQTTOptions
 import attrs
 from functools import cached_property
+
+from ..qwikswitch import parse_id, string_id
 
 _LOGGER = logging.getLogger(__name__)
 
 
 @attrs.define()
-class DevOptions:
+class DeviceOpt:
     """Options for an entity."""
 
     id: str = ""
@@ -19,16 +20,17 @@ class DevOptions:
 
 
 @attrs.define()
-class Buttons:
+class ButtonOpt:
     """Options for an entity."""
 
     name: str = ""
     buttons: list[str] = attrs.field(factory=list)
+    model: str = ""
 
     @cached_property
-    def button_dict(self) -> dict[str, str]:
-        """Return a map of button ids and their names."""
-        res: dict[str, str] = {}
+    def btn_map(self) -> dict[str, str]:
+        """Map button IDs to names."""
+        res = dict[str, str]()
         btnidx = 1
         for btn in self.buttons:
             try:
@@ -50,10 +52,14 @@ class Buttons:
 
 
 @attrs.define()
-class QSOptions(Options):
+class Options(MQTTOptions):
     """Addon Options."""
 
-    devices: list[DevOptions] = attrs.field(factory=list)
+    buttons: list[ButtonOpt] = attrs.field(factory=list)
+    switches: list[DeviceOpt] = attrs.field(factory=list)
+    lights: list[DeviceOpt] = attrs.field(factory=list)
+    debug: int = 0
+    prefix: str = "qsusb64_prefix"
 
 
-OPT = QSOptions()
+OPT = Options()

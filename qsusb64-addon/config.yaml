@@ -1,13 +1,23 @@
 ---
 name: QSUSB64 Add-on
-version: "0.0.1"
+version: "0.0.8"
 image: ghcr.io/kellerza/qsusb64
 slug: hass-addon-qsusb64
 description: Add-on for a Qwikswitch USB
 startup: services
 boot: auto
 url: "https://github.com/kellerza/qsusb64"
-uart: true
+
+full_access: true
+
+# devices:
+#     - /dev/bus/usb
+#     - /dev/hidraw0
+#     - /sys/class/hidraw
+# usb: true
+# udev: true
+# uart: true
+
 init: false
 arch:
   - aarch64
@@ -21,22 +31,38 @@ host_network: false
 # map:
 #   - share:rw
 options:
-# - string: "@30e2e0/rel/TV"
-# - string: "@30e170/rel/Pool pump"
-# - string: "@30e270/rel/Dining"
-# - string: "@288400/dim/Bed"
-  DEVICES:
-    - ID: "@30e170"
+  BUTTONS:
+    - NAME: "Spare"
+      BUTTONS:
+        - "@1cbd31"
+        - "@1cbd32"
+        - "@1cbd35"
+        - "@1cbd36"
+  LIGHTS:
+    - ID: "@30e270"
       KIND: "rel"
+      NAME: "Dining"
+  SWITCHES:
+    - ID: "@30e170"
       NAME: "Pool pump"
   MQTT_HOST: core-mosquitto
-  MQTT_PORT: 1883
   MQTT_USERNAME: hass
   MQTT_PASSWORD: ""
 schema:
-  DEVICES:
+  BUTTONS:
+    - NAME: str
+      MODEL: str?
+      BUTTONS:
+        - str
+  LIGHTS:
     - ID: str
       KIND: str
-      NAME: int(1,16)
+      NAME: str
+  SWITCHES:
+    - ID: str
+      NAME: str
   DEBUG: int(0,5)?
-  DEBUG_DEVICE: device(subsystem=tty)?
+  MQTT_HOST: str
+  MQTT_PORT: int?
+  MQTT_USERNAME: str
+  MQTT_PASSWORD: str
