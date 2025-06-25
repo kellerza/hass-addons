@@ -15,5 +15,7 @@ ssh homeassistant.local
 while :
 do
     docker logs -f --tail 50 addon_local_hass-addon-qsusb64
+    echo "Press Ctrl+C to exit"
+    sleep 0.5
 done
 ```
