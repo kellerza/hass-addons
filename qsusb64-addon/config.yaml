@@ -1,6 +1,6 @@
 ---
 name: QSUSB64 Add-on
-version: "0.0.8"
+version: "0.0.9"
 image: ghcr.io/kellerza/qsusb64
 slug: hass-addon-qsusb64
 description: Add-on for a Qwikswitch USB
@@ -8,15 +8,15 @@ startup: services
 boot: auto
 url: "https://github.com/kellerza/qsusb64"
 
-full_access: true
+#full_access: true
 
-# devices:
-#     - /dev/bus/usb
-#     - /dev/hidraw0
-#     - /sys/class/hidraw
-# usb: true
-# udev: true
-# uart: true
+devices:
+    - /dev/bus/usb
+    - /dev/hidraw0
+    - /sys/class/hidraw
+usb: true
+udev: true
+uart: true
 
 init: false
 arch:
