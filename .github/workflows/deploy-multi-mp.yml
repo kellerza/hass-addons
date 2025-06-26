@@ -15,7 +15,7 @@ on:
 env:
   ADDON_SLUG: hass-addon-qsusb64
   PKG_NAME: qsusb64
-  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/hass-addon-qsusb64
+  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/qsusb64
 
 jobs:
   ci-failure:
