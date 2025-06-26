@@ -15,7 +15,7 @@ on:
 env:
   ADDON_SLUG: hass-addon-qsusb64
   PKG_NAME: qsusb64
-  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/hass-addon-qsusb64
+  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/${{ env.ADDON_SLUG }}
 
 jobs:
   ci-failure:
@@ -50,7 +50,7 @@ jobs:
         id: information
         uses: frenck/action-addon-information@v1.4
         with:
-          path: ./${{ ADDON_SLUG }}
+          path: ./${{ env.ADDON_SLUG }}
       - name: ℹ️ Gather version and environment
         id: release
         run: |
@@ -97,9 +97,9 @@ jobs:
 
       - name: Prepare Files for Build
         run: |
-          mkdir -p ${{ ADDON_SLUG }}/${{ PKG_NAME }}
-          cp -r src ${{ ADDON_SLUG }}/${{ PKG_NAME }}/
-          cp pyproject.toml MANIFEST.in LICENSE README.md uv.lock ${{ ADDON_SLUG }}/${{ PKG_NAME }}/
+          mkdir -p ${{ env.ADDON_SLUG }}/${{ PKG_NAME }}
+          cp -r src ${{ env.ADDON_SLUG }}/${{ PKG_NAME }}/
+          cp pyproject.toml MANIFEST.in LICENSE README.md uv.lock ${{ env.ADDON_SLUG }}/${{ PKG_NAME }}/
 
       - name: Set up the correct base image based on platform
         run: |
@@ -149,8 +149,8 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
-          context: ./${{ ADDON_SLUG }} # Specify the directory containing your Dockerfile
-          file: ./${{ ADDON_SLUG }}/Dockerfile # Specify the Dockerfile path within the context
+          context: ./${{ env.ADDON_SLUG }} # Specify the directory containing your Dockerfile
+          file: ./${{ env.ADDON_SLUG }}/Dockerfile # Specify the Dockerfile path within the context
           platforms: ${{ matrix.platform }}
           cache-from: type=local,src=/tmp/.buildx-cache # Use cache for build
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max # Save cache
@@ -394,11 +394,11 @@ jobs:
           # Make the version updates
           sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' hass-addon-sunsynk-edge/config.yaml
           if [[ "${{ needs.information.outputs.environment }}" == "stable" ]]; then
-            sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ ADDON_SLUG }}/config.yaml
+            sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ env.ADDON_SLUG }}/config.yaml
           fi
 
           # Stage and commit changes
-          git add hass-addon-sunsynk-edge/config.yaml ${{ ADDON_SLUG }}/config.yaml
+          git add hass-addon-sunsynk-edge/config.yaml ${{ env.ADDON_SLUG }}/config.yaml
           git commit -m "Update addon version to ${{ needs.information.outputs.version }} [no ci]" || echo "No changes to commit"
 
       - name: Push changes
