@@ -14,6 +14,7 @@ on:
 
 env:
   ADDON_SLUG: hass-addon-qsusb64
+  ADDON_SLUG_EDGE: hass-addon-qsusb64
   PKG_NAME: qsusb64
   REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/qsusb64
 
@@ -105,9 +106,9 @@ jobs:
         run: |
           case "${{ matrix.platform }}" in
             linux/amd64)  echo "BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
-            linux/arm64)  echo "BUILD_FROM=ghcr.io/home-assistant/aarch64-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
             linux/arm/v6) echo "BUILD_FROM=ghcr.io/home-assistant/armhf-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
             linux/arm/v7) echo "BUILD_FROM=ghcr.io/home-assistant/armv7-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
+            linux/arm64)  echo "BUILD_FROM=ghcr.io/home-assistant/aarch64-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
             linux/i386)   echo "BUILD_FROM=ghcr.io/home-assistant/i386-base-python:3.12-alpine3.21" >> $GITHUB_ENV ;;
           esac
 
@@ -392,13 +393,13 @@ jobs:
           git pull --rebase origin main
 
           # Make the version updates
-          sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' hass-addon-sunsynk-edge/config.yaml
+          sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ env.ADDON_SLUG_EDGE }}/config.yaml
           if [[ "${{ needs.information.outputs.environment }}" == "stable" ]]; then
             sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ env.ADDON_SLUG }}/config.yaml
           fi
 
           # Stage and commit changes
-          git add hass-addon-sunsynk-edge/config.yaml ${{ env.ADDON_SLUG }}/config.yaml
+          git add ${{ env.ADDON_SLUG_EDGE }}/config.yaml ${{ env.ADDON_SLUG }}/config.yaml
           git commit -m "Update addon version to ${{ needs.information.outputs.version }} [no ci]" || echo "No changes to commit"
 
       - name: Push changes
