@@ -1,17 +1,19 @@
 """Bridge."""
 
 from __future__ import annotations
-import logging
-import attrs
-from typing import Any
-from .options import ButtonOpt, DeviceOpt, OPT
-from ..qwikswitch import parse_id, string_id, qs_encode
-from ..qsusb import QsWrite
-import time
 
-from mqtt_entity.device import MQTTDevice, MQTTBaseEntity, MQTTOrigin
-from mqtt_entity.entities import MQTTLightEntity, MQTTDeviceTrigger, MQTTSwitchEntity
+import logging
+import time
+from typing import Any
+
+import attrs
 from mqtt_entity.client import MQTTClient
+from mqtt_entity.device import MQTTBaseEntity, MQTTDevice, MQTTOrigin
+from mqtt_entity.entities import MQTTDeviceTrigger, MQTTLightEntity, MQTTSwitchEntity
+
+from ..qsusb import QsWrite
+from ..qwikswitch import parse_id, qs_encode, string_id
+from .options import OPT, ButtonOpt, DeviceOpt
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,16 +37,15 @@ class HassBridge:
         await self.client.connect(OPT)
         self.client.publish_discovery_info()
 
-    def find_id(self, id: str) -> tuple[MQTTBaseEntity, Bridge]:
+    def find_id(self, qid: str) -> tuple[MQTTBaseEntity, Bridge]:
         """Find the entity by ID."""
         for ent in self.bridges:
-            if base := ent.getid(id):
+            if base := ent.getid(qid):
                 return base, ent
-        raise ValueError(f"Entity with ID {id} not found.")
+        raise ValueError(f"Entity with ID {qid} not found.")
 
     def __attrs_post_init__(self) -> None:
         """Create entities for the devices."""
-
         for opt in OPT.buttons:
             print(f"Creating button {opt.name}")
             br = ButtonBridge(
@@ -96,7 +97,7 @@ class Bridge:
         """Process a message from the QS device."""
         raise NotImplementedError("process_msg must be implemented in subclasses")
 
-    def getid(self, id: str) -> MQTTBaseEntity | None:
+    def getid(self, qid: str) -> MQTTBaseEntity | None:
         """Get the entity by ID."""
         raise NotImplementedError("getid must be implemented in subclasses")
 
@@ -109,9 +110,9 @@ class ButtonBridge(Bridge):
     hassbtn: dict[str, MQTTDeviceTrigger] = attrs.field(init=False)
     press_time: float = attrs.field(default=0.0, init=False)
 
-    def getid(self, id: str) -> MQTTDeviceTrigger | None:
+    def getid(self, qid: str) -> MQTTDeviceTrigger | None:
         """Get the entity by ID."""
-        return self.hassbtn.get(qsslug(id))
+        return self.hassbtn.get(qsslug(qid))
 
     def create_entities(self, qs_write: QsWrite) -> dict[str, MQTTBaseEntity]:
         """Return a generator of Home Assistant entities for the buttons."""
@@ -130,8 +131,8 @@ class ButtonBridge(Bridge):
 
     async def process_msg(self, msg: dict[str, Any], client: MQTTClient) -> bool:
         """Process a button message."""
-        id = msg.get("id")
-        if not id:
+        qid = msg.get("id")
+        if not qid:
             return False
 
         # debounce 200ms
@@ -139,7 +140,7 @@ class ButtonBridge(Bridge):
             return False
         self.press_time = time.time() + 0.2
 
-        slug_id = qsslug(id)
+        slug_id = qsslug(qid)
         if btn := self.hassbtn.get(slug_id):
             await btn.send_trigger(client)
             return True
@@ -155,9 +156,9 @@ class LightBridge(Bridge):
     hassdev: MQTTLightEntity | MQTTSwitchEntity = attrs.field(init=False)
     switch: bool = attrs.field(default=False)
 
-    def getid(self, id: str) -> MQTTLightEntity | MQTTSwitchEntity | None:
+    def getid(self, qid: str) -> MQTTLightEntity | MQTTSwitchEntity | None:
         """Get the entity by ID."""
-        if id == self.opt.id:
+        if qid == self.opt.id:
             return self.hassdev
         return None
 
@@ -168,7 +169,7 @@ class LightBridge(Bridge):
         print(f"Creating device {self.opt} object_id={oid}")
 
         async def _cb(payload: str, topic: str) -> None:
-            """Callback for brightness change."""
+            """Brightness change callback."""
             val = 0 if payload == "OFF" else 100 if payload == "ON" else payload
             try:
                 val = int(val)
@@ -208,8 +209,8 @@ class LightBridge(Bridge):
 
     async def process_msg(self, msg: dict[str, Any], client: MQTTClient) -> bool:
         """Process a switch message."""
-        id = msg.get("id")
-        if not id or id != self.opt.id:
+        qid = msg.get("id")
+        if not qid or qid != self.opt.id:
             return False
 
         if self.opt.kind == "rel" or isinstance(self.hassdev, MQTTSwitchEntity):

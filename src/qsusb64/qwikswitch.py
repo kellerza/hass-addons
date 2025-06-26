@@ -1,8 +1,7 @@
 """QwikSwitch USB HID protocol."""
 
-from typing import Any
 from collections import defaultdict
-
+from typing import Any
 
 type QsId = tuple[int, int, int]
 type QsMsg = list[int]
@@ -13,7 +12,7 @@ def l2s(data: QsMsg | QsId, sep: str = " ") -> str:
     return sep.join([f"{d:02X}" for d in data])
 
 
-def s2l(data: str, sep=" ") -> QsMsg:
+def s2l(data: str, sep: str = " ") -> QsMsg:
     """Convert a string representation to a list of integers."""
     if sep == "":
         # group in 2s, add spaces
@@ -42,9 +41,9 @@ def string_id(data: QsMsg | QsId) -> str:
 COUNT: dict[QsId, int] = defaultdict(int)
 
 
-def qs_encode(cmd: str, id: str, val: int) -> QsMsg:
+def qs_encode(cmd: str, qid: str, val: int) -> QsMsg:
     """Encode a command for QwikSwitch USB HID protocol."""
-    idint = parse_id(id)
+    idint = parse_id(qid)
     count = COUNT[idint] + 1
     # Increment the count for this device. max 7
     COUNT[idint] = 0 if count > 6 else count
@@ -67,6 +66,7 @@ def qs_encode(cmd: str, id: str, val: int) -> QsMsg:
 
 
 def qs_decode(data: QsMsg) -> dict[str, Any]:
+    """Decode a QwikSwitch USB hub message."""
     if data[0] != 0x01 or data[5] != 0x00:
         print("Error: ", l2s(data))
     res = {

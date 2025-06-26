@@ -1,13 +1,14 @@
 """Main."""
 
-import sys
 import asyncio
 import logging
+import sys
 
-from qsusb64.addon.options import OPT
-from qsusb64 import VERSION
-from qsusb64.main import main_loop
 from colorama import init
+
+from qsusb64 import VERSION
+from qsusb64.addon.options import OPT
+from qsusb64.main import main_loop
 
 _LOGGER = logging.getLogger(__name__)
 

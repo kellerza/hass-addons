@@ -1,9 +1,10 @@
 """Addon options."""
 
 import logging
-from mqtt_entity.options import MQTTOptions
-import attrs
 from functools import cached_property
+
+import attrs
+from mqtt_entity.options import MQTTOptions
 
 from ..qwikswitch import parse_id, string_id
 
@@ -34,18 +35,18 @@ class ButtonOpt:
         btnidx = 1
         for btn in self.buttons:
             try:
-                id = string_id(parse_id(btn))
-                if id in res:
+                qid = string_id(parse_id(btn))
+                if qid in res:
                     continue
-                res[id] = f"button_{btnidx}"
+                res[qid] = f"button_{btnidx}"
                 btnidx = btnidx + 1
                 continue
             except ValueError:
                 pass
             try:
                 ids, name = btn.split(":", 1)
-                id = string_id(parse_id(ids))
-                res[id] = name.strip()
+                qid = string_id(parse_id(ids))
+                res[qid] = name.strip()
             except ValueError:
                 _LOGGER.error("Invalid button ID: %s", btn)
         return res
