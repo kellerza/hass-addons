@@ -1,5 +1,5 @@
 @echo off
-CALL :copy2 qsusb64-addon,\\192.168.1.8\addons\hass-addon-qsusb64\
+CALL :copy2 hass-addon-qsusb64,\\192.168.1.8\addons\hass-addon-qsusb64\
 
 EXIT /B %ERRORLEVEL%
 
