@@ -27,6 +27,7 @@ host_network: false
 # map:
 #   - share:rw
 options:
+  PREFIX: "qsusb"
   BUTTONS:
     - NAME: "Spare"
       BUTTONS:
@@ -42,9 +43,11 @@ options:
     - ID: "@30e170"
       NAME: "Pool pump"
   MQTT_HOST: core-mosquitto
+  MQTT_PORT: 1883
   MQTT_USERNAME: hass
   MQTT_PASSWORD: ""
 schema:
+  PREFIX: str
   BUTTONS:
     - NAME: str
       MODEL: str?

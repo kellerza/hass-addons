@@ -60,7 +60,7 @@ class Options(MQTTOptions):
     switches: list[DeviceOpt] = attrs.field(factory=list)
     lights: list[DeviceOpt] = attrs.field(factory=list)
     debug: int = 0
-    prefix: str = "qsusb64_prefix"
+    prefix: str = "qsusb64"
 
 
 OPT = Options()

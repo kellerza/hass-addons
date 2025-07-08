@@ -20,7 +20,7 @@ on:
       - ".github/workflows/ci.yml"
 
 env:
-  RUFF_VERSION: 0.11.3
+  RUFF_VERSION: 0.12.2
   UV_VERSION: 0.7.15
   TEST_TARGET: "src"
 

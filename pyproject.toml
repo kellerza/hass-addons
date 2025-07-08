@@ -5,17 +5,17 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "aiohttp>=3.12.13",
-    "cattrs>=25.1.1",
-    "colorama>=0.4.6",
-    "hidapi>=0.14.0.post4",
+    "aiohttp>=3.12,<4",
+    "cattrs>=25,<26",
+    "colorama>=0.4.6,<1",
+    "hidapi==0.14.0.post4",
     "icecream>=2.1.4",
     "mqtt-entity[options]>=0.1.0",
 ]
 
 [dependency-groups]
 dev = [
-    "pytest>=8.4.1",
+    "pytest",
     "mypy",
     "types-colorama",
     "types-attrs",
@@ -54,7 +54,7 @@ asyncio_mode = "auto"
 addopts = "--cov=src --cov-report xml:cov.xml"
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py312"
 include = ["src/**/*.py"]
 
 [tool.ruff.format]

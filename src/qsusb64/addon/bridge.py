@@ -32,7 +32,7 @@ class HassBridge:
         self.client = MQTTClient(
             devs=self.devs,
             availability_topic=f"{OPT.prefix}/status",
-            origin=MQTTOrigin(name="qsusb64", sw_version="1.0.0"),
+            origin=MQTTOrigin(name="qsusb64", sw="1.0.0"),
         )
         await self.client.connect(OPT)
         self.client.publish_discovery_info()

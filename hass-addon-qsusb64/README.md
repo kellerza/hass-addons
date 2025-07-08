@@ -1,4 +1,3 @@
-# QsUSB Add-on
+# QSUSB Add-on
 
-It supports Home Assistant auto-discovery.
-
+Refer to <https://github.com/kellerza/qsusb64>
