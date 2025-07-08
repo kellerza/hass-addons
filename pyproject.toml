@@ -6,7 +6,6 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "aiohttp>=3.12,<4",
-    "cattrs>=25,<26",
     "colorama>=0.4.6,<1",
     "hidapi==0.14.0.post4",
     "icecream>=2.1.4",

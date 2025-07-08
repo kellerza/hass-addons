@@ -8,7 +8,7 @@ from typing import Any
 
 import attrs
 from mqtt_entity.client import MQTTClient
-from mqtt_entity.device import MQTTBaseEntity, MQTTDevice, MQTTOrigin
+from mqtt_entity.device import MQTTBaseEntity, MQTTDevice
 from mqtt_entity.entities import MQTTDeviceTrigger, MQTTLightEntity, MQTTSwitchEntity
 
 from ..qsusb import QsWrite
@@ -32,10 +32,11 @@ class HassBridge:
         self.client = MQTTClient(
             devs=self.devs,
             availability_topic=f"{OPT.prefix}/status",
-            origin=MQTTOrigin(name="qsusb64", sw="1.0.0"),
+            origin_name="qsusb64",
+            origin_version="1.0.0",
         )
         await self.client.connect(OPT)
-        self.client.publish_discovery_info()
+        self.client.publish_discovery_info_when_online()
 
     def find_id(self, qid: str) -> tuple[MQTTBaseEntity, Bridge]:
         """Find the entity by ID."""
