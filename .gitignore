@@ -147,3 +147,4 @@ dmypy.json
 cov.xml
 
 src/qsusb64/test.py
+!.pre-commit-config.yaml

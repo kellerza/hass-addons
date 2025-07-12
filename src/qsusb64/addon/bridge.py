@@ -8,8 +8,13 @@ from typing import Any
 
 import attrs
 from mqtt_entity.client import MQTTClient
-from mqtt_entity.device import MQTTBaseEntity, MQTTDevice
-from mqtt_entity.entities import MQTTDeviceTrigger, MQTTLightEntity, MQTTSwitchEntity
+from mqtt_entity.device import MQTTDevice
+from mqtt_entity.entities import (
+    MQTTBaseEntity,
+    MQTTDeviceTrigger,
+    MQTTLightEntity,
+    MQTTSwitchEntity,
+)
 
 from ..qsusb import QsWrite
 from ..qwikswitch import parse_id, qs_encode, string_id
@@ -36,7 +41,7 @@ class HassBridge:
             origin_version="1.0.0",
         )
         await self.client.connect(OPT)
-        self.client.publish_discovery_info_when_online()
+        self.client.monitor_homeassistant_status()
 
     def find_id(self, qid: str) -> tuple[MQTTBaseEntity, Bridge]:
         """Find the entity by ID."""

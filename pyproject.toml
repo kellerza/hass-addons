@@ -18,7 +18,6 @@ dev = [
     "mypy",
     "types-colorama",
     "types-attrs",
-    "pylint",
     "pytest-cov",
     "pytest-asyncio",
 ]
@@ -30,17 +29,6 @@ build-backend = "uv_build"
 [tool.mypy]
 disallow_untyped_defs = true
 ignore_missing_imports = true
-
-[tool.pylint]
-extension-pkg-whitelist = ["hid"]
-
-[tool.pylint.'MESSAGES CONTROL']
-good-names = ["db", "fr", "cr", "k", "i", "ui"]
-enable = ["W", "E", "F"]
-disable = ["R", "unused-argument", "line-too-long"]
-
-[tool.pylint.design]
-max-returns = 8
 
 [tool.pytest.ini_options]
 pythonpath = [".", "src"]
@@ -66,16 +54,23 @@ docstring-code-line-length = "dynamic"
 
 [tool.ruff.lint]
 select = [
-    "B",   # bugbear
-    "D",   # pydocstyle
-    "E",   # pycodestyle
-    "F",   # pyflakes
-    "I",   # isort
-    "PIE", # flake8-pie
-    "PTH", # flake8-pathlib
-    "PYI", # flake8-pyi
-    "RUF", # ruff
-    "UP",  # pyupgrade
-    "W",   # pycodestyle
+    "A",     # flake8-builtins
+    "ASYNC", # flake8-async
+    "B",     # bugbear
+    "D",     # pydocstyle
+    "E",     # pycodestyle
+    "F",     # pyflakes
+    "I",     # isort
+    "PGH",   # pygrep-hooks
+    "PIE",   # flake8-pie
+    "PL",    # pylint
+    "PTH",   # flake8-pathlib
+    "PYI",   # flake8-pyi
+    "RUF",   # ruff
+    "UP",    # pyupgrade
+    "W",     # pycodestyle
 ]
-ignore = ["E203", "E501", "D203", "D213"]
+ignore = ["E203", "E501", "D203", "D213", "PLR2004"]
+
+[tool.ruff.lint.pylint]
+max-args = 7
