@@ -10,7 +10,7 @@ ENV PATH="/root/.local/bin/:$PATH"
 COPY ha_addon ha_addon
 
 RUN set -x \
-    && curl -LsSf https://astral.sh/uv/0.7.19/install.sh | sh \
+    && curl -LsSf https://astral.sh/uv/0.7.20/install.sh | sh \
     && uv venv \
     && uv pip install --index-strategy unsafe-best-match \
         ./ha_addon

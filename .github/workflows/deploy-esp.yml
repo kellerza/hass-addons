@@ -1,5 +1,4 @@
-# Shared with sunsynk deploy-multi-mp.yaml
-name: Deploy esp addon to ghcr.io
+name: Deploy hass-addon-esp addon to ghcr.io
 
 on:
   workflow_run:
@@ -10,8 +9,8 @@ on:
     paths:
       - ".github/workflows/deploy-esp.yml"
       - "hass-addon-esp/**"
-      - "src/ha_addon_esp"
-      - "src/ha_addon"
+      - "src/ha_addon_esp/**"
+      - "src/ha_addon/**"
   workflow_dispatch: {}
 
 env:

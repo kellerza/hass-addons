@@ -17,7 +17,7 @@ RUN apk add --no-cache --virtual .build-deps \
 COPY ha_addon ha_addon
 
 RUN set -x \
-    && curl -LsSf https://astral.sh/uv/0.7.15/install.sh | sh \
+    && curl -LsSf https://astral.sh/uv/0.7.20/install.sh | sh \
     && uv venv \
     && uv pip install --index-strategy unsafe-best-match \
         ./ha_addon[hidapi]

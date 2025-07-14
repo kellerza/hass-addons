@@ -1,6 +1,6 @@
 [project]
 name = "ha_addon"
-version = "0.1.0"
+version = "0.0.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -27,18 +27,21 @@ hidapi = [
     "hidapi==0.14.0.post4",
 ]
 
-[build-system]
-requires = ["uv-build"]
-build-backend = "uv_build"
+[build-system] # setuptools required for sub-packages
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+license-files = [] # https://github.com/astral-sh/uv/issues/9513
 
 [tool.mypy]
 disallow_untyped_defs = true
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-pythonpath = [".", "src"]
+pythonpath = ["src"]
 filterwarnings = "ignore:.+@coroutine.+deprecated.+"
-testpaths = "src\tests"
+testpaths = "src/tests"
 norecursedirs = [".git", "modules"]
 log_cli = true
 log_cli_level = "DEBUG"
