@@ -1,8 +1,6 @@
 """Main."""
 
 from ha_addon_qsusb64 import __main__ as main_module
-
-
 from ha_addon_qsusb64 import main
 
 
