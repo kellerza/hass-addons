@@ -233,10 +233,14 @@ source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
     { name = "colorama" },
-    { name = "hidapi" },
     { name = "icecream" },
     { name = "jmespath" },
     { name = "mqtt-entity", extra = ["options"] },
+]
+
+[package.optional-dependencies]
+hidapi = [
+    { name = "hidapi" },
 ]
 
 [package.dev-dependencies]
@@ -253,11 +257,12 @@ dev = [
 requires-dist = [
     { name = "aiohttp", specifier = ">=3.12,<4" },
     { name = "colorama", specifier = ">=0.4.6,<1" },
-    { name = "hidapi", specifier = "==0.14.0.post4" },
+    { name = "hidapi", marker = "extra == 'hidapi'", specifier = "==0.14.0.post4" },
     { name = "icecream", specifier = ">=2.1.4" },
     { name = "jmespath", specifier = "==1.0.1" },
     { name = "mqtt-entity", extras = ["options"], specifier = ">=0.1.0" },
 ]
+provides-extras = ["hidapi"]
 
 [package.metadata.requires-dev]
 dev = [

@@ -7,6 +7,7 @@ LABEL maintainer="Johann Kellerman <kellerza@gmail.com>"
 ENV PATH="/root/.local/bin/:$PATH"
 ENV HIDAPI_WITH_LIBUSB=1
 
+# Required to build hidapi
 RUN apk add --no-cache --virtual .build-deps \
       build-base zlib-dev openssl-dev libffi-dev \
       hidapi \
@@ -16,13 +17,9 @@ RUN apk add --no-cache --virtual .build-deps \
 COPY ha_addon ha_addon
 
 RUN set -x \
-    # && apk add --no-cache --virtual .build-deps \
-    #     build-base \
     && curl -LsSf https://astral.sh/uv/0.7.15/install.sh | sh \
     && uv venv \
     && uv pip install --index-strategy unsafe-best-match \
-        ./ha_addon
-    # && uv sync --frozen --no-dev --all-extras \
-    # && apk del .build-deps
+        ./ha_addon[hidapi]
 
 COPY rootfs /

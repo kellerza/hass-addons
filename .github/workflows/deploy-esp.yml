@@ -1,3 +1,4 @@
+# Shared with sunsynk deploy-multi-mp.yaml
 name: Deploy esp addon to ghcr.io
 
 on:

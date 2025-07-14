@@ -1,5 +1,5 @@
 # Shared with sunsynk deploy-multi-mp.yaml
-name: Deploy addon to ghcr.io
+name: Deploy qsusb64 addon to ghcr.io
 
 on:
   workflow_run:
