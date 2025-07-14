@@ -8,18 +8,19 @@ dependencies = [
     "aiohttp>=3.12,<4",
     "colorama>=0.4.6,<1",
     "icecream>=2.1.4",
-    "mqtt-entity[options]>=0.1.0",
     "jmespath==1.0.1",
+    "mqtt-entity[options]>=0.1.0",
 ]
 
 [dependency-groups]
 dev = [
-    "pytest",
     "mypy",
-    "types-colorama",
-    "types-attrs",
-    "pytest-cov",
     "pytest-asyncio",
+    "pytest-cov",
+    "pytest",
+    "types-attrs",
+    "types-colorama",
+    "types-jmespath",
 ]
 
 [project.optional-dependencies]

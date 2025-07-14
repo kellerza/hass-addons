@@ -5,9 +5,10 @@ import logging
 import sys
 
 from colorama import init
-from qsusb64 import VERSION
-from qsusb64.addon.options import OPT
-from qsusb64.main import main_loop
+
+from . import VERSION
+from .addon.options import OPT
+from .main import main_loop
 
 _LOGGER = logging.getLogger(__name__)
 
