@@ -13,7 +13,7 @@ RUN apk add --no-cache --virtual .build-deps \
       eudev-libs eudev-dev libusb-dev libusb
 
 # Install qsusb64 from local source
-COPY qsusb64 qsusb64
+COPY ha_addon ha_addon
 
 RUN set -x \
     # && apk add --no-cache --virtual .build-deps \
@@ -21,7 +21,7 @@ RUN set -x \
     && curl -LsSf https://astral.sh/uv/0.7.15/install.sh | sh \
     && uv venv \
     && uv pip install --index-strategy unsafe-best-match \
-        ./qsusb64
+        ./ha_addon
     # && uv sync --frozen --no-dev --all-extras \
     # && apk del .build-deps
 

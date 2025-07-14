@@ -7,7 +7,7 @@ LABEL maintainer="Johann Kellerman <kellerza@gmail.com>"
 ENV PATH="/root/.local/bin/:$PATH"
 
 # Install sunsynk from local source
-COPY sunsynk sunsynk
+COPY ha_addon ha_addon
 
 RUN set -x \
     # && apk add --no-cache --virtual .build-deps \
@@ -15,7 +15,7 @@ RUN set -x \
     && curl -LsSf https://astral.sh/uv/0.7.19/install.sh | sh \
     && uv venv \
     && uv pip install --index-strategy unsafe-best-match \
-        ./sunsynk[addon]
+        ./ha_addon
     # && uv sync --frozen --no-dev --all-extras
     # && apk del .build-deps
 

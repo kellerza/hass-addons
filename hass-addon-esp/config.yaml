@@ -6,7 +6,7 @@ description: Add-on to query the EskomSePush API
 image: ghcr.io/kellerza/hass-addon-esp
 startup: services
 boot: auto
-url: "https://github.com/kellerza/sunsynk/"
+url: "https://github.com/kellerza/hass-addons/"
 uart: false
 init: false
 arch:

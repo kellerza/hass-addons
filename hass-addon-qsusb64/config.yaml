@@ -6,7 +6,7 @@ slug: hass-addon-qsusb64
 description: Add-on for a QwikSwitch USB
 startup: services
 boot: auto
-url: "https://github.com/kellerza/qsusb64"
+url: "https://github.com/kellerza/hass-addons/"
 
 devices:
     - /dev/bus/usb
