@@ -26,7 +26,7 @@ def parse_id(data: str) -> QsId:
     if not data.startswith("@") or len(data) != 7:
         raise ValueError(f"Invalid ID format: {data}")
     try:
-        return tuple(s2l(data[1:], sep=""))  # type:ignore
+        return tuple(s2l(data[1:], sep=""))  # type:ignore[return-value]
     except ValueError:
         raise ValueError(f"Invalid ID format: {data}") from None
 
@@ -65,7 +65,7 @@ def qs_encode(cmd: str, qid: str, val: int) -> QsMsg:
     return data
 
 
-def qs_decode(data: QsMsg) -> dict[str, Any]:
+def qs_decode(data: QsMsg) -> dict[str, Any]:  # noqa: PLR0912
     """Decode a QwikSwitch USB hub message."""
     if data[0] != 0x01 or data[5] != 0x00:
         print("Error: ", l2s(data))

@@ -6,18 +6,18 @@ on:
       - published
   push:
     paths:
+      - ".github/workflows/**"
+      - "hass-addon-esp/**"
+      - "hass-addon-qsusb64/**"
       - "setup.*"
       - "src/**"
-      - "hass-addon-qsusb64/**"
-      - ".github/workflows/deploy-multi.yml"
-      - ".github/workflows/ci.yml"
   pull_request:
     paths:
+      - ".github/workflows/**"
+      - "hass-addon-esp/**"
+      - "hass-addon-qsusb64/**"
       - "setup.*"
       - "src/**"
-      - "hass-addon-qsusb64/**"
-      - ".github/workflows/deploy-multi.yml"
-      - ".github/workflows/ci.yml"
 
 env:
   RUFF_VERSION: 0.12.2

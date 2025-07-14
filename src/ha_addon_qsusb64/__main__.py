@@ -5,7 +5,6 @@ import logging
 import sys
 
 from colorama import init
-
 from qsusb64 import VERSION
 from qsusb64.addon.options import OPT
 from qsusb64.main import main_loop

@@ -1,6 +1,6 @@
 """Test qs."""
 
-from qsusb64.qwikswitch import parse_id, qs_encode
+from ha_addon_qsusb64.qwikswitch import parse_id, qs_encode
 
 
 def test_id() -> None:

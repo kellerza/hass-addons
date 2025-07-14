@@ -1,5 +1,5 @@
 [project]
-name = "qsusb64"
+name = "ha_addon"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -10,6 +10,7 @@ dependencies = [
     "hidapi==0.14.0.post4",
     "icecream>=2.1.4",
     "mqtt-entity[options]>=0.1.0",
+    "jmespath==1.0.1",
 ]
 
 [dependency-groups]

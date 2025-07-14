@@ -4,7 +4,7 @@ from collections.abc import Callable
 from typing import Any
 
 import attrs
-import hid  # type: ignore
+import hid  # type: ignore[]
 from colorama import Fore
 
 from .qwikswitch import QsMsg, l2s
