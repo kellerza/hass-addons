@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "aiohttp>=3.12,<4",
     "colorama>=0.4.6,<1",
+    "colorlog>=6.9.0",
     "icecream>=2.1.4",
     "jmespath==1.0.1",
     "mqtt-entity[options]>=0.1.0",
@@ -24,9 +25,7 @@ dev = [
 ]
 
 [project.optional-dependencies]
-hidapi = [
-    "hidapi==0.14.0.post4",
-]
+hidapi = ["hidapi==0.14.0.post4"]
 
 [build-system] # setuptools required for sub-packages
 requires = ["setuptools", "setuptools-scm"]

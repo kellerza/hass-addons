@@ -2,4 +2,4 @@
 # shellcheck shell=bash
 
 bashio::log.info "Starting the ESP add-on"
-uv run python -m ha_addon_esp
+uv run --no-sync python -m ha_addon_esp

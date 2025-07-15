@@ -1,5 +1,6 @@
 """Main."""
 
+import sys
 import asyncio
 import logging
 
@@ -7,18 +8,27 @@ import attrs
 from mqtt_entity import MQTTClient
 from mqtt_entity.options import MQTTOptions
 
+from ha_addon.helpers import get_mqtt_details, logging_color
+
 from .esp import ESP, search_area
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def main_loop() -> None:
+async def main_loop() -> int:
     """Entry point."""
     opt = Options()
     opt.init_addon()
 
+    logging_color()
+    await get_mqtt_details(opt)
+
     if opt.search_area:
         await search_area(opt.search_area, opt.areas[0].api_key)
+
+    if not opt.areas:
+        _LOGGER.error("No areas to monitor. Check config")
+        return 1
 
     asyncio.get_event_loop().set_debug(opt.debug > 0)
     devs = list[ESP]()
@@ -61,6 +71,7 @@ async def main_loop() -> None:
         except Exception as ex:
             _LOGGER.error("Error in main loop: %s", ex, exc_info=True)
         wait = 60 * 60  # Update every hour
+    return 0
 
 
 @attrs.define()
@@ -82,4 +93,4 @@ class Options(MQTTOptions):
 
 
 if __name__ == "__main__":
-    asyncio.run(main_loop())
+    sys.exit(asyncio.run(main_loop()))

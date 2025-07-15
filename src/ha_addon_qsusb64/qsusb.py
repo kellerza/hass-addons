@@ -1,5 +1,6 @@
 """QsUsb HID interface."""
 
+import logging
 from collections.abc import Callable
 from typing import Any
 
@@ -10,6 +11,8 @@ from colorama import Fore
 from .qwikswitch import QsMsg, l2s
 
 type QsWrite = Callable[[QsMsg], None]
+
+_LOGGER = logging.getLogger(__name__)
 
 
 @attrs.define()
@@ -25,14 +28,16 @@ class QsUsb:
         try:
             self.dev.open(*self.vid_pid)
         except OSError as e:
-            raise RuntimeError(f"Could not open QSUSB device {self.vid_pid}") from e
-        print(f"Manufacturer: {self.dev.get_manufacturer_string()}")
-        print(f"Product: {self.dev.get_product_string()}")
+            msg = f"Could not open QSUSB device {self.vid_pid}: {e}"
+            _LOGGER.fatal(msg)
+            raise ConnectionError(e) from None
+        _LOGGER.info(f"Manufacturer: {self.dev.get_manufacturer_string()}")
+        _LOGGER.info(f"Product: {self.dev.get_product_string()}")
         self.dev.set_nonblocking(1)  # enable non-blocking mode
 
     def write(self, data: QsMsg, cmd: int = 0) -> None:
         """Write data to the HID device. Pad to 64 bytes."""
-        print(f"TX {Fore.GREEN}{l2s(data)}")
+        _LOGGER.info(f"TX {Fore.GREEN}{l2s(data)}")
         # pad data to 64 bytes
         data = [cmd, *data]
         data += [0] * (64 - len(data))

@@ -1,13 +1,12 @@
 ---
 name: ESP Add-on
+description: Add-on to query the EskomSePush API
 version: "4316844"
 slug: hass-addon-esp
-description: Add-on to query the EskomSePush API
 image: ghcr.io/kellerza/hass-addon-esp
-startup: services
-boot: auto
-url: "https://github.com/kellerza/hass-addons/"
-uart: false
+url: https://github.com/kellerza/hass-addons
+services: ["mqtt:need"]
+hassio_api: true
 init: false
 arch:
   - aarch64
@@ -15,9 +14,6 @@ arch:
   - armhf
   - armv7
   - i386
-ports: {}
-ports_description: {}
-host_network: false
 map:
   - share:rw
 options:
@@ -25,18 +21,14 @@ options:
     - API_KEY: "xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxxxxx"
       AREA_ID: "jhbcitypower3-2-victorypark"
       HA_PREFIX: "eskom_vp"
-  MQTT_HOST: core-mosquitto
-  MQTT_PORT: 1883
-  MQTT_USERNAME: hass
-  MQTT_PASSWORD: ""
 schema:
   AREAS:
     - API_KEY: str
       HA_PREFIX: str
       AREA_ID: str
-  MQTT_HOST: str
-  MQTT_PORT: port
-  MQTT_USERNAME: str
-  MQTT_PASSWORD: password
-  DEBUG: int(0,5)?
   SEARCH_AREA: str?
+  MQTT_HOST: str?
+  MQTT_PORT: port?
+  MQTT_USERNAME: str?
+  MQTT_PASSWORD: password?
+  DEBUG: int(0,5)?

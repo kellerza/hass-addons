@@ -1,5 +1,6 @@
 @echo off
 CALL :copy2 hass-addon-qsusb64,\\192.168.1.8\addons\hass-addon-qsusb64\
+CALL :copy2 hass-addon-esp,\\192.168.1.8\addons\hass-addon-esp\
 
 EXIT /B %ERRORLEVEL%
 
@@ -15,7 +16,7 @@ echo # Copy '%~1' to '%~2'
 xcopy /Y /S /EXCLUDE:scripts\copyexclude.txt %~1 %~2
 
 echo # Copy qsusb package
-for %%f in (pyproject.toml,MANIFEST.in,LICENSE,README.md,uv.lock) do xcopy /Y "%%f" %~2\qsusb64\
-xcopy /Y /S /EXCLUDE:scripts\copyexclude.txt src %~2\qsusb64\src\
+for %%f in (pyproject.toml,MANIFEST.in,LICENSE,README.md,uv.lock) do xcopy /Y "%%f" %~2\ha_addon\
+xcopy /Y /S /EXCLUDE:scripts\copyexclude.txt src %~2\ha_addon\src\
 
 EXIT /B 0

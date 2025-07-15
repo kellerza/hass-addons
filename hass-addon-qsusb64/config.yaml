@@ -1,31 +1,24 @@
 ---
 name: QSUSB64 Add-on
-version: "4316844"
-image: ghcr.io/kellerza/hass-addon-qsusb64
-slug: hass-addon-qsusb64
 description: Add-on for a QwikSwitch USB
-startup: services
-boot: auto
-url: "https://github.com/kellerza/hass-addons/"
-
+version: "4316844x"
+slug: hass-addon-qsusb64
+image: ghcr.io/kellerza/hass-addon-qsusb64
+url: https://github.com/kellerza/hass-addons
+services: ["mqtt:need"]
+hassio_api: true
+init: false
 devices:
     - /dev/bus/usb
     - /sys/class/hidraw
 usb: true
 udev: true
-
-init: false
 arch:
   - aarch64
   - amd64
   - armhf
   - armv7
   - i386
-ports: {}
-ports_description: {}
-host_network: false
-# map:
-#   - share:rw
 options:
   PREFIX: "qsusb"
   BUTTONS:
@@ -42,10 +35,6 @@ options:
   SWITCHES:
     - ID: "@30e170"
       NAME: "Pool pump"
-  MQTT_HOST: core-mosquitto
-  MQTT_PORT: 1883
-  MQTT_USERNAME: hass
-  MQTT_PASSWORD: ""
 schema:
   PREFIX: str
   BUTTONS:
@@ -60,8 +49,8 @@ schema:
   SWITCHES:
     - ID: str
       NAME: str
-  DEBUG: int(0,5)?
-  MQTT_HOST: str
+  MQTT_HOST: str?
   MQTT_PORT: int?
-  MQTT_USERNAME: str
-  MQTT_PASSWORD: str
+  MQTT_USERNAME: str?
+  MQTT_PASSWORD: str?
+  DEBUG: int(0,5)?
