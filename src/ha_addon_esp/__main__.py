@@ -1,8 +1,8 @@
 """Main."""
 
-import sys
 import asyncio
 import logging
+import sys
 
 import attrs
 from mqtt_entity import MQTTClient
