@@ -12,6 +12,7 @@ dependencies = [
     "jmespath==1.0.1",
     "mqtt-entity[options]>=0.1.0",
 ]
+license = { file = "LICENSE" }
 
 [dependency-groups]
 dev = [
@@ -49,16 +50,11 @@ asyncio_mode = "auto"
 addopts = "--cov=src --cov-report xml:cov.xml"
 
 [tool.ruff]
-target-version = "py312"
-include = ["src/**/*.py"]
+include = ["src/**/*.py", "**/pyproject.toml"]
 
 [tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-skip-magic-trailing-comma = false
 line-ending = "lf"
 docstring-code-format = true
-docstring-code-line-length = "dynamic"
 
 [tool.ruff.lint]
 select = [

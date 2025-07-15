@@ -8,8 +8,6 @@ import attrs
 from mqtt_entity import MQTTClient
 from mqtt_entity.options import MQTTOptions
 
-from ha_addon.helpers import get_mqtt_details, logging_color
-
 from .esp import ESP, search_area
 
 _LOGGER = logging.getLogger(__name__)
@@ -18,10 +16,7 @@ _LOGGER = logging.getLogger(__name__)
 async def main_loop() -> int:
     """Entry point."""
     opt = Options()
-    opt.init_addon()
-
-    logging_color()
-    await get_mqtt_details(opt)
+    await opt.init_addon()
 
     if opt.search_area:
         await search_area(opt.search_area, opt.areas[0].api_key)

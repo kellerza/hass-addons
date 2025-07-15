@@ -21,7 +21,7 @@ on:
 
 env:
   RUFF_VERSION: 0.12.3
-  UV_VERSION: 0.7.20
+  UV_VERSION: 0.7.21
   TEST_TARGET: "src"
 
 jobs:

@@ -5,8 +5,6 @@ import sys
 
 from colorama import Fore
 
-from ha_addon.helpers import get_mqtt_details, logging_color
-
 from .addon.bridge import HassBridge
 from .addon.options import OPT
 from .qsusb import QsUsb
@@ -15,9 +13,7 @@ from .qwikswitch import qs_decode
 
 async def main_loop() -> int:
     """Run the QS64 USB HID interface."""
-    OPT.init_addon()
-    logging_color()
-    await get_mqtt_details(OPT)
+    await OPT.init_addon()
 
     try:
         qsusb = QsUsb()
