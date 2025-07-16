@@ -12,8 +12,8 @@ import aiohttp
 import attrs
 from jmespath import search
 from mqtt_entity import MQTTClient, MQTTDevice, MQTTSensorEntity
-
-from ha_addon.helpers import ha_share_path, slug
+from mqtt_entity.helpers import hass_share_path
+from mqtt_entity.utils import slug
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class ESP:
     def __attrs_post_init__(self) -> None:
         """Init."""
         self.statefile = (
-            ha_share_path(ADDON_SLUG, True) / f"esp_{slug(self.area_id)}.json"
+            hass_share_path(ADDON_SLUG, True) / f"esp_{slug(self.area_id)}.json"
         )
         if self.statefile.exists():
             _LOGGER.debug("Loading state from %s", self.statefile)
@@ -197,7 +197,7 @@ AST = "areas_search"
 async def search_area(name: str, api_key: str) -> None:
     """Search for an area."""
     res = {}
-    sfile = ha_share_path(ADDON_SLUG, True) / "esp_search.json"
+    sfile = hass_share_path(ADDON_SLUG, True) / "esp_search.json"
     if sfile.exists():
         with sfile.open("r", encoding="utf8") as fjson:
             res = json.load(fjson)

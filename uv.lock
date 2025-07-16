@@ -365,16 +365,16 @@ wheels = [
 
 [[package]]
 name = "mqtt-entity"
-version = "1.0.15"
+version = "1.0.16"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
     { name = "attrs" },
     { name = "paho-mqtt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/04/f5/744e573a9a029a82c80bd19fb102d0ed1ad6c0b6fe539e6c064c50fd38e9/mqtt_entity-1.0.15.tar.gz", hash = "sha256:ebcbe4fdf5e0250a89f68964f86c8f5a69d06aef07a176ed8757ec0ddccbbaed", size = 15239 }
+sdist = { url = "https://files.pythonhosted.org/packages/17/cf/e3da14173896bd9b7ac7f09665f194cfec70e630b776227cdd215b22cd6f/mqtt_entity-1.0.16.tar.gz", hash = "sha256:9d4d18ed4a179f1347dec008f54bb4345a89e6b88d18cceb6012e00f68db8ae7", size = 16008 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f1/a0/908c524388561e9481263134198e51c8fdb4ae9329406314a3aa4b693013/mqtt_entity-1.0.15-py3-none-any.whl", hash = "sha256:7a95ced20a63ef18e4c8063ac6bf80d5bf666a25bbdf18d04499b1b23af13ae1", size = 17533 },
+    { url = "https://files.pythonhosted.org/packages/d0/15/015a420ec8f0d77b245ae29de9b0ed81f6a288ed7e66da190970bc23b2e9/mqtt_entity-1.0.16-py3-none-any.whl", hash = "sha256:2cffd0924f0fb29d882addc8f039b1e0f4e66f8f422babcd07c6e21672bbe3d3", size = 18394 },
 ]
 
 [package.optional-dependencies]
@@ -602,14 +602,14 @@ wheels = [
 
 [[package]]
 name = "pytest-asyncio"
-version = "1.0.0"
+version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d0/d4/14f53324cb1a6381bef29d698987625d80052bb33932d8e7cbf9b337b17c/pytest_asyncio-1.0.0.tar.gz", hash = "sha256:d15463d13f4456e1ead2594520216b225a16f781e144f8fdf6c5bb4667c48b3f", size = 46960 }
+sdist = { url = "https://files.pythonhosted.org/packages/4e/51/f8794af39eeb870e87a8c8068642fc07bce0c854d6865d7dd0f2a9d338c2/pytest_asyncio-1.1.0.tar.gz", hash = "sha256:796aa822981e01b68c12e4827b8697108f7205020f24b5793b3c41555dab68ea", size = 46652 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/30/05/ce271016e351fddc8399e546f6e23761967ee09c8c568bbfbecb0c150171/pytest_asyncio-1.0.0-py3-none-any.whl", hash = "sha256:4f024da9f1ef945e680dc68610b52550e36590a67fd31bb3b4943979a1f90ef3", size = 15976 },
+    { url = "https://files.pythonhosted.org/packages/c7/9d/bf86eddabf8c6c9cb1ea9a869d6873b46f105a5d292d3a6f7071f5b07935/pytest_asyncio-1.1.0-py3-none-any.whl", hash = "sha256:5fe2d69607b0bd75c656d1211f969cadba035030156745ee09e7d71740e58ecf", size = 15157 },
 ]
 
 [[package]]
