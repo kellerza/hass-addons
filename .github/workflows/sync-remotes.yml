@@ -45,46 +45,74 @@ jobs:
 
       - name: Sync files to hass-addons repository and commit changes
         run: |
-          echo Remove extra source files
+          echo # Remove extra source files
           ls sunsynk
           rm -rf sunsynk/hass-addon-sunsynk-multi/rootfs sunsynk/hass-addon-sunsynk-multi/Dockerfile sunsynk/hass-addon-sunsynk-multi/build.yaml
 
-          echo clean destination
+          echo # Clean destination
           mkdir -p hass-addons/hass-addon-sunsynk-multi
           mkdir -p hass-addons/hass-addon-sunsynk-edge
           rm -rf hass-addons/hass-addon-sunsynk-edge/*
           rm -rf hass-addons/hass-addon-sunsynk-multi/*
 
-          echo Copy files from sunsynk to hass-addons
+          echo # Copy files from sunsynk to hass-addons
           cp -r sunsynk/hass-addon-sunsynk-edge/* hass-addons/hass-addon-sunsynk-edge
           cp -r sunsynk/hass-addon-sunsynk-multi/* hass-addons/hass-addon-sunsynk-multi
 
-          echo Make the version updates
+          echo # Make the version updates
           #sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ env.ADDON_SLUG_EDGE }}/config.yaml
           #if [[ "${{ needs.information.outputs.environment }}" == "stable" ]]; then
           #  sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ env.ADDON_SLUG }}/config.yaml
           #fi
 
-          echo Stage and commit changes
+          echo # Stage and commit changes
           cd hass-addons
 
           git add hass-addon-sunsynk-edge/* hass-addon-sunsynk-multi/*
           #git diff HEAD
           git commit -m "Update sunsynk addons [no ci]" || echo "No changes to commit"
 
-      # - name: Push changes
-      #   run: |
-      #     # Try to push changes
-      #     for i in {1..3}; do
-      #       if git push origin main; then
-      #         echo "Successfully pushed changes"
-      #         exit 0
-      #       else
-      #         echo "Push failed, attempting to rebase and retry..."
-      #         git pull --rebase origin main
-      #       fi
-      #       echo "Waiting 5 seconds before next push attempt..."
-      #       sleep 5
-      #     done
-      #     echo "Failed to push after 3 attempts"
-      #     exit 1
+      - name: Checkout sma-em repository
+        uses: actions/checkout@v4
+        with:
+          repository: kellerza/hassio-sma-em
+          path: sma-em
+          ref: main
+          sparse-checkout: |
+            sma-em-dev
+          fetch-depth: 0
+
+      - name: Sync files to hass-addons repository and commit changes
+        run: |
+          echo # Clean destination
+          mkdir -p hass-addons/hass-addon-sma-em-edge
+          rm -rf hass-addons/hass-addon-sma-em-edge/*
+
+          echo # Copy files from sma-em to hass-addons
+          cp -r sma-em/sma-em-dev/* hass-addons/hass-addon-sma-em-edge
+
+          cd hass-addons
+
+          echo # Update the slug
+          sed -i 's/slug:.*/slug: hass-addon-sma-em-edge"/g' hass-addon-sma-em-edge/config.yaml
+
+          echo # Stage and commit changes
+          git add hass-addon-sma-em-edge/*
+          git commit -m "Update sma-em addons [no ci]" || echo "No changes to commit"
+
+      - name: Push changes
+        run: |
+          # Try to push changes
+          for i in {1..3}; do
+            if git push origin main; then
+              echo "Successfully pushed changes"
+              exit 0
+            else
+              echo "Push failed, attempting to rebase and retry..."
+              git pull --rebase origin main
+            fi
+            echo "Waiting 5 seconds before next push attempt..."
+            sleep 5
+          done
+          echo "Failed to push after 3 attempts"
+          exit 1
