@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - ".github/workflows/**"
+      - "!.github/workflows/sync-remotes.yml"
       - "hass-addon-esp/**"
       - "hass-addon-qsusb64/**"
       - "setup.*"
@@ -14,6 +15,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/**"
+      - "!.github/workflows/sync-remotes.yml"
       - "hass-addon-esp/**"
       - "hass-addon-qsusb64/**"
       - "setup.*"
