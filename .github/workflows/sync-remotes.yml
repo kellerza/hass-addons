@@ -47,10 +47,12 @@ jobs:
         run: |
           mkdir -p hass-addons/hass-addon-sunsynk-multi
           mkdir -p hass-addons/hass-addon-sunsynk-edge
+          rm -rf hass-addons/hass-addon-sunsynk-edge/*
+          rm -rf hass-addons/hass-addon-sunsynk-multi/*
 
           echo Copy files from sunsynk to hass-addons
-          cp sunsynk/hass-addon-sunsynk-multi/* hass-addons/hass-addon-sunsynk-multi
-          cp sunsynk/hass-addon-sunsynk-edge/* hass-addons/hass-addon-sunsynk-edge
+          cp -r sunsynk/hass-addon-sunsynk-edge/* hass-addons/hass-addon-sunsynk-edge
+          cp -r --exclude sunsynk/hass-addon-sunsynk-multi/rootfs sunsynk/hass-addon-sunsynk-multi/* hass-addons/hass-addon-sunsynk-multi
           echo Done
 
           cd hass-addons
