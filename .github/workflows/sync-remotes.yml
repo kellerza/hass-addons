@@ -23,9 +23,9 @@ jobs:
           repository: kellerza/sunsynk
           path: sunsynk
           ref: main
-          # sparse-checkout: |
-          #   hass-addon-synsynk-edge/
-          #   hass-addon-synsynk-multi/
+          sparse-checkout: |
+            hass-addon-sunsynk-edge
+            hass-addon-sunsynk-multi
           fetch-depth: 0
 
       - name: Checkout hass-addons repository
@@ -45,17 +45,12 @@ jobs:
 
       - name: Sync files to hass-addons repository and commit changes
         run: |
-          ls sunsynk/
-          mkdir -p hass-addons/hass-addon-synsynk-multi
-          mkdir -p hass-addons/hass-addon-synsynk-edge
-
-          cp --help
+          mkdir -p hass-addons/hass-addon-sunsynk-multi
+          mkdir -p hass-addons/hass-addon-sunsynk-edge
 
           echo Copy files from sunsynk to hass-addons
-
-          cp sunsynk/hass-addon-synsynk-multi/* hass-addons/hass-addon-synsynk-multi
-          cp sunsynk/hass-addon-synsynk-edge/* hass-addons/hass-addon-synsynk-edge
-
+          cp sunsynk/hass-addon-sunsynk-multi/* hass-addons/hass-addon-sunsynk-multi
+          cp sunsynk/hass-addon-sunsynk-edge/* hass-addons/hass-addon-sunsynk-edge
           echo Done
 
           cd hass-addons
@@ -69,7 +64,7 @@ jobs:
 
           echo Stage and commit changes
 
-          git add hass-addon-synsynk-edge/* hass-addon-synsynk-multi/*
+          git add hass-addon-sunsynk-edge/* hass-addon-sunsynk-multi/*
           git diff HEAD
           git commit -m "Update sunsynk addons [no ci]" || echo "No changes to commit"
 
