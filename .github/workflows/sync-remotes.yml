@@ -1,4 +1,4 @@
-name: Sync files from remote repositories
+name: Sync add-ons from remote repositories
 
 on:
   workflow_dispatch: {}
@@ -91,6 +91,7 @@ jobs:
 
       - name: Push changes
         run: |
+          cd hass-addons
           # Try to push changes
           for i in {1..3}; do
             if git push origin main; then
