@@ -83,7 +83,7 @@ jobs:
           cd hass-addons
 
           echo # Update the slug
-          sed -i 's/slug:.*/slug: hass-addon-sma-em-edge"/g' hass-addon-sma-em-edge/config.yaml
+          sed -i 's/slug:.*/slug: hass-addon-sma-em-edge/g' hass-addon-sma-em-edge/config.yaml
 
           echo # Stage and commit changes
           git add hass-addon-sma-em-edge/*
