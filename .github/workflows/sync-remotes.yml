@@ -38,6 +38,7 @@ jobs:
           sparse-checkout: |
             hass-addon-sunsynk-edge
             hass-addon-sunsynk-multi
+            hass-addon-mbusd
           fetch-depth: 0
 
       - name: Sync sunsynk add-ons and commit changes
