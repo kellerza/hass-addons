@@ -68,7 +68,7 @@ jobs:
           echo Stage and commit changes
 
           git add hass-addon-sunsynk-edge/* hass-addon-sunsynk-multi/*
-          git diff HEAD
+          #git diff HEAD
           git commit -m "Update sunsynk addons [no ci]" || echo "No changes to commit"
 
       # - name: Push changes
