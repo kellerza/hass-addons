@@ -23,9 +23,9 @@ jobs:
           repository: kellerza/sunsynk
           path: sunsynk
           ref: main
-          sparse-checkout: |
-            hass-addon-synsynk-edge
-            hass-addon-synsynk-multi
+          # sparse-checkout: |
+          #   hass-addon-synsynk-edge/
+          #   hass-addon-synsynk-multi/
           fetch-depth: 0
 
       - name: Checkout hass-addons repository
