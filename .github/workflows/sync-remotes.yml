@@ -49,15 +49,15 @@ jobs:
           mkdir -p hass-addons/hass-addon-sunsynk-edge
           rm -rf hass-addons/hass-addon-sunsynk-edge/*
           rm -rf hass-addons/hass-addon-sunsynk-multi/*
-          rm -rf sunsynk/hass-addon-sunsynk-multi/rootfs
+          rm -rf sunsynk/hass-addon-sunsynk-multi/rootfs sunsynk/hass-addon-sunsynk-multi/Dockerfile sunsynk/hass-addon-sunsynk-multi/build.yaml
 
           echo Copy files from sunsynk to hass-addons
           cp -r sunsynk/hass-addon-sunsynk-edge/* hass-addons/hass-addon-sunsynk-edge
           cp -r sunsynk/hass-addon-sunsynk-multi/* hass-addons/hass-addon-sunsynk-multi
           echo Done
 
-          cd hass-addons
-          ls
+          # cd hass-addons
+          # ls
 
           # Make the version updates
           #sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ env.ADDON_SLUG_EDGE }}/config.yaml
