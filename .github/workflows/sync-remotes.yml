@@ -1,0 +1,79 @@
+name: Sync files from remote repositories
+
+on:
+  # schedule:
+  #   - cron: "0 0 * * *"  # Every day at midnight
+  workflow_dispatch: {}
+  # push
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/sync-remotes.yml"
+
+jobs:
+  sync-remotes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout sunsynk repository
+        uses: actions/checkout@v4
+        with:
+          repository: kellerza/sunsynk
+          path: sunsynk
+          ref: main
+          sparse-checkout: |
+            hass-addon-synsynk-edge/**
+            hass-addon-synsynk-multi/**
+          fetch-depth: 0
+
+      - name: Checkout hass-addons repository
+        uses: actions/checkout@v4
+        with:
+          path: hass-addons
+          fetch-depth: 0
+          ref: main
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          # Pull latest changes with rebase strategy
+          cd hass-addons
+          git pull --rebase origin main
+
+      - name: Sync files to hass-addons repository and commit changes
+        run: |
+          copy sunsynk/hass-addon-synsynk-edge/. hass-addons/hass-addon-synsynk-edge/
+          copy sunsynk/hass-addon-synsynk-multi/. hass-addons/hass-addon-synsynk-multi/
+
+          cd hass-addons
+
+          # Make the version updates
+          #sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ env.ADDON_SLUG_EDGE }}/config.yaml
+          #if [[ "${{ needs.information.outputs.environment }}" == "stable" ]]; then
+          #  sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ env.ADDON_SLUG }}/config.yaml
+          #fi
+
+          # Stage and commit changes
+
+          git add hass-addon-synsynk-edge/* hass-addon-synsynk-multi/*
+          git commit -m "Update sunsynk addons [no ci]" || echo "No changes to commit"
+
+      # - name: Push changes
+      #   run: |
+      #     # Try to push changes
+      #     for i in {1..3}; do
+      #       if git push origin main; then
+      #         echo "Successfully pushed changes"
+      #         exit 0
+      #       else
+      #         echo "Push failed, attempting to rebase and retry..."
+      #         git pull --rebase origin main
+      #       fi
+      #       echo "Waiting 5 seconds before next push attempt..."
+      #       sleep 5
+      #     done
+      #     echo "Failed to push after 3 attempts"
+      #     exit 1
