@@ -59,10 +59,10 @@ jobs:
           cp -r sunsynk/hass-addon-sunsynk-multi/* hass-addons/hass-addon-sunsynk-multi
           cp -r sunsynk/hass-addon-mbusd/* hass-addons/hass-addon-mbusd
 
-          echo # Stage and commit changes
           cd hass-addons
 
-          git add hass-addon-sunsynk-edge/* hass-addon-sunsynk-multi/*
+          echo # Stage and commit changes
+          git add hass-addon-sunsynk-edge/* hass-addon-sunsynk-multi/* hass-addon-mbusd/*
           git commit -m "Update sunsynk addons [no ci]" || echo "No changes to commit"
 
       - name: Checkout kellerza/hassio-sma-em repository
