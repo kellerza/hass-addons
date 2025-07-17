@@ -45,10 +45,9 @@ jobs:
 
       - name: Sync files to hass-addons repository and commit changes
         run: |
-          ls
-
-          cp sunsynk/hass-addon-synsynk-edge/. hass-addons/hass-addon-synsynk-edge/
-          cp sunsynk/hass-addon-synsynk-multi/. hass-addons/hass-addon-synsynk-multi/
+          ls sunsynk/
+          #cp sunsynk/hass-addon-synsynk-multi/. hass-addons/hass-addon-synsynk-multi/
+          # cp sunsynk/hass-addon-synsynk-edge/. hass-addons/hass-addon-synsynk-edge/
 
           cd hass-addons
           ls
@@ -62,6 +61,7 @@ jobs:
           # Stage and commit changes
 
           git add hass-addon-synsynk-edge/* hass-addon-synsynk-multi/*
+          git diff HEAD
           git commit -m "Update sunsynk addons [no ci]" || echo "No changes to commit"
 
       # - name: Push changes
