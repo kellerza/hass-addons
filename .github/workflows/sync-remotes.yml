@@ -45,9 +45,11 @@ jobs:
 
       - name: Sync files to hass-addons repository and commit changes
         run: |
-          ls sunsynk/
-          #cp sunsynk/hass-addon-synsynk-multi/. hass-addons/hass-addon-synsynk-multi/
-          # cp sunsynk/hass-addon-synsynk-edge/. hass-addons/hass-addon-synsynk-edge/
+          #ls sunsynk/
+          mkdir -p hass-addons/hass-addon-synsynk-multi
+          mkdir -p hass-addons/hass-addon-synsynk-edge
+          cp sunsynk/hass-addon-synsynk-multi/. hass-addons/hass-addon-synsynk-multi
+          cp sunsynk/hass-addon-synsynk-edge/. hass-addons/hass-addon-synsynk-edge
 
           cd hass-addons
           ls
