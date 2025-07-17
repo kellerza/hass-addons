@@ -45,10 +45,13 @@ jobs:
 
       - name: Sync files to hass-addons repository and commit changes
         run: |
-          copy sunsynk/hass-addon-synsynk-edge/. hass-addons/hass-addon-synsynk-edge/
-          copy sunsynk/hass-addon-synsynk-multi/. hass-addons/hass-addon-synsynk-multi/
+          ls
+
+          cp sunsynk/hass-addon-synsynk-edge/. hass-addons/hass-addon-synsynk-edge/
+          cp sunsynk/hass-addon-synsynk-multi/. hass-addons/hass-addon-synsynk-multi/
 
           cd hass-addons
+          ls
 
           # Make the version updates
           #sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ env.ADDON_SLUG_EDGE }}/config.yaml
