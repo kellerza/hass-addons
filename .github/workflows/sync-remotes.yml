@@ -1,10 +1,7 @@
 name: Sync files from remote repositories
 
 on:
-  # schedule:
-  #   - cron: "0 0 * * *"  # Every day at midnight
   workflow_dispatch: {}
-  # push
   push:
     branches:
       - main
@@ -17,17 +14,6 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout sunsynk repository
-        uses: actions/checkout@v4
-        with:
-          repository: kellerza/sunsynk
-          path: sunsynk
-          ref: main
-          sparse-checkout: |
-            hass-addon-sunsynk-edge
-            hass-addon-sunsynk-multi
-          fetch-depth: 0
-
       - name: Checkout hass-addons repository
         uses: actions/checkout@v4
         with:
@@ -43,10 +29,20 @@ jobs:
           cd hass-addons
           git pull --rebase origin main
 
-      - name: Sync files to hass-addons repository and commit changes
+      - name: Checkout kellerza/sunsynk repository
+        uses: actions/checkout@v4
+        with:
+          repository: kellerza/sunsynk
+          path: sunsynk
+          ref: main
+          sparse-checkout: |
+            hass-addon-sunsynk-edge
+            hass-addon-sunsynk-multi
+          fetch-depth: 0
+
+      - name: Sync sunsynk add-ons and commit changes
         run: |
           echo # Remove extra source files
-          ls sunsynk
           rm -rf sunsynk/hass-addon-sunsynk-multi/rootfs sunsynk/hass-addon-sunsynk-multi/Dockerfile sunsynk/hass-addon-sunsynk-multi/build.yaml
 
           echo # Clean destination
@@ -59,20 +55,13 @@ jobs:
           cp -r sunsynk/hass-addon-sunsynk-edge/* hass-addons/hass-addon-sunsynk-edge
           cp -r sunsynk/hass-addon-sunsynk-multi/* hass-addons/hass-addon-sunsynk-multi
 
-          echo # Make the version updates
-          #sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ env.ADDON_SLUG_EDGE }}/config.yaml
-          #if [[ "${{ needs.information.outputs.environment }}" == "stable" ]]; then
-          #  sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ env.ADDON_SLUG }}/config.yaml
-          #fi
-
           echo # Stage and commit changes
           cd hass-addons
 
           git add hass-addon-sunsynk-edge/* hass-addon-sunsynk-multi/*
-          #git diff HEAD
           git commit -m "Update sunsynk addons [no ci]" || echo "No changes to commit"
 
-      - name: Checkout sma-em repository
+      - name: Checkout kellerza/hassio-sma-em repository
         uses: actions/checkout@v4
         with:
           repository: kellerza/hassio-sma-em
@@ -82,7 +71,7 @@ jobs:
             sma-em-dev
           fetch-depth: 0
 
-      - name: Sync files to hass-addons repository and commit changes
+      - name: Sync sma-em addons and commit changes
         run: |
           echo # Clean destination
           mkdir -p hass-addons/hass-addon-sma-em-edge
