@@ -35,6 +35,15 @@ options:
   SWITCHES:
     - ID: "@30e170"
       NAME: "Pool pump"
+  BINARY_SENSORS:
+    - ID: ""
+      NAME: ""
+  SENSORS:
+    - ID: ""
+      NAME: ""
+  IGNORE:
+    - ID: ""
+      NAME: ""
 schema:
   PREFIX: str
   BUTTONS:
@@ -49,6 +58,18 @@ schema:
   SWITCHES:
     - ID: str
       NAME: str
+  BINARY_SENSORS:
+    - ID: str
+      KIND: str?
+      NAME: str
+  SENSORS:
+    - ID: str
+      KIND: str?
+      NAME: str
+  IGNORE:
+    - ID: str
+      KIND: str?
+      NAME: str?
   MQTT_HOST: str?
   MQTT_PORT: int?
   MQTT_USERNAME: str?

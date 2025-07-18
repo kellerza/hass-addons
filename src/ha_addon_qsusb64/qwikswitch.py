@@ -38,6 +38,13 @@ def string_id(data: QsMsg | QsId) -> str:
     return "@" + l2s(data, sep="").lower()
 
 
+def qsslug(value: str, parse: bool = False) -> str:
+    """Convert a string to a slug suitable for MQTT topics and ids."""
+    if parse:
+        value = string_id(parse_id(value))
+    return value.strip(" _").lower().replace("@", "qs_").replace(" ", "_")
+
+
 COUNT: dict[QsId, int] = defaultdict(int)
 
 

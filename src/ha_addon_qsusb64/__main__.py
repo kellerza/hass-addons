@@ -14,6 +14,7 @@ from .qwikswitch import qs_decode
 async def main_loop() -> int:
     """Run the QS64 USB HID interface."""
     await OPT.init_addon()
+    OPT.check_allok()
 
     try:
         qsusb = QsUsb()
@@ -31,8 +32,8 @@ async def main_loop() -> int:
                 print(f"RX {Fore.YELLOW}{qsd}")
                 if qid := qsd.get("id"):
                     try:
-                        _, br = hass.find_id(qid)
-                        await br.process_msg(qsd, hass.client)
+                        for _, br in hass.find_ids(qid):
+                            await br.process_msg(qsd, hass.client)
                     except ValueError as e:
                         print(f"{Fore.RED}Error processing message: {e}")
 

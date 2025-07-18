@@ -19,6 +19,20 @@ class DeviceOpt:
     kind: str = ""
     name: str = ""
 
+    def allok(self, checkname: bool = True) -> bool:
+        """Check if the entity is empty."""
+        if not self.id and not self.name and not self.kind:
+            return False
+        try:
+            self.id = string_id(parse_id(self.id))
+        except ValueError:
+            _LOGGER.error("Invalid ID: %s, %s", self.id, self)
+            return False
+        if checkname and not self.name:
+            _LOGGER.error("Invalid name: %s: %s", self.name, self)
+            return False
+        return True
+
 
 @attrs.define()
 class ButtonOpt:
@@ -59,8 +73,21 @@ class Options(MQTTOptions):
     buttons: list[ButtonOpt] = attrs.field(factory=list)
     switches: list[DeviceOpt] = attrs.field(factory=list)
     lights: list[DeviceOpt] = attrs.field(factory=list)
+    binary_sensors: list[DeviceOpt] = attrs.field(factory=list)
+    sensors: list[DeviceOpt] = attrs.field(factory=list)
+
+    ignore: list[DeviceOpt] = attrs.field(factory=list)
+
     debug: int = 0
     prefix: str = "qsusb64"
+
+    def check_allok(self) -> None:
+        """Remove entities with empty IDs."""
+        self.switches = [o for o in self.switches if o.allok()]
+        self.lights = [o for o in self.lights if o.allok()]
+        self.binary_sensors = [o for o in self.binary_sensors if o.allok()]
+        self.sensors = [o for o in self.sensors if o.allok()]
+        self.ignore = [o for o in self.ignore if o.allok(checkname=False)]
 
 
 OPT = Options()
