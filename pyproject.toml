@@ -16,10 +16,12 @@ license = { file = "LICENSE" }
 
 [dependency-groups]
 dev = [
+    "codespell",
     "mypy",
     "pytest-asyncio",
     "pytest-cov",
     "pytest",
+    "ruff>=0.12.5",
     "types-attrs",
     "types-colorama",
     "types-jmespath",
@@ -34,6 +36,10 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 license-files = [] # https://github.com/astral-sh/uv/issues/9513
+
+[tool.codespell]
+skip=["hass-addon-sma-em-edge", "PKG-INFO"]
+ignore-words-list = ["HASS", "hass", "Hass", "iif"]
 
 [tool.mypy]
 disallow_untyped_defs = true
@@ -64,6 +70,7 @@ select = [
     "D",     # pydocstyle
     "E",     # pycodestyle
     "F",     # pyflakes
+    "G",     # flake8-logging-format
     "I",     # isort
     "PGH",   # pygrep-hooks
     "PIE",   # flake8-pie

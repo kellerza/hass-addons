@@ -1,0 +1,40 @@
+---
+name: Control Group add-on
+description: Add-on to manage control groups
+version: "xx"
+slug: hass-addon-control-group
+image: ghcr.io/kellerza/hass-addon-control-group
+url: https://github.com/kellerza/hass-addons
+services: ["mqtt:need"]
+hassio_api: true
+hassio_role: homeassistant
+homeassistant_api: true
+init: false
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+map:
+  - share:rw
+options:
+  GROUPS:
+    - ENTITIES: [light.my_light]
+      TEMPLATE: "{{ iif(is_state('light.other', 'on'), 'on,light other', 'off') }}"
+schema:
+  GROUPS:
+    - ENTITIES:
+        - str
+      TEMPLATE: str
+      NAME: str?
+      HA_PREFIX: str?
+      TRIGGERS:
+        - str?
+  MQTT_HOST: str?
+  MQTT_PORT: port?
+  MQTT_USERNAME: str?
+  MQTT_PASSWORD: password?
+  DEBUG: int(0,5)?
+  HA_API_URL: str?
+  HA_API_TOKEN: str?

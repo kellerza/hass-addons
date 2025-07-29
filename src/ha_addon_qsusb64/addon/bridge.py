@@ -61,9 +61,9 @@ class HassBridge:
                 cnt += 1
         if cnt == 0:
             if qid not in [i.id for i in OPT.ignore]:
-                _LOGGER.warning(f"ID not found {qid}")
+                _LOGGER.warning("ID not found %s", qid)
             else:
-                _LOGGER.debug(f"ID {qid} is in the ignore list.")
+                _LOGGER.debug("ID %s is in the ignore list.", qid)
 
     def __attrs_post_init__(self) -> None:
         """Create entities for the devices."""

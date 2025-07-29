@@ -31,13 +31,13 @@ class QsUsb:
             msg = f"Could not open QSUSB device {self.vid_pid}: {e}"
             _LOGGER.fatal(msg)
             raise ConnectionError(e) from None
-        _LOGGER.info(f"Manufacturer: {self.dev.get_manufacturer_string()}")
-        _LOGGER.info(f"Product: {self.dev.get_product_string()}")
+        _LOGGER.info("Manufacturer: %s", self.dev.get_manufacturer_string())
+        _LOGGER.info("Product: %s", self.dev.get_product_string())
         self.dev.set_nonblocking(1)  # enable non-blocking mode
 
     def write(self, data: QsMsg, cmd: int = 0) -> None:
         """Write data to the HID device. Pad to 64 bytes."""
-        _LOGGER.info(f"TX {Fore.GREEN}{l2s(data)}")
+        _LOGGER.info("TX %s", Fore.GREEN + l2s(data) + Fore.RESET)
         # pad data to 64 bytes
         data = [cmd, *data]
         data += [0] * (64 - len(data))

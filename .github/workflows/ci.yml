@@ -22,7 +22,7 @@ on:
       - "src/**"
 
 env:
-  RUFF_VERSION: 0.12.3
+  RUFF_VERSION: 0.12.5
   UV_VERSION: 0.7.21
   TEST_TARGET: "src"
 

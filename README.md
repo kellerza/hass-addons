@@ -7,7 +7,7 @@ This repository contains various Home Assistant add-ons
 - Sunsynk/Deye Inverter: An add-on for monitoring and controlling Sunsynk and Deye inverters - see <https://kellerza.github.io/sunsynk/>
 - SMA Energy Meter: An add-on for monitoring SMA Energy Meters - see <https://github.com/kellerza/hassio-sma-em>. Including a supporting mbusdb addon
 - QSUSB64: An add-on for controlling QwikSwitch devices with the QwikSwitch USB modem - see [hass-addon-qsusb64/README.md](hass-addon-qsusb64/README.md)
-- ESP: An add-on for monitoring South African load shedding schdules via the EskonSEPush API - see <https://kellerza.github.io/sunsynk/guide/esp>
+- ESP: An add-on for monitoring South African load shedding schedules via the EskonSEPush API - see <https://kellerza.github.io/sunsynk/guide/esp>
 - Git-push: An add-on for pushing files to a remote Git repository
 
 ## Development

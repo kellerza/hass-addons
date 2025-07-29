@@ -64,7 +64,7 @@ async def main_loop() -> int:
             _LOGGER.info("Shutting down ESP sensors")
             break
         except Exception as ex:
-            _LOGGER.error("Error in main loop: %s", ex, exc_info=True)
+            _LOGGER.exception("Error in main loop: %s", ex)
         wait = 60 * 60  # Update every hour
     return 0
 
