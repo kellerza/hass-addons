@@ -2,4 +2,4 @@
 # shellcheck shell=bash
 
 bashio::log.info "Starting the Control Group add-on"
-uv run --no-sync python -m ha_addon_cgroup
+uv run --no-sync python -m ha_addon_control_group
