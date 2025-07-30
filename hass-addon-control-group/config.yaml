@@ -1,6 +1,6 @@
 ---
-name: Control Group add-on
-description: Add-on to manage control groups
+name: Control group add-on
+description: Add-on to manage and control groups of entities based on templates
 version: "f8e6479"
 slug: hass-addon-control-group
 image: ghcr.io/kellerza/hass-addon-control-group
@@ -10,6 +10,7 @@ hassio_api: true
 hassio_role: homeassistant
 homeassistant_api: true
 init: false
+apparmor: true
 arch:
   - aarch64
   - amd64
@@ -17,7 +18,7 @@ arch:
   - armv7
   - i386
 map:
-  - share:rw
+  - addon_config:rw
 options:
   GROUPS:
     - ENTITIES: [light.my_light]
@@ -26,15 +27,20 @@ schema:
   GROUPS:
     - ENTITIES:
         - str
-      TEMPLATE: str
+      TEMPLATE: str?
       NAME: str?
-      HA_PREFIX: str?
+
       TRIGGERS:
         - str?
+  HA_PREFIX: str?
+  UUID: str?
+
+  HA_API_URL: str?
+  HA_API_TOKEN: str?
+
   MQTT_HOST: str?
   MQTT_PORT: port?
   MQTT_USERNAME: str?
   MQTT_PASSWORD: password?
+
   DEBUG: int(0,5)?
-  HA_API_URL: str?
-  HA_API_TOKEN: str?

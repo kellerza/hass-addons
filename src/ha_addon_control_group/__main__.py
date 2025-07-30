@@ -5,7 +5,7 @@ import logging
 import sys
 
 import attrs
-from mqtt_entity import MQTTClient, MQTTDevice, MQTTTextEntity
+from mqtt_entity import MQTTClient, MQTTDevice, MQTTSensorEntity
 
 from ha_addon.all_apis import HaAllApis
 from ha_addon.helpers import onoff
@@ -14,7 +14,7 @@ from .options import ControlGroupOptions, Options
 
 _LOG = logging.getLogger(__name__)
 
-TEM1 = "{{ states.sun.sun.state }}"
+TEM1 = "{{ states('sun.sun') }}"
 
 
 API = HaAllApis[Options]()
@@ -32,16 +32,6 @@ async def main_loop() -> int:
     res = await API.rest.render_template(tmpl)
     _LOG.info("RESTAPI Rendered template %s", res)
 
-    # await API.ws.render_template(
-    #     tmpl, result_callback=lambda msg: _LOG.info(f"Template rendered: {msg}")
-    # )
-    # await API.ws.render_template(
-    #     "{{ now() }}",
-    #     result_callback=lambda msg: _LOG.info(f"Template rendered now!: {msg}"),
-    # )
-
-    # await asyncio.create_task(asyncio.Event().wait())  # wait forever
-
     dev = MQTTDevice(
         name="Control group",
         identifiers=[opt.uuid],
@@ -53,14 +43,22 @@ async def main_loop() -> int:
         origin_name="Control Group add-on",
     )
 
-    texte = MQTTTextEntity(
+    # dev.components["ts"] = texte = MQTTTextEntity(
+    #     "Template states",
+    #     unique_id=dev.id + "_ts",
+    #     object_id=f"{opt.ha_prefix}_debug_edit",
+    #     state_topic="cgroup/template_states",
+    #     command_topic="cgroup/template_states_set",
+    #     on_command=lambda msg: _LOG.info("Received command: %s", msg),
+    # )
+    mqtt.devs[0].remove_components["ts"] = "text"
+    texte = dev.components["dbg"] = MQTTSensorEntity(
         "Template states",
-        unique_id=dev.id + "_ts",
+        unique_id=dev.id + "_dbg",
+        object_id=f"{opt.ha_prefix}_debug",
         state_topic="cgroup/template_states",
-        command_topic="cgroup/template_states_set",
-        on_command=lambda msg: _LOG.info("Received command: %s", msg),
+        entity_category="diagnostic",
     )
-    dev.components["ts"] = texte
 
     await mqtt.connect(opt)
     mqtt.monitor_homeassistant_status()
