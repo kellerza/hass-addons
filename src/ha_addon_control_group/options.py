@@ -1,10 +1,12 @@
 """Options."""
 
 import logging
+from pathlib import Path
 
 import attrs
-from mqtt_entity.options import MQTTOptions
+from mqtt_entity.options import CONVERTER, MQTTOptions
 from mqtt_entity.utils import slug
+from yaml import safe_load
 
 from ha_addon.all_apis import HaAllApis
 
@@ -41,6 +43,17 @@ class Options(MQTTOptions):
         """Init addon options."""
         await super().init_addon()
 
+        # Load others from files
+        for path in Path("/config").glob("group*.yml"):
+            _LOG.info("Loading group config from %s", path)
+            try:
+                with path.open("r") as f:
+                    data = safe_load(f)
+                res = CONVERTER.structure(data, list[ControlGroupOptions])
+                self.groups.extend(res)
+            except Exception as ex:
+                _LOG.error("Error loading group config from %s: %s", path, ex)
+
         ids = [g.id for g in self.groups]
         if "" in ids:  # check empty IDs
             raise ValueError("Groups need a unique ID. Fix your config.")
@@ -51,6 +64,8 @@ class Options(MQTTOptions):
             for aid in set(ids):
                 ids.remove(aid)
             raise ValueError(f"Duplicate group IDs found: {ids}")
+
+        self.groups.sort(key=lambda g: g.id)
 
 
 API = HaAllApis[Options]()

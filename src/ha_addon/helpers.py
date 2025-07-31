@@ -5,7 +5,7 @@ import logging
 _LOG = logging.getLogger(__name__)
 
 
-def onoff(state: str | bool | int | None) -> str:
+def onoff(state: str | bool | int | None) -> str | None:
     """Convert state to on/off."""
     if state is None:
         return "off"
@@ -14,10 +14,10 @@ def onoff(state: str | bool | int | None) -> str:
     if isinstance(state, int):
         return "off" if state == 0 else "on"
 
-    ss = state.strip()
+    ss = state.strip("\t\n ")
     if ss in ("0", "off"):
         return "off"
     elif ss in ("1", "on", "100"):
         return "on"
-    _LOG.warning("Unknown state %s, defaulting to off", state)
-    return "off"
+    # _LOG.warning("Unknown state %s, defaulting to off", state)
+    return None

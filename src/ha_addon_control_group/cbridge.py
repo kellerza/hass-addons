@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from ast import literal_eval
+from typing import Any
 
 import attrs
 from mqtt_entity import MQTTClient, MQTTDevice, MQTTSelectEntity, MQTTSensorEntity
@@ -72,6 +73,23 @@ class AddonState:
         for cg in self.cgs:
             await cg.register_ws()
 
+        entities = list[str]()
+        for cg in self.cgs:
+            entities.extend(cg.opt.entities)
+        triggers = [{"platform": "state", "entity_id": e} for e in set(entities)]
+
+        async def _cb(msg: dict[str, Any]) -> None:
+            eid = msg["variables"]["trigger"]["entity_id"]
+            state = msg["variables"]["trigger"]["to_state"]["state"]
+            for cg in self.cgs:
+                if state == cg.state:
+                    continue
+                if eid in cg.opt.entities:
+                    _LOG.info("CG %s: Reset %s to %s", cg.opt.id, eid, cg.state)
+                    await API.rest.set_entity_state(eid, cg.state or "off")
+
+        await API.ws.subscribe_triggers(trigger=triggers, callback=_cb)
+
     async def run_loop(self) -> None:
         """Run the main loop."""
         if ACHANGE.is_set():
@@ -101,7 +119,7 @@ class CGroupBridge:
 
     opt: ControlGroupOptions
     state_reason: str = ""
-    state: str = ""
+    state: str | None = None
     mode_entity: MQTTSelectEntity = attrs.field(init=False)
 
     file_opt: FileGroupOption = attrs.field(init=False)
@@ -138,40 +156,30 @@ class CGroupBridge:
             self.file_opt.mode = value
             OPT_FILE.save_file()
 
-    @property
-    def kick_template(self) -> str:
-        """The kick template ensures the listeners includes controlled entities."""
-        states = "+".join(f"states('{e}')" for e in self.opt.entities)
-        return "{%- set _kick=" + states + " -%}" if self.opt.entities else ""
-
-    async def on_render(self, msg: str) -> None:
+    async def on_render(self, text: str, msg: dict[str, Any]) -> None:
         """Handle template rendered callback."""
         if self.opt.call_script:
             # await API.ws.call_service(self.opt.call_script, {"msg": msg})
-            await API.rest.call_service(self.opt.call_script, {"msg": msg})
+            await API.rest.call_service(self.opt.call_script, {"msg": text})
 
+        state, _, self.state_reason = text.strip().partition(",")
         match self.mode:
             case "enabled":
-                self.state, _, self.state_reason = msg.strip().partition(",")
-                self.state = onoff(self.state)
+                self.state = onoff(state)
+                if self.state is None:
+                    _LOG.error("CG %s: Invalid state '%s'", self.opt.id, state)
+                    return
             case "on":
-                _, _, r = msg.strip().partition(",")
-                self.state_reason = f"FORCED {r}"
+                self.state_reason = f"FORCED {self.state_reason}"
                 self.state = "on"
             case "off":
-                _, _, r = msg.strip().partition(",")
-                self.state_reason = f"FORCED {r}"
+                self.state_reason = f"FORCED {self.state_reason}"
                 self.state = "off"
             case "disabled":
-                _, _, r = msg.strip().partition(",")
-                self.state_reason = f"DISABLED {r}"
+                self.state_reason = f"DISABLED {self.state_reason}"
                 return
             case _:
-                _LOG.warning(
-                    "Unknown mode value '%s' for control group '%s'",
-                    self.mode,
-                    self.opt.id,
-                )
+                _LOG.warning("CG %s: Unknown mode value '%s'", self.opt.id, self.mode)
                 return
 
         # sync the state
@@ -179,25 +187,24 @@ class CGroupBridge:
         diff = [s for s in current_state if s and s.state != self.state]
         if diff:
             ents = ",".join(s.entity_id for s in diff)
-            _LOG.info("Cgroup set %s=%s", ents, self.state)
-        ACHANGE.set()
+            _LOG.info("CG %s: set %s=%s", self.opt.id, ents, self.state)
 
         # set the values
         for st in diff:
             await API.rest.set_entity_state(st.entity_id, self.state)
+        # _LOG.info("CG %s: listeners %s", self.opt.id, msg.get("listeners"))
+        ACHANGE.set()
 
     async def render_template(self) -> None:
         """Render template with REST API."""
         template = await API.rest.render_template(self.opt.template)
         if template:
-            return await self.on_render(template)
+            return await self.on_render(template, msg={})
         self.state_reason = "Template rendering failed"
 
     async def register_ws(self) -> None:
         """Register the control group with the websocket."""
-        await API.ws.render_template(
-            self.kick_template + self.opt.template, self.on_render
-        )
+        await API.ws.render_template(self.opt.template, self.on_render)
 
     async def expand_entities(self) -> None:
         """Expand entities in the control group."""
@@ -209,9 +216,13 @@ class CGroupBridge:
                     if res:
                         resl = literal_eval(res)
                         self.opt.entities.extend(resl)
-                        _LOG.info("Expanding template '%s' \nto '%s'", ent, resl)
+                        _LOG.info(
+                            "CG %s: expand '%s' \nto '%s'", self.opt.id, ent, resl
+                        )
                 except Exception as e:
-                    _LOG.error("Error expanding template '%s': %s %s", ent, e, res)
+                    _LOG.error(
+                        "CG %s: could not expand '%s': %s %s", self.opt.id, ent, e, res
+                    )
 
     async def on_command_state(self, payload: str) -> None:
         """Handle state changes."""

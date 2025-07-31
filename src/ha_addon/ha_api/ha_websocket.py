@@ -313,11 +313,11 @@ class HaWebsocketApi(HaApiBase):
         return await self.send(msg, type="subscribe_events", callback=callback)
 
     async def subscribe_triggers(
-        self, trigger: dict[str, Any], callback: MsgCallback
+        self, trigger: dict[str, Any] | list[dict[str, Any]], callback: MsgCallback
     ) -> int | None:
         """Subscribe to websocket triggers."""
         return await self.send(
-            type="subscribe_trigger", trigger=trigger, callback=callback
+            type="subscribe_trigger", trigger=trigger, result_callback=callback
         )
 
     async def unsubscribe_events(self, event_id: int) -> None:

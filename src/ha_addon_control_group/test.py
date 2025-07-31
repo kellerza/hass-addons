@@ -11,7 +11,6 @@ from typing import Any
 
 from ha_addon.all_apis import HaAllApis
 
-from .cbridge import CGroupBridge
 from .options import Options
 
 _LOG = logging.getLogger(__name__)
@@ -48,11 +47,6 @@ async def main_loop() -> int:
     await API.ws.render_template(TEM1, ws_log_factory(TEM1))
 
     await asyncio.sleep(1)
-
-    cg = CGroupBridge(opt=opt.groups[0])
-    _LOG.info("Created control group bridge: %s", cg.kick_template)
-    templ = cg.kick_template + "kick='{{ _kick }}'"
-    await API.ws.render_template(templ, ws_log_factory(templ))
 
     templ = "{{ states.binary_sensor | map(attribute='entity_id') | select('is_state', 'on') | list }}"
     bs = await API.rest.render_template(templ)

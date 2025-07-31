@@ -25,6 +25,7 @@ dev = [
     "types-attrs",
     "types-colorama",
     "types-jmespath",
+    "types-pyyaml>=6.0.12.20250516",
 ]
 
 [project.optional-dependencies]
