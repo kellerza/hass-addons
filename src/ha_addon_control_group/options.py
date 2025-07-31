@@ -15,7 +15,9 @@ _LOG = logging.getLogger(__name__)
 class ControlGroupOptions:
     """Options for a control group."""
 
-    id: str = attrs.field(validator=lambda _, __, v: v == slug(v) and len(v) > 0)
+    id: str = attrs.field(
+        validator=lambda _, __, v: v == slug(v).lower() and len(v) > 0
+    )
     name: str = ""
     entities: list[str] = attrs.field(factory=list)
     template: str = ""
@@ -29,7 +31,7 @@ class Options(MQTTOptions):
     name: str = ""
     groups: list[ControlGroupOptions] = attrs.field(factory=list)
     ha_prefix: str = attrs.field(
-        default="cgroup", validator=lambda _, __, v: v == slug(v) and len(v) > 0
+        default="cgroup", validator=lambda _, __, v: v == slug(v).lower() and len(v) > 0
     )
     ha_api_url: str = ""
     ha_api_token: str = ""

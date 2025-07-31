@@ -39,7 +39,7 @@ class AddonState:
             model=" ",
         )
         API.mqtt = MQTTClient(
-            availability_topic=f"/cg/{API.opt.ha_prefix}_status",
+            availability_topic=f"cg/{API.opt.ha_prefix}_status",
             devs=[self.dev],
             origin_name=f"Control Group add-on {API.opt.name}",
         )
@@ -50,7 +50,7 @@ class AddonState:
             f"Template states {API.opt.name}",
             unique_id=f"{self.dev.id}_{debug_id}",
             object_id=f"{API.opt.ha_prefix}_debug",
-            state_topic=f"/cg/{API.opt.ha_prefix}/template_states",
+            state_topic=f"cg/{API.opt.ha_prefix}/template_states",
             entity_category="diagnostic",
         )
         for cg in self.cgs:
@@ -77,11 +77,12 @@ class AddonState:
         if ACHANGE.is_set():
             ACHANGE.clear()
             tgtg_text = "- " + "\n- ".join(
-                f"{','.join(g.opt.entities)}={g.state} {g.state_reason}".strip()
-                for g in STATE.cgs
+                f"{g.name}={g.state} {g.state_reason}".strip() for g in STATE.cgs
             )
             if tgtg_text != self.debug_sensor_state:
                 self.debug_sensor_state = tgtg_text
+                if len(self.debug_sensor_state) > 255:
+                    self.debug_sensor_state = self.debug_sensor_state[:255]
                 await self.debug_sensor.send_state(API.mqtt, self.debug_sensor_state)
 
 
@@ -113,6 +114,11 @@ class CGroupBridge:
             self.file_opt = OPT_FILE.groups[self.opt.id] = FileGroupOption(
                 mode=MODE_OPTIONS[0] if self.opt.template else MODE_OPTIONS[1]
             )
+
+    @property
+    def name(self) -> str:
+        """Get the name of the control group."""
+        return self.opt.name or self.opt.id
 
     @property
     def mode(self) -> str:
@@ -174,7 +180,6 @@ class CGroupBridge:
         if diff:
             ents = ",".join(s.entity_id for s in diff)
             _LOG.info("Cgroup set %s=%s", ents, self.state)
-            self.state_reason += f" [will update {' '.join(s.entity_id for s in diff)}]"
         ACHANGE.set()
 
         # set the values
@@ -216,17 +221,16 @@ class CGroupBridge:
 
     def register_mqtt(self, mq_dev: MQTTDevice) -> None:
         """Register the control group with the MQTT broker."""
-        name = self.opt.name or " ".join(self.opt.entities)
 
         async def _cb(msg: str) -> None:
             await self.on_command_state(msg)
 
         self.mode_entity = mq_dev.components[self.opt.id] = MQTTSelectEntity(
-            name=f"{name} mode",
+            name=f"{self.name} mode",
             unique_id=mq_dev.id + f"_{self.opt.id}",
-            object_id=f"{API.opt.ha_prefix}_{slug(name)}_mode",
+            object_id=f"{API.opt.ha_prefix}_{slug(self.name).lower()}_mode",
             options=MODE_OPTIONS,
-            state_topic=f"/cg/{API.opt.ha_prefix}/{self.opt.id}",
-            command_topic=f"/cg/{API.opt.ha_prefix}/{self.opt.id}_set",
+            state_topic=f"cg/{API.opt.ha_prefix}/{self.opt.id}",
+            command_topic=f"cg/{API.opt.ha_prefix}/{self.opt.id}_set",
             on_command=_cb,
         )

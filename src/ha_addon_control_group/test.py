@@ -20,7 +20,6 @@ TEM1 = "{{ states('sun.sun') }}"
 
 
 API = HaAllApis[Options]()
-ACHANGE = asyncio.Event()
 
 
 def ws_log_factory(template: str) -> Callable[[str, dict[str, Any]], None]:
