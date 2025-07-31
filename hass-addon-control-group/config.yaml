@@ -20,20 +20,24 @@ arch:
 map:
   - addon_config:rw
 options:
+  NAME: main
   GROUPS:
-    - ENTITIES: [light.my_light]
+    - ID: cg1
+      ENTITIES: [light.my_light]
       TEMPLATE: "{{ iif(is_state('light.other', 'on'), 'on,light other', 'off') }}"
 schema:
+  NAME: str
   GROUPS:
-    - ENTITIES:
+    - ID: str
+      ENTITIES:
         - str
       TEMPLATE: str?
       NAME: str?
+      CALL_SCRIPT: str?
 
       TRIGGERS:
         - str?
   HA_PREFIX: str?
-  UUID: str?
 
   HA_API_URL: str?
   HA_API_TOKEN: str?

@@ -9,9 +9,18 @@ This allows you to easily build motion or presence-based automations using the s
 - The state of another switch, light or basically any entity's state or attribute.
 - During the evening, when the sun sets, or based on a specific time of the day
 
-The template can be as simple or as complex as you need it to be. You can add a reason to your desired state, which makes it really easy to fine-tune your automations.
+The template can be as simple or as complex as you need it to be. You can add a reason to your desired state, which makes it really easy to debug and fine-tune your automations.
 
-Templates are standard Home Assistant [templates](https://www.home-assistant.io/docs/configuration/templating/).
+Templates are standard Home Assistant [templates](https://www.home-assistant.io/docs/configuration/templating/). The sections below shows several examples.
+
+## Alternative options
+
+A similar concept can be achieved using a combination of existing Home Assistant features:
+
+- You can use *template sensor* helpers to create the state and use an automation that syncs the value of this template sensor to the desired entity.
+In the past I've used automation blueprints to maintain this syncing capability. You end up with several entities that you need to manage and it's fairly cumbersome to debug.
+
+- Home Assistant has [Template Triggers](https://www.home-assistant.io/docs/automation/trigger/#template-trigger) that can be used for automations, but unfortunately only when the template state changes from False to True. For some discussions see [PR#121451](https://github.com/home-assistant/core/pull/121451).
 
 ## Installation
 
@@ -20,6 +29,38 @@ Templates are standard Home Assistant [templates](https://www.home-assistant.io/
    [![Open your Home Assistant instance and add the kellerza/hass-addons URL](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fkellerza%2Fhass-addons)
 
 2. Install the addon, configure and run.
+
+## Configuration
+
+Groups are configured under the **GROUPS** key in the configuration file.
+
+When a group has a **TEMPLATE** defined, it will be rendered whenever the state changes in Home Assistant. The result of the template will be used to determine the state of the group. Template are discussed in detail in the next sections.
+
+Each group requires a unique **ID**. The ID can be a short string as it will include a uuid for the addon when used as identifiers for Home Assistant entities. If you change them you will get stale entities that you can delete from the frontend (after a restart!)
+
+You can add a **NAME**. If not provided the name will be a list of entities.
+
+The **ENTITIES** in a group can either be a name (light.x, switch.y), or a template that will be expanded when the addon starts.
+
+Example:
+
+```yaml
+GROUPS:
+- ID: abc
+  ENTITIES:
+    - light.fixed_light
+    - "{{ states.binary_sensor | map(attribute='entity_id') | select('is_state', 'on') | list }}"
+  CALL_SCRIPTS: script.do_something
+```
+
+Using **CALL_SCRIPT** you can call a script when the result of the template changes. This is optional and the value of the template will be passed to the script as *msg*
+
+```yaml
+GROUPS:
+- ID: abc
+  ENTITIES: [...]
+  CALL_SCRIPT: script.do_something
+```
 
 ## How to build the templates
 
@@ -124,7 +165,9 @@ Here we control the light in the scullery, which is between the laundry and the 
 - If there has been motion in the kitchen in the last 5 minutes, the motion timer in the scullery increases to 10 minutes (`sk<300 and ss<600`)
 
 ```yaml
-  - ENTITIES: [light.scullery]
+GROUPS:
+  - ID: abc
+    ENTITIES: [light.scullery]
     TEMPLATE: |
       {%- if is_state("light.kitchen", "on") -%}
         on,light kitchen
@@ -153,7 +196,9 @@ So the light will be on:
 - When the override is on (a press button toggling the sonoff's status led)
 
 ```yaml
-  - ENTITIES: [light.garage]
+GROUPS:
+  - ID: abc
+    ENTITIES: [light.garage]
     TEMPLATE: |
       {%- set n = as_timestamp(now()) -%}
       {%- if 600 > (n-(as_timestamp(states.binary_sensor.zone_garage_pir_open.last_changed) or n)) -%}

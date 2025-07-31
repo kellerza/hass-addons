@@ -11,6 +11,7 @@ See https://developers.home-assistant.io/docs/add-ons/communication
 from __future__ import annotations
 
 import asyncio
+import inspect
 import json
 from collections.abc import Callable, Coroutine
 from typing import Any, cast
@@ -18,11 +19,19 @@ from urllib.parse import urljoin
 
 import attrs
 from aiohttp import ClientWebSocketResponse, WSMsgType
+from typing_extensions import TypeIs
 
 from .base import HaApiBase
 
 type MsgCallback = Callable[[dict[str, Any]], Coroutine[None, None, None]]
+
 type StrCallback = Callable[[str], Coroutine[None, None, None]] | Callable[[str], None]
+
+type StrOrMsgCallback = (
+    StrCallback
+    | Callable[[str, dict[str, Any]], Coroutine[None, None, None]]
+    | Callable[[str, dict[str, Any]], None]
+)
 
 
 @attrs.define()
@@ -229,8 +238,39 @@ class HaWebsocketApi(HaApiBase):
             asyncio.create_task(ping_loop(count=count, interval=interval))
         )
 
+    async def call_service(
+        self,
+        domain_service: str,
+        service_data: dict[str, Any] | None = None,
+        target_entity_ids: list[str] | None = None,
+        return_response: bool = False,
+    ) -> None:
+        """Call a service.
+
+        This will call a service action in Home Assistant. Right now there is no return value.
+        The client can listen to state_changed events if it is interested in changed entities as a result of a call.
+
+        return_response: Must be included for service actions that return response data.
+        """
+        domain, _, service = domain_service.partition(".")
+        msg: dict[str, Any] = {
+            "type": "call_service",
+            "domain": domain,
+            "service": service,
+        }
+        if service_data is not None:
+            msg["service_data"] = service_data
+        if target_entity_ids is not None:
+            msg["target_entity_ids"] = target_entity_ids
+        if return_response:
+            msg["return_response"] = return_response
+        await self.send(msg)
+
     async def render_template(
-        self, template: str, result_callback: StrCallback, report_errors: bool = True
+        self,
+        template: str,
+        result_callback: StrOrMsgCallback,
+        report_errors: bool = True,
     ) -> int | None:
         """Render a template."""
 
@@ -241,10 +281,21 @@ class HaWebsocketApi(HaApiBase):
                 result_callback.__name__,
                 msg,
             )
+
+            if err_msg := msg.get("error"):
+                self.log_error(
+                    f"Template rendering {msg.get('level', 'ERR')}: {err_msg}"
+                )
+
+            result = str(msg.get("result", ""))
+            param = [msg]
+            if isStrCallback(result_callback):
+                param = []
+
             if asyncio.iscoroutinefunction(result_callback):
-                await result_callback(msg.get("result", ""))
+                await result_callback(result, *param)
             else:
-                result_callback(msg.get("result", ""))
+                result_callback(result, *param)
 
         res = await self.send(
             type="render_template",
@@ -272,3 +323,12 @@ class HaWebsocketApi(HaApiBase):
     async def unsubscribe_events(self, event_id: int) -> None:
         """Unsubscribe from websocket events."""
         await self.send(type="unsubscribe_events", event_id=event_id)
+
+
+def isStrCallback(
+    callback: MsgCallback | StrOrMsgCallback,
+) -> TypeIs[StrCallback]:
+    """Check if the callback is a StrCallback."""
+    params = list(inspect.signature(callback).parameters.values())
+    return len(params) == 1
+    # return params[0].annotation is str
