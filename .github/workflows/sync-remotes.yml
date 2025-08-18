@@ -15,7 +15,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout hass-addons repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: hass-addons
           fetch-depth: 0
@@ -30,7 +30,7 @@ jobs:
           git pull --rebase origin main
 
       - name: Checkout kellerza/sunsynk repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: kellerza/sunsynk
           path: sunsynk
@@ -66,7 +66,7 @@ jobs:
           git commit -m "Update sunsynk addons [no ci]" || echo "No changes to commit"
 
       - name: Checkout kellerza/hassio-sma-em repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: kellerza/hassio-sma-em
           path: sma-em
