@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.7.21
+    rev: 0.8.19
     hooks:
       - id: uv-lock
 
@@ -15,6 +15,12 @@ repos:
       - id: cp-readme-qsusb64
         name: Copy README.md to DOCS.md
         entry: cp hass-addon-qsusb64/README.md hass-addon-qsusb64/DOCS.md
+        language: system
+        pass_filenames: false
+
+      - id: pyproject-fmt
+        name: pyproject-fmt
+        entry: uv run pyproject-fmt pyproject.toml
         language: system
         pass_filenames: false
 
@@ -39,6 +45,13 @@ repos:
       - id: mypy
         name: mypy
         entry: uv run mypy --config-file pyproject.toml .
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: pytest
+        name: pytest
+        entry: uv run pytest
         language: system
         types: [python]
         pass_filenames: false

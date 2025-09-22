@@ -1,88 +1,88 @@
+[build-system] # setuptools required for sub-packages
+build-backend = "setuptools.build_meta"
+
+requires = [ "setuptools", "setuptools-scm" ]
+
 [project]
-name = "ha_addon"
+name = "ha-addon"
 version = "0.0.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "aiohttp>=3.12,<4",
-    "colorama>=0.4.6,<1",
-    "colorlog>=6.9.0",
-    "icecream>=2.1.4",
-    "jmespath==1.0.1",
-    "mqtt-entity[options]>=0.1.0",
-]
 license = { file = "LICENSE" }
+
+requires-python = ">=3.13"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+  "aiohttp>=3.12,<4",
+  "colorama>=0.4.6,<1",
+  "colorlog>=6.9",
+  "icecream>=2.1.4",
+  "jmespath==1.0.1",
+  "mqtt-entity[options]>=0.1",
+]
+optional-dependencies.hidapi = [ "hidapi==0.14.0.post4" ]
 
 [dependency-groups]
 dev = [
-    "codespell",
-    "mypy",
-    "pytest-asyncio",
-    "pytest-cov",
-    "pytest",
-    "ruff>=0.12.5",
-    "types-attrs",
-    "types-colorama",
-    "types-jmespath",
-    "types-pyyaml>=6.0.12.20250516",
+  "codespell",
+  "mypy",
+  "pyproject-fmt>=2.6",
+  "pytest",
+  "pytest-asyncio",
+  "pytest-cov",
+  "ruff>=0.12.5",
+  "types-attrs",
+  "types-colorama",
+  "types-jmespath",
+  "types-pyyaml>=6.0.12.20250516",
 ]
 
-[project.optional-dependencies]
-hidapi = ["hidapi==0.14.0.post4"]
-
-[build-system] # setuptools required for sub-packages
-requires = ["setuptools", "setuptools-scm"]
-build-backend = "setuptools.build_meta"
-
 [tool.setuptools]
-license-files = [] # https://github.com/astral-sh/uv/issues/9513
+license-files = [  ] # https://github.com/astral-sh/uv/issues/9513
+
+[tool.ruff]
+include = [ "**/pyproject.toml", "src/**/*.py" ]
+
+format.line-ending = "lf"
+format.docstring-code-format = true
+lint.select = [
+  "A",     # flake8-builtins
+  "ASYNC", # flake8-async
+  "B",     # bugbear
+  "D",     # pydocstyle
+  "E",     # pycodestyle
+  "F",     # pyflakes
+  "G",     # flake8-logging-format
+  "I",     # isort
+  "PGH",   # pygrep-hooks
+  "PIE",   # flake8-pie
+  "PL",    # pylint
+  "PTH",   # flake8-pathlib
+  "PYI",   # flake8-pyi
+  "RUF",   # ruff
+  "UP",    # pyupgrade
+  "W",     # pycodestyle
+]
+lint.ignore = [ "D203", "D213", "E203", "E501", "PLR2004" ]
+lint.pylint.max-args = 7
 
 [tool.codespell]
-skip=["hass-addon-sma-em-edge", "PKG-INFO"]
-ignore-words-list = ["HASS", "hass", "Hass", "iif"]
-
-[tool.mypy]
-disallow_untyped_defs = true
-ignore_missing_imports = true
+skip = [ "hass-addon-sma-em-edge", "PKG-INFO" ]
+ignore-words-list = [ "HASS", "hass", "Hass", "iif" ]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = [ "src" ]
 filterwarnings = "ignore:.+@coroutine.+deprecated.+"
 testpaths = "src/tests"
-norecursedirs = [".git", "modules"]
+norecursedirs = [ ".git", "modules" ]
 log_cli = true
 log_cli_level = "DEBUG"
 asyncio_mode = "auto"
 addopts = "--cov=src --cov-report xml:cov.xml"
 
-[tool.ruff]
-include = ["src/**/*.py", "**/pyproject.toml"]
-
-[tool.ruff.format]
-line-ending = "lf"
-docstring-code-format = true
-
-[tool.ruff.lint]
-select = [
-    "A",     # flake8-builtins
-    "ASYNC", # flake8-async
-    "B",     # bugbear
-    "D",     # pydocstyle
-    "E",     # pycodestyle
-    "F",     # pyflakes
-    "G",     # flake8-logging-format
-    "I",     # isort
-    "PGH",   # pygrep-hooks
-    "PIE",   # flake8-pie
-    "PL",    # pylint
-    "PTH",   # flake8-pathlib
-    "PYI",   # flake8-pyi
-    "RUF",   # ruff
-    "UP",    # pyupgrade
-    "W",     # pycodestyle
-]
-ignore = ["E203", "E501", "D203", "D213", "PLR2004"]
-
-[tool.ruff.lint.pylint]
-max-args = 7
+[tool.mypy]
+disallow_untyped_defs = true
+ignore_missing_imports = true
