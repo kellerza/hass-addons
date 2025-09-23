@@ -284,7 +284,7 @@ dev = [
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
-    { name = "ruff", specifier = ">=0.12.5" },
+    { name = "ruff", specifier = ">=0.13.1" },
     { name = "types-attrs" },
     { name = "types-colorama" },
     { name = "types-jmespath" },

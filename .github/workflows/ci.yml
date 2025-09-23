@@ -22,8 +22,8 @@ on:
       - "src/**"
 
 env:
-  RUFF_VERSION: 0.12.5
-  UV_VERSION: 0.7.21
+  RUFF_VERSION: 0.13.1
+  UV_VERSION: 0.8.19
   TEST_TARGET: "src"
 
 jobs:
@@ -65,7 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12", "3.13"]
+        python-version: ["3.13", "3.14"]
     env:
       PYTHON: ${{ matrix.python-version }}
     steps:
