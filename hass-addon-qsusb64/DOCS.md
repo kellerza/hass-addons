@@ -43,7 +43,7 @@ UPDATE (July 2025): QwikSwitch published a 64-bit application and the addon abov
 
 ## Development
 
-You can test the addon locally by cloning the repository and running it in a Python 3.12+ virtual environment.
+You can test the addon locally by cloning the repository and running it in a Python 3.13+ virtual environment.
 
 Requirements: [uv](https://docs.astral.sh/uv/getting-started/). uv can be used to install Python and the required dependencies in a virtual environment.
 

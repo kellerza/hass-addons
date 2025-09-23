@@ -14,7 +14,7 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  call-deployer:
+  deployer:
     uses: kellerza/hass-addons/.github/workflows/deployer.yml@main
     secrets: inherit
     with:

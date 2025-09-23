@@ -14,8 +14,8 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  call-deployer:
-    uses: kellerza/hass-addons/.github/workflows/deployer.yml
+  deployer:
+    uses: kellerza/hass-addons/.github/workflows/deployer.yml@main
     secrets: inherit
     with:
       addon-slug: hass-addon-esp
