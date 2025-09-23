@@ -14,12 +14,11 @@ import asyncio
 import inspect
 import json
 from collections.abc import Callable, Coroutine
-from typing import Any, cast
+from typing import Any, TypeIs, cast
 from urllib.parse import urljoin
 
 import attrs
 from aiohttp import ClientWebSocketResponse, WSMsgType
-from typing import TypeIs
 
 from .base import HaApiBase
 

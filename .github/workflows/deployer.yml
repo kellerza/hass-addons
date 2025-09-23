@@ -17,7 +17,7 @@ on:
       personal_access_token:
         required: true
 
-name: Deploy ${{ inputs.addon-slug }} addon to ghcr.io
+name: Deploy addon to ghcr.io
 
 jobs:
   information:

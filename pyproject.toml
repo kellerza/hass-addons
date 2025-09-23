@@ -1,7 +1,6 @@
-[build-system] # setuptools required for sub-packages
-build-backend = "setuptools.build_meta"
-
-requires = [ "setuptools", "setuptools-scm" ]
+[build-system]
+build-backend = "uv_build"
+requires = [ "uv-build>=0.8.20,<0.9" ]
 
 [project]
 name = "ha-addon"
@@ -39,9 +38,6 @@ dev = [
   "types-jmespath",
   "types-pyyaml>=6.0.12.20250516",
 ]
-
-[tool.setuptools]
-license-files = [  ] # https://github.com/astral-sh/uv/issues/9513
 
 [tool.ruff]
 include = [ "**/pyproject.toml", "src/**/*.py" ]
@@ -86,3 +82,6 @@ addopts = "--cov=src --cov-report xml:cov.xml"
 [tool.mypy]
 disallow_untyped_defs = true
 ignore_missing_imports = true
+
+[tool.uv.build-backend]
+module-name = [ "ha_addon", "ha_addon_control_group", "ha_addon_esp", "ha_addon_qsusb64" ]

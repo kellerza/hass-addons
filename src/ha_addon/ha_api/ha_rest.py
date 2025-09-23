@@ -10,13 +10,12 @@ See https://developers.home-assistant.io/docs/add-ons/communication
 
 from __future__ import annotations
 
-from typing import Any, get_origin
+from typing import Any, TypeVar, get_origin
 from urllib.parse import urljoin
 
 import attrs
 from colorama import Fore, Style
 from mqtt_entity.options import CONVERTER
-from typing import TypeVar
 
 from .base import HaApiBase
 from .types import HAEvents, HAService, HAState
