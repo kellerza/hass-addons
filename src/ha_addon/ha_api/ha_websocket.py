@@ -19,7 +19,7 @@ from urllib.parse import urljoin
 
 import attrs
 from aiohttp import ClientWebSocketResponse, WSMsgType
-from typing_extensions import TypeIs
+from typing import TypeIs
 
 from .base import HaApiBase
 

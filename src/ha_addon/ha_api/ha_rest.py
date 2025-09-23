@@ -16,7 +16,7 @@ from urllib.parse import urljoin
 import attrs
 from colorama import Fore, Style
 from mqtt_entity.options import CONVERTER
-from typing_extensions import TypeVar
+from typing import TypeVar
 
 from .base import HaApiBase
 from .types import HAEvents, HAService, HAState

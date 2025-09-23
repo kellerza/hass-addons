@@ -17,7 +17,7 @@ on:
       personal_access_token:
         required: true
 
-name: Deploy ${{ input.addon-slug }} addon to ghcr.io
+name: Deploy ${{ inputs.addon-slug }} addon to ghcr.io
 
 jobs:
   information:
@@ -42,7 +42,7 @@ jobs:
         id: information
         uses: frenck/action-addon-information@v1.4
         with:
-          path: ./${{ input.addon-slug }}
+          path: ./${{ inputs.addon-slug }}
       - name: ℹ️ Gather version and environment
         id: release
         run: |
@@ -90,9 +90,9 @@ jobs:
 
       - name: Prepare Files for Build
         run: |
-          mkdir -p ${{ input.addon-slug }}/${{ input.pkg-name }}
-          cp -r src ${{ input.addon-slug }}/${{ input.pkg-name }}/
-          cp pyproject.toml MANIFEST.in LICENSE README.md uv.lock ${{ input.addon-slug }}/${{ input.pkg-name }}/
+          mkdir -p ${{ inputs.addon-slug }}/${{ inputs.pkg-name }}
+          cp -r src ${{ inputs.addon-slug }}/${{ inputs.pkg-name }}/
+          cp pyproject.toml MANIFEST.in LICENSE README.md uv.lock ${{ inputs.addon-slug }}/${{ inputs.pkg-name }}/
 
       - name: Set up the correct base image based on platform
         run: |
@@ -108,7 +108,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ input.registry-image }}
+          images: ${{ inputs.registry-image }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -142,13 +142,13 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
-          context: ./${{ input.addon-slug }} # Specify the directory containing your Dockerfile
-          file: ./${{ input.addon-slug }}/Dockerfile # Specify the Dockerfile path within the context
+          context: ./${{ inputs.addon-slug }} # Specify the directory containing your Dockerfile
+          file: ./${{ inputs.addon-slug }}/Dockerfile # Specify the Dockerfile path within the context
           platforms: ${{ matrix.platform }}
           cache-from: type=local,src=/tmp/.buildx-cache # Use cache for build
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max # Save cache
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ input.registry-image }},push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ inputs.registry-image }},push-by-digest=true,name-canonical=true,push=true
           build-args: |
             BUILD_FROM=${{ env.BUILD_FROM }}
 
@@ -198,7 +198,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ input.registry-image }}
+          images: ${{ inputs.registry-image }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -225,8 +225,8 @@ jobs:
         run: |
           # Define base tags
           TAGS=(
-            "-t ${{ input.registry-image }}:${{ needs.information.outputs.version }}"
-            "-t ${{ input.registry-image }}:${{ needs.information.outputs.environment }}"
+            "-t ${{ inputs.registry-image }}:${{ needs.information.outputs.version }}"
+            "-t ${{ inputs.registry-image }}:${{ needs.information.outputs.environment }}"
           )
 
           # Get the list of platforms from the build job output
@@ -235,8 +235,8 @@ jobs:
           # Split the platforms and add platform-specific tags
           IFS=',' read -ra PLATFORM_ARRAY <<< "$platforms"
           for PLATFORM in "${PLATFORM_ARRAY[@]}"; do
-            TAGS+=("-t ${{ input.registry-image }}/${PLATFORM}:${{ needs.information.outputs.version }}")
-            TAGS+=("-t ${{ input.registry-image }}/${PLATFORM}:${{ needs.information.outputs.environment }}")
+            TAGS+=("-t ${{ inputs.registry-image }}/${PLATFORM}:${{ needs.information.outputs.version }}")
+            TAGS+=("-t ${{ inputs.registry-image }}/${PLATFORM}:${{ needs.information.outputs.environment }}")
           done
 
           # Join tags into a string
@@ -282,9 +282,9 @@ jobs:
           # Create base manifest
           echo "Creating base manifest..."
           retry_with_backoff docker buildx imagetools create \
-            -t ${{ input.registry-image }}:${{ needs.information.outputs.version }} \
-            -t ${{ input.registry-image }}:${{ needs.information.outputs.environment }} \
-            $(printf '${{ input.registry-image }}@sha256:%s ' "${digests[@]}")
+            -t ${{ inputs.registry-image }}:${{ needs.information.outputs.version }} \
+            -t ${{ inputs.registry-image }}:${{ needs.information.outputs.environment }} \
+            $(printf '${{ inputs.registry-image }}@sha256:%s ' "${digests[@]}")
 
       - name: Inspect image
         run: |
@@ -315,7 +315,7 @@ jobs:
           echo "Waiting 20 seconds for manifests to settle before starting inspections..."
           sleep 20
           echo "Inspecting base image..."
-          retry_with_backoff docker buildx imagetools inspect ${{ input.registry-image }}:${{ needs.information.outputs.version }}
+          retry_with_backoff docker buildx imagetools inspect ${{ inputs.registry-image }}:${{ needs.information.outputs.version }}
 
   publish_addon:
     name: 🆕 Update addon version to ${{ needs.information.outputs.version }}
@@ -341,13 +341,13 @@ jobs:
           git pull --rebase origin main
 
           # Make the version updates
-          sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ input.addon-slug-edge }}/config.yaml
+          sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ inputs.addon-slug-edge }}/config.yaml
           if [[ "${{ needs.information.outputs.environment }}" == "stable" ]]; then
-            sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ input.addon-slug }}/config.yaml
+            sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ inputs.addon-slug }}/config.yaml
           fi
 
           # Stage and commit changes
-          git add ${{ input.addon-slug-edge }}/config.yaml ${{ input.addon-slug }}/config.yaml
+          git add ${{ inputs.addon-slug-edge }}/config.yaml ${{ inputs.addon-slug }}/config.yaml
           git commit -m "Update addon version to ${{ needs.information.outputs.version }} [no ci]" || echo "No changes to commit"
 
       - name: Push changes
