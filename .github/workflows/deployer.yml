@@ -13,9 +13,6 @@ on:
       registry-image:
         required: true
         type: string
-    secrets:
-      personal_access_token:
-        required: true
 
 name: Deploy addon to ghcr.io
 
