@@ -13,17 +13,12 @@ on:
       - "src/ha_addon/**"
   workflow_dispatch: {}
 
-env:
-  ADDON_SLUG: hass-addon-control-group
-  ADDON_SLUG_EDGE: hass-addon-control-group
-  PKG_NAME: ha_addon
-
 jobs:
   call-deployer:
     uses: kellerza/hass-addons/.github/workflows/deployer.yml
     secrets: inherit
     with:
-      addon-slug: ${{ env.ADDON_SLUG }}
-      addon-slug-edge: ${{ env.ADDON_SLUG_EDGE }}
-      pkg-name: ${{ env.PKG_NAME }}
-      registry-image: ghcr.io/${{ github.repository_owner }}/${{ env.ADDON_SLUG }}
+      addon-slug: hass-addon-control-group
+      addon-slug-edge: hass-addon-control-group
+      pkg-name: ha_addon
+      registry-image: ghcr.io/${{ github.repository_owner }}/hass-addon-control-group
