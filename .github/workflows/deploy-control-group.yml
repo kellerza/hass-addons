@@ -15,7 +15,7 @@ on:
 
 jobs:
   call-deployer:
-    uses: kellerza/hass-addons/.github/workflows/deployer.yml
+    uses: kellerza/hass-addons/.github/workflows/deployer.yml@main
     secrets: inherit
     with:
       addon-slug: hass-addon-control-group
