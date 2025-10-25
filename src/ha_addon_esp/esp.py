@@ -15,7 +15,7 @@ from mqtt_entity import MQTTClient, MQTTDevice, MQTTSensorEntity
 from mqtt_entity.helpers import hass_share_path
 from mqtt_entity.utils import slug
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 URI = "https://developer.sepush.co.za/business/2.0"
 API_STATE = f"{URI}/area"
@@ -53,7 +53,7 @@ class ESP:
             hass_share_path(ADDON_SLUG, True) / f"esp_{slug(self.area_id)}.json"
         )
         if self.statefile.exists():
-            _LOGGER.debug("Loading state from %s", self.statefile)
+            _LOG.debug("Loading state from %s", self.statefile)
             with self.statefile.open(encoding="utf-8") as jsf:
                 self.state = json.load(jsf)
 
@@ -89,7 +89,7 @@ class ESP:
                 async with session.get(uri, headers=headers, params=params) as resp:
                     return await resp.json()
         except aiohttp.ClientError as err:
-            _LOGGER.error("Read Error: %s: %s", type(err), err)
+            _LOG.error("Read Error: %s: %s", type(err), err)
             return {}
 
     async def query_api(self) -> None:
@@ -98,7 +98,7 @@ class ESP:
         if not val:
             return
         self.state = val
-        _LOGGER.debug("Saving state to %s", self.statefile)
+        _LOG.debug("Saving state to %s", self.statefile)
         with self.statefile.open("w", encoding="utf-8") as jsf:
             json.dump(val, jsf, indent=2)
 
@@ -108,7 +108,7 @@ class ESP:
             if not self.state:
                 await self.init()
                 return
-            _LOGGER.info("Updating ESP state")
+            _LOG.info("Updating ESP state")
             await self.query_api()
             for sen in self.sensors:
                 await sen.get_state(self)
@@ -119,10 +119,10 @@ class ESP:
     async def init(self) -> None:
         """Initialize ESP."""
         if not self.state:
-            _LOGGER.info("No state history, querying API")
+            _LOG.info("No state history, querying API")
             await self.query_api()
         else:
-            _LOGGER.debug("Using state history: %s", self.state)
+            _LOG.debug("Using state history: %s", self.state)
 
         for sen in self.sensors:
             await sen.get_state(self)
@@ -144,9 +144,9 @@ class ESPSensor:
             name=self.name,
             state_topic=f"ESP/{unique_id}/state",
             json_attributes_topic=f"ESP/{unique_id}/attributes",
-            object_id=f"{ha_prefix}_{nme}",
+            default_entity_id=f"sensor.{ha_prefix}_{nme}",
         )
-        dev.components[self.entity.object_id] = self.entity
+        dev.components[f"{ha_prefix}_{nme}"] = self.entity
 
     async def get_state(self, esp: ESP) -> Any:
         """Read the sensor value from the API."""
@@ -165,11 +165,11 @@ class JMESSensor(ESPSensor):
         val = search(self.state_expr, esp.state)
         await self.entity.send_state(esp.client, val, retain=True)
         atr = search(self.attr_expr, esp.state)
-        _LOGGER.debug("Attributes %s = %s", self.name, json.dumps(atr))
+        _LOG.debug("Attributes %s = %s", self.name, json.dumps(atr))
         try:
             await self.entity.send_json_attributes(esp.client, atr)
         except TypeError as err:
-            _LOGGER.error("%s", err)
+            _LOG.error("%s", err)
         return val
 
 
@@ -188,7 +188,7 @@ class AllowanceSensor(ESPSensor):
             try:
                 await self.entity.send_json_attributes(esp.client, api, retain=True)
             except TypeError as err:
-                _LOGGER.error("%s", err)
+                _LOG.error("%s", err)
 
 
 AST = "areas_search"
@@ -217,4 +217,4 @@ async def search_area(name: str, api_key: str) -> None:
                 with sfile.open("w", encoding="utf8") as fjson:
                     json.dump(res, fjson)
 
-    _LOGGER.info("Search result:\n%s", json.dumps(res, indent=2))
+    _LOG.info("Search result:\n%s", json.dumps(res, indent=2))

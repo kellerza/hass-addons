@@ -13,14 +13,15 @@ requires-python = ">=3.13"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
   "aiohttp>=3.12,<4",
-  "colorama>=0.4.6,<1",
-  "colorlog>=6.9",
-  "icecream>=2.1.4",
-  "jmespath==1.0.1",
-  "mqtt-entity[options]>=0.1",
+  "colorama",
+  "colorlog",
+  "icecream",
+  "jmespath",
+  "mqtt-entity[options]",
 ]
 optional-dependencies.hidapi = [ "hidapi==0.14.0.post4" ]
 
@@ -28,16 +29,19 @@ optional-dependencies.hidapi = [ "hidapi==0.14.0.post4" ]
 dev = [
   "codespell",
   "mypy",
-  "pyproject-fmt>=2.6",
+  "pyproject-fmt",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
-  "ruff>=0.13.1",
+  "ruff==0.14.2",
   "types-attrs",
   "types-colorama",
   "types-jmespath",
-  "types-pyyaml>=6.0.12.20250516",
+  "types-pyyaml",
 ]
+
+[tool.uv.build-backend]
+module-name = [ "ha_addon", "ha_addon_control_group", "ha_addon_esp", "ha_addon_qsusb64" ]
 
 [tool.ruff]
 include = [ "**/pyproject.toml", "src/**/*.py" ]
@@ -82,6 +86,3 @@ addopts = "--cov=src --cov-report xml:cov.xml"
 [tool.mypy]
 disallow_untyped_defs = true
 ignore_missing_imports = true
-
-[tool.uv.build-backend]
-module-name = [ "ha_addon", "ha_addon_control_group", "ha_addon_esp", "ha_addon_qsusb64" ]

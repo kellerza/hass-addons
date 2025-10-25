@@ -12,7 +12,7 @@ from .qwikswitch import QsMsg, l2s
 
 type QsWrite = Callable[[QsMsg], None]
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 @attrs.define()
@@ -29,15 +29,15 @@ class QsUsb:
             self.dev.open(*self.vid_pid)
         except OSError as e:
             msg = f"Could not open QSUSB device {self.vid_pid}: {e}"
-            _LOGGER.fatal(msg)
+            _LOG.fatal(msg)
             raise ConnectionError(e) from None
-        _LOGGER.info("Manufacturer: %s", self.dev.get_manufacturer_string())
-        _LOGGER.info("Product: %s", self.dev.get_product_string())
+        _LOG.info("Manufacturer: %s", self.dev.get_manufacturer_string())
+        _LOG.info("Product: %s", self.dev.get_product_string())
         self.dev.set_nonblocking(1)  # enable non-blocking mode
 
     def write(self, data: QsMsg, cmd: int = 0) -> None:
         """Write data to the HID device. Pad to 64 bytes."""
-        _LOGGER.info("TX %s", Fore.GREEN + l2s(data) + Fore.RESET)
+        _LOG.info("TX %s", Fore.GREEN + l2s(data) + Fore.RESET)
         # pad data to 64 bytes
         data = [cmd, *data]
         data += [0] * (64 - len(data))

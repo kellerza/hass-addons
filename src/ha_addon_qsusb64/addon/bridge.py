@@ -27,7 +27,7 @@ from .entity_bridge import (
 )
 from .options import OPT, ButtonOpt
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 @attrs.define()
@@ -59,9 +59,9 @@ class HassBridge:
                 cnt += 1
         if cnt == 0:
             if qid not in [i.id for i in OPT.ignore]:
-                _LOGGER.warning("ID not found %s", qid)
+                _LOG.warning("ID not found %s", qid)
             else:
-                _LOGGER.debug("ID %s is in the ignore list.", qid)
+                _LOG.debug("ID %s is in the ignore list.", qid)
 
     def __attrs_post_init__(self) -> None:
         """Create entities for the devices."""
@@ -100,7 +100,7 @@ class HassBridge:
             all_ids.extend(b.hassbtn.keys())
         all_ids.extend(qsslug(i.id, parse=True) for i in OPT.ignore)
 
-        _LOGGER.debug("All QS IDs: %s", all_ids)
+        _LOG.debug("All QS IDs: %s", all_ids)
 
         # remove other platforms
         for br in (
@@ -146,7 +146,7 @@ class ButtonDevBridge(Bridge):
         """Return a generator of Home Assistant entities for the buttons."""
         self.hassbtn = dict[str, MQTTDeviceTrigger]()
         for btn_id, btn_type in self.opt.btn_map.items():
-            _LOGGER.debug("Creating button entity %s -> %s", btn_id, btn_type)
+            _LOG.debug("Creating button entity %s -> %s", btn_id, btn_type)
             slug_id = qsslug(btn_id)
             self.hassbtn[slug_id] = MQTTDeviceTrigger(
                 topic=f"{OPT.prefix}/{slug_id}_trigger",
@@ -172,5 +172,5 @@ class ButtonDevBridge(Bridge):
         if btn := self.hassbtn.get(slug_id):
             await btn.send_trigger(client)
             return True
-        _LOGGER.warning("Button with ID %s not found in hassbtn", slug_id)
+        _LOG.warning("Button with ID %s not found in hassbtn", slug_id)
         return False

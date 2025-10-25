@@ -8,7 +8,7 @@ from mqtt_entity.options import MQTTOptions
 
 from ..qwikswitch import parse_id, string_id
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 @attrs.define()
@@ -26,10 +26,10 @@ class DeviceOpt:
         try:
             self.id = string_id(parse_id(self.id))
         except ValueError:
-            _LOGGER.error("Invalid ID: %s, %s", self.id, self)
+            _LOG.error("Invalid ID: %s, %s", self.id, self)
             return False
         if checkname and not self.name:
-            _LOGGER.error("Invalid name: %s: %s", self.name, self)
+            _LOG.error("Invalid name: %s: %s", self.name, self)
             return False
         return True
 
@@ -62,7 +62,7 @@ class ButtonOpt:
                 qid = string_id(parse_id(ids))
                 res[qid] = name.strip()
             except ValueError:
-                _LOGGER.error("Invalid button ID: %s", btn)
+                _LOG.error("Invalid button ID: %s", btn)
         return res
 
 

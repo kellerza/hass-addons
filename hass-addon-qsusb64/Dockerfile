@@ -16,7 +16,7 @@ RUN apk add --no-cache --virtual .build-deps \
 COPY ha_addon .
 
 RUN set -x \
-    && curl -LsSf https://astral.sh/uv/0.8.19/install.sh | sh \
+    && curl -LsSf https://astral.sh/uv/0.9.2/install.sh | sh \
     && uv sync --locked --no-dev --extra hidapi
 
 COPY rootfs /

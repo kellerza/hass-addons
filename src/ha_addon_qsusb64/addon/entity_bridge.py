@@ -21,7 +21,7 @@ from ..qsusb import QsWrite
 from ..qwikswitch import qs_encode, qsslug
 from .options import OPT, DeviceOpt
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 @attrs.define()
@@ -88,13 +88,13 @@ class LightBridge(Bridge1):
                 val = 100
 
             if topic.endswith("/cmd"):
-                _LOGGER.info("Command callback: %s", payload)
+                _LOG.info("Command callback: %s", payload)
                 qs_write(qs_encode("SET", self.opt.id, val))
             elif topic.endswith("/brightness_cmd"):
-                _LOGGER.debug("Brightness change callback: %s", payload)
+                _LOG.debug("Brightness change callback: %s", payload)
                 qs_write(qs_encode("SET", self.opt.id, val))
             else:
-                _LOGGER.warning("Unknown command topic: %s", topic)
+                _LOG.warning("Unknown command topic: %s", topic)
 
         is_switch = isinstance(self, SwitchBridge)
         dev_class = MQTTSwitchEntity if is_switch else MQTTLightEntity
@@ -131,17 +131,17 @@ class LightBridge(Bridge1):
             try:
                 value = int(msg.get("val", 0))
             except ValueError:
-                _LOGGER.error("Invalid brightness value: %s", msg.get("val"))
+                _LOG.error("Invalid brightness value: %s", msg.get("val"))
             await self.hassdev.send_brightness(client, brightness=value)
             return True
 
         if self.opt.kind == "imod":
             value = 0
             try:
-                _LOGGER.info("imod %s", msg.get("val"))
+                _LOG.info("imod %s", msg.get("val"))
                 value = int(msg.get("val", 0))
             except ValueError:
-                _LOGGER.error("Invalid brightness value: %s", msg.get("val"))
+                _LOG.error("Invalid brightness value: %s", msg.get("val"))
             await self.hassdev.send_state(client, payload=bool(value))
             return True
 

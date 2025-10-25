@@ -50,7 +50,7 @@ class AddonState:
         self.debug_sensor = self.dev.components[debug_id] = MQTTSensorEntity(
             f"Template states {API.opt.name}",
             unique_id=f"{self.dev.id}_{debug_id}",
-            object_id=f"{API.opt.ha_prefix}_debug",
+            default_entity_id=f"sensor.{API.opt.ha_prefix}_debug",
             state_topic=f"cg/{API.opt.ha_prefix}/template_states",
             entity_category="diagnostic",
         )
@@ -239,7 +239,7 @@ class CGroupBridge:
         self.mode_entity = mq_dev.components[self.opt.id] = MQTTSelectEntity(
             name=f"{self.name} mode",
             unique_id=mq_dev.id + f"_{self.opt.id}",
-            object_id=f"{API.opt.ha_prefix}_{slug(self.name).lower()}_mode",
+            default_entity_id=f"select.{API.opt.ha_prefix}_{slug(self.name).lower()}_mode",
             options=MODE_OPTIONS,
             state_topic=f"cg/{API.opt.ha_prefix}/{self.opt.id}",
             command_topic=f"cg/{API.opt.ha_prefix}/{self.opt.id}_set",

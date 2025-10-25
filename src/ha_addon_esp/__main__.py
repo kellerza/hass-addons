@@ -10,7 +10,7 @@ from mqtt_entity.options import MQTTOptions
 
 from .esp import ESP, search_area
 
-_LOGGER = logging.getLogger(__name__)
+_LOG = logging.getLogger(__name__)
 
 
 async def main_loop() -> int:
@@ -22,7 +22,7 @@ async def main_loop() -> int:
         await search_area(opt.search_area, opt.areas[0].api_key)
 
     if not opt.areas:
-        _LOGGER.error("No areas to monitor. Check config")
+        _LOG.error("No areas to monitor. Check config")
         return 1
 
     asyncio.get_event_loop().set_debug(opt.debug > 0)
@@ -45,7 +45,7 @@ async def main_loop() -> int:
 
     await client.connect(opt)
     client.monitor_homeassistant_status()
-    _LOGGER.info("Connected to MQTT broker")
+    _LOG.info("Connected to MQTT broker")
 
     # wait a bit for discovery
     await asyncio.sleep(10)
@@ -61,10 +61,10 @@ async def main_loop() -> int:
             for dev in devs:
                 await dev.callback(client)
         except asyncio.CancelledError:
-            _LOGGER.info("Shutting down ESP sensors")
+            _LOG.info("Shutting down ESP sensors")
             break
         except Exception as ex:
-            _LOGGER.exception("Error in main loop: %s", ex)
+            _LOG.exception("Error in main loop: %s", ex)
         wait = 60 * 60  # Update every hour
     return 0
 
