@@ -1,7 +1,7 @@
 ---
 name: Sunsynk or Deye Inverter add-on (multi)
 description: Add-on for a Sunsynk/Deye branded Inverter
-version: "0.9.2"
+version: "0.9.3"
 slug: hass-addon-sunsynk-multi
 image: ghcr.io/kellerza/hass-addon-sunsynk-multi
 url: "https://kellerza.github.io/sunsynk"
@@ -73,6 +73,7 @@ schema:
       CHANGE_PERCENT: int(0,500)?
   NUMBER_ENTITY_MODE: list(auto|box|slider)
   PROG_TIME_INTERVAL: list(5|10|15|30|45|60)?
+  MQTT_CUSTOM: str?
   MQTT_HOST: str?
   MQTT_PORT: port?
   MQTT_USERNAME: str?
