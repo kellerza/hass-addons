@@ -91,6 +91,11 @@ jobs:
           cp -r src ${{ inputs.addon-slug }}/${{ inputs.pkg-name }}/
           cp pyproject.toml MANIFEST.in LICENSE README.md uv.lock ${{ inputs.addon-slug }}/${{ inputs.pkg-name }}/
 
+      - name: Include version in the Docker build
+        run: |
+          # update version in pyproject.toml
+          sed -i 's/version =.*/version = "${{ needs.information.outputs.version }}"/g' ${{ inputs.addon-slug }}/${{ inputs.pkg-name }}/pyproject.toml
+
       - name: Set up the correct base image based on platform
         run: |
           case "${{ matrix.platform }}" in

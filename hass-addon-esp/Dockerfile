@@ -1,6 +1,8 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
+ARG UV_VERSION=0.9.5
+
 LABEL maintainer="Johann Kellerman <kellerza@gmail.com>"
 
 # Add uv to the PATH
@@ -8,8 +10,9 @@ ENV PATH="/root/.local/bin/:$PATH"
 
 COPY ha_addon .
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -x \
-    && curl -LsSf https://astral.sh/uv/0.9.2/install.sh | sh \
+    && curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh \
     && uv sync --locked --no-dev
 
 COPY rootfs /

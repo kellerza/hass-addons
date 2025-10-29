@@ -1,6 +1,6 @@
 @echo off
-CALL :copy2 hass-addon-control-group,\\192.168.1.8\addons\hass-addon-control-group\
-rem CALL :copy2 hass-addon-qsusb64,\\192.168.1.8\addons\hass-addon-qsusb64\
+rem CALL :copy2 hass-addon-control-group,\\192.168.1.8\addons\hass-addon-control-group\
+CALL :copy2 hass-addon-qsusb64,\\192.168.1.8\addons\hass-addon-qsusb64\
 rem CALL :copy2 hass-addon-esp,\\192.168.1.8\addons\hass-addon-esp\
 
 EXIT /B %ERRORLEVEL%
