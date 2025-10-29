@@ -1,7 +1,7 @@
 ---
 name: Control group add-on
 description: Add-on to manage and control groups of entities based on templates
-version: "091af95"
+version: "d6bf5e4"
 slug: hass-addon-control-group
 image: ghcr.io/kellerza/hass-addon-control-group
 url: https://github.com/kellerza/hass-addons
