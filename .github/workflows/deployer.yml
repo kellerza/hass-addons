@@ -164,7 +164,7 @@ jobs:
           touch "/tmp/digests/${digest#sha256:}"
 
       - name: Upload digest
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: digests-${{ env.SANITIZED_PLATFORM }} # Use the sanitized platform name
           path: /tmp/digests/*
@@ -178,7 +178,7 @@ jobs:
           echo ${{ env.SANITIZED_PLATFORM }} >> outputs/${{ env.SANITIZED_PLATFORM }}.txt
 
       - name: Artifact platform file for later
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: platform-outputs-${{ env.SANITIZED_PLATFORM }}
           path: outputs/*.txt
@@ -190,7 +190,7 @@ jobs:
     needs: [information, build]
     steps:
       - name: Download digests
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           path: /tmp/digests
           pattern: digests-*
@@ -213,7 +213,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download platform outputs
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: platform-outputs-*
           path: outputs
