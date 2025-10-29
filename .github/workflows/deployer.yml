@@ -94,7 +94,10 @@ jobs:
       - name: Include version in the Docker build
         run: |
           # update version in pyproject.toml
-          sed -i 's/version =.*/version = "${{ needs.information.outputs.version }}"/g' ${{ inputs.addon-slug }}/${{ inputs.pkg-name }}/pyproject.toml
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            sed -i 's/version =.*/version = "${{ needs.information.outputs.version }}"/g' ${{ inputs.addon-slug }}/${{ inputs.pkg-name }}/pyproject.toml
+          fi
+          echo "${{ needs.information.outputs.version }}" >> ${{ inputs.addon-slug }}/VERSION
 
       - name: Set up the correct base image based on platform
         run: |
