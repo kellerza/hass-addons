@@ -127,25 +127,33 @@ class LightBridge(Bridge1):
             return True
 
         if self.opt.kind == "dim":
-            value = 0
-            try:
-                value = int(msg.get("val", 0))
-            except ValueError:
-                _LOG.error("Invalid brightness value: %s", msg.get("val"))
+            value = bright2val(msg.get("val"))
             await self.hassdev.send_brightness(client, brightness=value)
             return True
 
         if self.opt.kind == "imod":
-            value = 0
-            try:
-                _LOG.info("imod %s", msg.get("val"))
-                value = int(msg.get("val", 0))
-            except ValueError:
-                _LOG.error("Invalid brightness value: %s", msg.get("val"))
+            value = bright2val(msg.get("val"))
             await self.hassdev.send_state(client, payload=bool(value))
             return True
 
         return False
+
+
+def bright2val(bright: Any) -> int:
+    """Convert brightness to value."""
+    if bright:
+        try:
+            if isinstance(bright, str):
+                if bright.endswith("%"):
+                    return round(int(bright.strip("%")) * 255 / 100)
+                elif bright == "ON":
+                    return 255
+                elif bright == "OFF":
+                    return 0
+            return int(bright)
+        except ValueError:
+            _LOG.error("Invalid brightness value: %s", bright)
+    return 0
 
 
 @attrs.define()
