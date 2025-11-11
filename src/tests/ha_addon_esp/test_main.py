@@ -21,6 +21,7 @@ def test_load_esp() -> None:
             },
         ],
         "debug": 0,
+        "mqtt_custom": False,
         "mqtt_host": "core-mosquitto",
         "mqtt_password": "",
         "mqtt_port": 1883,

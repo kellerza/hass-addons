@@ -129,6 +129,7 @@ class LightBridge(Bridge1):
         if self.opt.kind == "dim":
             value = bright2val(msg.get("val"))
             await self.hassdev.send_brightness(client, brightness=value)
+            await self.hassdev.send_state(client, payload=bool(value))
             return True
 
         if self.opt.kind == "imod":
