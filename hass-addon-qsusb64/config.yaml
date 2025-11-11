@@ -1,7 +1,7 @@
 ---
 name: QSUSB64 Add-on
 description: Add-on for a QwikSwitch USB
-version: "c44d98c"
+version: "4c534c7"
 slug: hass-addon-qsusb64
 image: ghcr.io/kellerza/hass-addon-qsusb64
 url: https://github.com/kellerza/hass-addons
