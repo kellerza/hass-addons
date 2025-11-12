@@ -146,7 +146,8 @@ def bright2val(bright: Any) -> int:
         try:
             if isinstance(bright, str):
                 if bright.endswith("%"):
-                    return round(int(bright.strip("%")) * 255 / 100)
+                    # return round(int(bright.strip("%")) * 255 / 100)
+                    return int(bright.strip("%"))
                 elif bright == "ON":
                     return 255
                 elif bright == "OFF":
