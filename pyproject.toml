@@ -33,7 +33,7 @@ dev = [
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
-  "ruff==0.14.2",
+  "ruff==0.14.6",
   "types-attrs",
   "types-colorama",
   "types-jmespath",
