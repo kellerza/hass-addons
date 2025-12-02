@@ -57,6 +57,8 @@ schema:
       DONGLE_SERIAL_NUMBER: str?
       PORT: str
   SENSOR_DEFINITIONS: list(single-phase|single-phase-16kw|three-phase|three-phase-hv)
+  SENSOR_OVERRIDES:
+    - "match(^[a-z_]+(.[a-z]+)?=[0-9]+$)?"
   SENSORS:
     - str
   SENSORS_FIRST_INVERTER:

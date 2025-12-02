@@ -1,7 +1,7 @@
 ---
 name: Sunsynk or Deye Inverter add-on (dev-edge)
 description: Add-on for a Sunsynk/Deye branded Inverter
-version: "e43570d"
+version: "70598b4"
 slug: hass-addon-sunsynk-edge
 image: ghcr.io/kellerza/hass-addon-sunsynk-multi
 url: "https://kellerza.github.io/sunsynk"
@@ -30,6 +30,8 @@ options:
       DONGLE_SERIAL_NUMBER: "0"
       PORT: "tcp://homeassistant.local:502"
   SENSOR_DEFINITIONS: single-phase
+  SENSOR_OVERRIDES:
+    - "match(^[a-z_]+(.[a-z]+)?=[0-9]+$)?"
   SENSORS:
     - energy_management
     - power_flow_card
