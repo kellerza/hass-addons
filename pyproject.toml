@@ -23,7 +23,7 @@ dependencies = [
   "jmespath",
   "mqtt-entity[options]",
 ]
-optional-dependencies.hidapi = [ "hidapi==0.14.0.post4" ]
+optional-dependencies.hidapi = [ "hidapi==0.15.0" ]
 
 [dependency-groups]
 dev = [
