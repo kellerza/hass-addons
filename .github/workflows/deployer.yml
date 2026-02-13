@@ -34,7 +34,7 @@ jobs:
       version: ${{ steps.release.outputs.version }}
     steps:
       - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: 🚀 Run add-on information
         id: information
         uses: frenck/action-addon-information@v1.4
@@ -83,7 +83,7 @@ jobs:
           - linux/arm64
     steps:
       - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Prepare Files for Build
         run: |
@@ -122,7 +122,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Cache Docker layers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: /tmp/.buildx-cache # Cache path
           key: ${{ runner.os }}-buildx-${{ github.sha }} # Unique key for cache
@@ -164,7 +164,7 @@ jobs:
           touch "/tmp/digests/${digest#sha256:}"
 
       - name: Upload digest
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: digests-${{ env.SANITIZED_PLATFORM }} # Use the sanitized platform name
           path: /tmp/digests/*
@@ -178,7 +178,7 @@ jobs:
           echo ${{ env.SANITIZED_PLATFORM }} >> outputs/${{ env.SANITIZED_PLATFORM }}.txt
 
       - name: Artifact platform file for later
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: platform-outputs-${{ env.SANITIZED_PLATFORM }}
           path: outputs/*.txt
@@ -190,7 +190,7 @@ jobs:
     needs: [information, build]
     steps:
       - name: Download digests
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: /tmp/digests
           pattern: digests-*
@@ -213,7 +213,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download platform outputs
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: platform-outputs-*
           path: outputs
@@ -330,7 +330,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: main
