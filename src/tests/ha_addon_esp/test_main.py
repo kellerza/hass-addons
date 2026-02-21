@@ -1,6 +1,6 @@
 """Test ESP addon."""
 
-import attrs
+from dataclasses import asdict
 
 from ha_addon_esp.__main__ import Options
 
@@ -10,7 +10,7 @@ def test_load_esp() -> None:
     opt = Options()
     opt.load_dict({"areas": [{"ha_PREFIX": "HA", "area_id": "1", "api_key": "xxx"}]})
 
-    res = attrs.asdict(opt)
+    res = asdict(opt)
 
     assert res == {
         "areas": [

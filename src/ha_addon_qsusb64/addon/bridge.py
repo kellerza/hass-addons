@@ -5,9 +5,9 @@ from __future__ import annotations
 import logging
 import time
 from collections.abc import Generator
+from dataclasses import dataclass, field
 from typing import Any
 
-import attrs
 from mqtt_entity.client import MQTTClient
 from mqtt_entity.device import MQTTDevice
 from mqtt_entity.entities import (
@@ -30,14 +30,14 @@ from .options import OPT, ButtonOpt
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define()
+@dataclass
 class HassBridge:
     """Bridge for Home Assistant integration."""
 
     qs_write: QsWrite
-    devs: list[MQTTDevice] = attrs.field(factory=list)
-    bridges: list[Bridge] = attrs.field(factory=list)
-    client: MQTTClient = attrs.field(init=False, repr=False)
+    devs: list[MQTTDevice] = field(default_factory=list)
+    bridges: list[Bridge] = field(default_factory=list)
+    client: MQTTClient = field(init=False, repr=False)
 
     async def mqtt_connect(self) -> None:
         """Connect to the MQTT broker and publish discovery info."""
@@ -63,7 +63,7 @@ class HassBridge:
             else:
                 _LOG.debug("ID %s is in the ignore list.", qid)
 
-    def __attrs_post_init__(self) -> None:
+    def __post_init__(self) -> None:
         """Create entities for the devices."""
         # All entities will share the **QS device**
         dev = MQTTDevice(
@@ -115,13 +115,13 @@ class HassBridge:
                     dev.remove_components[uid] = br.platform
 
 
-@attrs.define()
+@dataclass
 class ButtonDevBridge(Bridge):
     """Bridge for button actions."""
 
     opt: ButtonOpt
-    hassbtn: dict[str, MQTTDeviceTrigger] = attrs.field(init=False)
-    press_time: float = attrs.field(default=0.0, init=False)
+    hassbtn: dict[str, MQTTDeviceTrigger] = field(init=False)
+    press_time: float = field(default=0.0, init=False)
 
     @classmethod
     def dev_factory(cls, opt: ButtonOpt) -> ButtonDevBridge:

@@ -3,8 +3,8 @@
 import asyncio
 import logging
 import sys
+from dataclasses import dataclass, field
 
-import attrs
 from mqtt_entity import MQTTClient
 from mqtt_entity.options import MQTTOptions
 
@@ -69,7 +69,7 @@ async def main_loop() -> int:
     return 0
 
 
-@attrs.define()
+@dataclass
 class AreaOptions:
     """Options for an ESP area."""
 
@@ -78,11 +78,11 @@ class AreaOptions:
     ha_prefix: str = ""
 
 
-@attrs.define()
+@dataclass
 class Options(MQTTOptions):
     """HASS Addon Options."""
 
-    areas: list[AreaOptions] = attrs.field(factory=list)
+    areas: list[AreaOptions] = field(default_factory=list)
     search_area: str = ""
     debug: int = 0
 

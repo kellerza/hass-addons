@@ -1,9 +1,9 @@
 """Addon options."""
 
 import logging
+from dataclasses import dataclass, field
 from functools import cached_property
 
-import attrs
 from mqtt_entity.options import MQTTOptions
 
 from ..qwikswitch import parse_id, string_id
@@ -11,7 +11,7 @@ from ..qwikswitch import parse_id, string_id
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define()
+@dataclass
 class DeviceOpt:
     """Options for an entity."""
 
@@ -34,12 +34,12 @@ class DeviceOpt:
         return True
 
 
-@attrs.define()
+@dataclass
 class ButtonOpt:
     """Options for an entity."""
 
     name: str = ""
-    buttons: list[str] = attrs.field(factory=list)
+    buttons: list[str] = field(default_factory=list)
     model: str = ""
 
     @cached_property
@@ -66,17 +66,17 @@ class ButtonOpt:
         return res
 
 
-@attrs.define()
+@dataclass
 class Options(MQTTOptions):
     """Addon Options."""
 
-    buttons: list[ButtonOpt] = attrs.field(factory=list)
-    switches: list[DeviceOpt] = attrs.field(factory=list)
-    lights: list[DeviceOpt] = attrs.field(factory=list)
-    binary_sensors: list[DeviceOpt] = attrs.field(factory=list)
-    sensors: list[DeviceOpt] = attrs.field(factory=list)
+    buttons: list[ButtonOpt] = field(default_factory=list)
+    switches: list[DeviceOpt] = field(default_factory=list)
+    lights: list[DeviceOpt] = field(default_factory=list)
+    binary_sensors: list[DeviceOpt] = field(default_factory=list)
+    sensors: list[DeviceOpt] = field(default_factory=list)
 
-    ignore: list[DeviceOpt] = attrs.field(factory=list)
+    ignore: list[DeviceOpt] = field(default_factory=list)
 
     debug: int = 0
     prefix: str = "qsusb64"

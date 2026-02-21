@@ -10,10 +10,10 @@ See https://developers.home-assistant.io/docs/add-ons/communication
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any, TypeVar, get_origin
 from urllib.parse import urljoin
 
-import attrs
 from colorama import Fore, Style
 from mqtt_entity.options import CONVERTER
 
@@ -23,7 +23,7 @@ from .types import HAEvents, HAService, HAState
 T = TypeVar("T", default=dict[str, Any])
 
 
-@attrs.define()
+@dataclass
 class HaRestApi(HaApiBase):
     """Home Assistant REST API wrapper."""
 

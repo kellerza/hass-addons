@@ -5,9 +5,9 @@ from __future__ import annotations
 import asyncio
 import logging
 from ast import literal_eval
+from dataclasses import dataclass, field
 from typing import Any
 
-import attrs
 from mqtt_entity import MQTTClient, MQTTDevice, MQTTSelectEntity, MQTTSensorEntity
 from mqtt_entity.utils import slug
 
@@ -20,14 +20,14 @@ _LOG = logging.getLogger(__name__)
 ACHANGE = asyncio.Event()
 
 
-@attrs.define()
+@dataclass
 class AddonState:
     """Main addon state."""
 
-    cgs: list[CGroupBridge] = attrs.field(factory=list)
+    cgs: list[CGroupBridge] = field(default_factory=list)
 
-    dev: MQTTDevice = attrs.field(init=False)
-    debug_sensor: MQTTSensorEntity = attrs.field(init=False)
+    dev: MQTTDevice = field(init=False)
+    debug_sensor: MQTTSensorEntity = field(init=False)
     debug_sensor_state: str = ""
 
     async def connect_mqtt(self) -> None:
@@ -48,7 +48,7 @@ class AddonState:
         debug_id = "debug"
 
         self.debug_sensor = self.dev.components[debug_id] = MQTTSensorEntity(
-            f"Template states {API.opt.name}",
+            name=f"Template states {API.opt.name}",
             unique_id=f"{self.dev.id}_{debug_id}",
             default_entity_id=f"sensor.{API.opt.ha_prefix}_debug",
             state_topic=f"cg/{API.opt.ha_prefix}/template_states",
@@ -113,18 +113,18 @@ MODE_OPTIONS = [
 ]
 
 
-@attrs.define()
+@dataclass
 class CGroupBridge:
     """Control group bridge."""
 
     opt: ControlGroupOptions
     state_reason: str = ""
     state: str | None = None
-    mode_entity: MQTTSelectEntity = attrs.field(init=False)
+    mode_entity: MQTTSelectEntity = field(init=False)
 
-    file_opt: FileGroupOption = attrs.field(init=False)
+    file_opt: FileGroupOption = field(init=False)
 
-    def __attrs_post_init__(self) -> None:
+    def __post_init__(self) -> None:
         """Post-initialization processing."""
         if opt := OPT_FILE.groups.get(self.opt.id):
             self.file_opt = opt
@@ -233,7 +233,7 @@ class CGroupBridge:
     def register_mqtt(self, mq_dev: MQTTDevice) -> None:
         """Register the control group with the MQTT broker."""
 
-        async def _cb(msg: str) -> None:
+        async def _cb(msg: str, _: str) -> None:
             await self.on_command_state(msg)
 
         self.mode_entity = mq_dev.components[self.opt.id] = MQTTSelectEntity(

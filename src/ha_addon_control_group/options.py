@@ -1,9 +1,9 @@
 """Options."""
 
 import logging
-from pathlib import Path
+from dataclasses import dataclass, field
 
-import attrs
+from anyio import Path
 from mqtt_entity.options import CONVERTER, MQTTOptions
 from mqtt_entity.utils import slug
 from yaml import safe_load
@@ -13,42 +13,50 @@ from ha_addon.all_apis import HaAllApis
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define()
+@dataclass
 class ControlGroupOptions:
     """Options for a control group."""
 
-    id: str = attrs.field(
-        validator=lambda _, __, v: v == slug(v).lower() and len(v) > 0
-    )
+    id: str
     name: str = ""
-    entities: list[str] = attrs.field(factory=list)
+    entities: list[str] = field(default_factory=list)
     template: str = ""
     call_script: str = ""
 
+    def __post_init__(self) -> None:
+        """Init."""
+        self.id = slug(self.id).lower()
+        if not self.id:
+            raise ValueError("Group ID cannot be empty.")
 
-@attrs.define()
+
+@dataclass
 class Options(MQTTOptions):
     """HASS Addon Options."""
 
     name: str = ""
-    groups: list[ControlGroupOptions] = attrs.field(factory=list)
-    ha_prefix: str = attrs.field(
-        default="cgroup", validator=lambda _, __, v: v == slug(v).lower() and len(v) > 0
-    )
+    groups: list[ControlGroupOptions] = field(default_factory=list)
+    ha_prefix: str = "cgroup"
     ha_api_url: str = ""
     ha_api_token: str = ""
     debug: int = 0
+
+    def __post_init__(self) -> None:
+        """Init."""
+        self.ha_prefix = slug(self.ha_prefix).lower()
+        if not self.ha_prefix:
+            raise ValueError("HA prefix cannot be empty.")
 
     async def init_addon(self) -> None:
         """Init addon options."""
         await super().init_addon()
 
         # Load others from files
-        for path in Path("/config").glob("group*.yml"):
+        async for path in Path("/config").glob("group*.yml"):
             _LOG.info("Loading group config from %s", path)
             try:
-                with path.open("r") as f:
-                    data = safe_load(f)
+                fbytes = await path.read_bytes()
+                data = safe_load(fbytes)
                 res = CONVERTER.structure(data, list[ControlGroupOptions])
                 self.groups.extend(res)
             except Exception as ex:

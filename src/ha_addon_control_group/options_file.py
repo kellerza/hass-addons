@@ -5,29 +5,29 @@ Persistent UUID etc.
 
 import json
 import logging
+from dataclasses import dataclass, field
 from pathlib import Path
 from uuid import uuid4
 
-import attrs
 from cattrs.preconf.json import make_converter
 
 CONVERTER = make_converter()
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define()
+@dataclass
 class FileGroupOption:
     """File group option."""
 
     mode: str = ""
 
 
-@attrs.define()
+@dataclass
 class FileOptions:
     """HASS Addon Options."""
 
     uuid: str = ""
-    groups: dict[str, FileGroupOption] = attrs.field(factory=dict)
+    groups: dict[str, FileGroupOption] = field(default_factory=dict)
 
     def file_path(self) -> Path:
         """Get the configuration folder."""

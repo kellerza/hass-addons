@@ -9,7 +9,6 @@ description = "Add your description here"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = [ "LICENSE" ]
-
 requires-python = ">=3.13,<3.14"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
@@ -17,6 +16,7 @@ classifiers = [
 ]
 dependencies = [
   "aiohttp>=3.12,<4",
+  "anyio>=4.12.1",
   "colorama",
   "colorlog",
   "icecream",
@@ -28,24 +28,22 @@ optional-dependencies.hidapi = [ "hidapi==0.14.0.post4" ]
 [dependency-groups]
 dev = [
   "codespell",
-  "mypy",
   "pyproject-fmt",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
-  "ruff==0.14.2",
-  "types-attrs",
+  "ruff",
   "types-colorama",
   "types-jmespath",
   "types-pyyaml",
+  "zuban>=0.5.1",
 ]
 
-[tool.uv.build-backend]
-module-name = [ "ha_addon", "ha_addon_control_group", "ha_addon_esp", "ha_addon_qsusb64" ]
+[tool.uv]
+build-backend.module-name = [ "ha_addon", "ha_addon_control_group", "ha_addon_esp", "ha_addon_qsusb64" ]
 
 [tool.ruff]
 include = [ "**/pyproject.toml", "src/**/*.py" ]
-
 format.line-ending = "lf"
 format.docstring-code-format = true
 lint.select = [
@@ -73,16 +71,15 @@ lint.pylint.max-args = 7
 skip = [ "hass-addon-sma-em-edge", "PKG-INFO" ]
 ignore-words-list = [ "HASS", "hass", "Hass", "iif" ]
 
-[tool.pytest.ini_options]
-pythonpath = [ "src" ]
-filterwarnings = "ignore:.+@coroutine.+deprecated.+"
-testpaths = "src/tests"
-norecursedirs = [ ".git", "modules" ]
-log_cli = true
-log_cli_level = "DEBUG"
-asyncio_mode = "auto"
-addopts = "--cov=src --cov-report xml:cov.xml"
+[tool.pytest]
+ini_options.pythonpath = [ "src" ]
+ini_options.filterwarnings = "ignore:.+@coroutine.+deprecated.+"
+ini_options.testpaths = "src/tests"
+ini_options.norecursedirs = [ ".git", "modules" ]
+ini_options.log_cli = true
+ini_options.log_cli_level = "DEBUG"
+ini_options.asyncio_mode = "auto"
+ini_options.addopts = "--cov=src --cov-report xml:cov.xml"
 
-[tool.mypy]
-disallow_untyped_defs = true
-ignore_missing_imports = true
+[tool.zuban]
+warn_unreachable = false

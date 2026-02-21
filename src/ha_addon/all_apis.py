@@ -1,23 +1,30 @@
 """All HA APIs."""
 
 import asyncio
+from dataclasses import dataclass, field
 
-import attrs
 from mqtt_entity import MQTTClient
 
 from ha_addon.ha_api import HaRestApi, HaWebsocketApi, LogBase
 
 
-@attrs.define()
+@dataclass
 class HaAllApis[T](LogBase):
     """API clients for the add-on."""
 
-    opt: T = attrs.field(init=False, repr=False)
-    rest: HaRestApi = attrs.field(default=None, init=False, repr=False)
-    ws: HaWebsocketApi = attrs.field(default=None, init=False, repr=False)
-    mqtt: MQTTClient = attrs.field(init=False, repr=False)
+    opt: T = field(init=False, repr=False)
+    rest: HaRestApi = field(init=False, repr=False)
+    ws: HaWebsocketApi = field(init=False, repr=False)
+    mqtt: MQTTClient = field(init=False, repr=False)
 
     _log_prefix = "HA APIs: "
+
+    def __post_init__(self) -> None:
+        """Init."""
+        super().__post_init__()
+        self.rest = None  # type: ignore[assignment]
+        self.ws = None  # type: ignore[assignment]
+        self.mqtt = None  # type: ignore[assignment]
 
     async def connect_rest_ws(self) -> None:
         """Bootstrap the API clients."""

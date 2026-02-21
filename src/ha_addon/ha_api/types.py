@@ -1,11 +1,10 @@
 """HA API types."""
 
+from dataclasses import dataclass, field
 from typing import Any
 
-import attrs
 
-
-@attrs.define()
+@dataclass
 class HAEvents:
     """Response from the get_events request.
 
@@ -19,7 +18,7 @@ class HAEvents:
     listener_count: int = 0
 
 
-@attrs.define()
+@dataclass
 class HAService:
     """Response from the get_services request.
 
@@ -30,10 +29,10 @@ class HAService:
     """
 
     domain: str = ""
-    service: list[str] = attrs.field(factory=list)
+    service: list[str] = field(default_factory=list)
 
 
-@attrs.define()
+@dataclass
 class HAState:
     """Response from a call_service request.
 
@@ -48,8 +47,8 @@ class HAState:
     entity_id: str
     state: str
 
-    attributes: dict[str, Any] = attrs.field(factory=dict)
-    context: dict[str, Any] = attrs.field(factory=dict)
+    attributes: dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     last_changed: str = ""
     last_reported: str = ""
     last_updated: str = ""

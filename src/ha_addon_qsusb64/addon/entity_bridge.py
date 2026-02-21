@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass, field
 from typing import Any
 
-import attrs
 from mqtt_entity.client import MQTTClient
 from mqtt_entity.device import MQTTDevice
 from mqtt_entity.entities import (
@@ -24,7 +24,7 @@ from .options import OPT, DeviceOpt
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define()
+@dataclass
 class Bridge:
     """Bridge class to handle communication between MQTT and the QS device."""
 
@@ -43,7 +43,7 @@ class Bridge:
         raise NotImplementedError()
 
 
-@attrs.define()
+@dataclass
 class Bridge1(Bridge):
     """Bridge for sensor actions."""
 
@@ -64,12 +64,12 @@ class Bridge1(Bridge):
         return qsslug(self.opt.id, parse=True) + self.slug_post
 
 
-@attrs.define()
+@dataclass
 class LightBridge(Bridge1):
     """Bridge for switch actions."""
 
     opt: DeviceOpt
-    hassdev: MQTTLightEntity | MQTTSwitchEntity = attrs.field(init=False)
+    hassdev: MQTTLightEntity | MQTTSwitchEntity = field(init=False)
 
     platform = "light"
     slug_post = "_l"
@@ -158,7 +158,7 @@ def bright2val(bright: Any) -> int:
     return 0
 
 
-@attrs.define()
+@dataclass
 class SwitchBridge(LightBridge):
     """Bridge for switch actions."""
 
@@ -166,11 +166,11 @@ class SwitchBridge(LightBridge):
     slug_post = "_sw"
 
 
-@attrs.define()
+@dataclass
 class BinarySensorBridge(Bridge1):
     """Binary Sensor Bridge."""
 
-    hassdev: MQTTBinarySensorEntity = attrs.field(init=False)
+    hassdev: MQTTBinarySensorEntity = field(init=False)
     toggle: bool = False
 
     platform = "binary_sensor"
@@ -202,13 +202,13 @@ class BinarySensorBridge(Bridge1):
         return True
 
 
-@attrs.define()
+@dataclass
 class SensorBridge(Bridge1):
     """Sensor Bridge, incrementing count."""
 
-    hassdev: MQTTSensorEntity = attrs.field(init=False)
+    hassdev: MQTTSensorEntity = field(init=False)
 
-    count: int = attrs.field(default=0)
+    count: int = field(default=0)
     platform = "sensor"
     slug_post = "_s"
 

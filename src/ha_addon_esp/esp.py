@@ -5,11 +5,11 @@ from __future__ import annotations
 import json
 import logging
 import traceback
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 import aiohttp
-import attrs
 from jmespath import search
 from mqtt_entity import MQTTClient, MQTTDevice, MQTTSensorEntity
 from mqtt_entity.helpers import hass_share_path
@@ -23,7 +23,7 @@ API_ALLOWANCE = f"{URI}/api_allowance"
 ADDON_SLUG = "hass-addon-esp"
 
 
-@attrs.define(slots=True)
+@dataclass
 class ESP:
     """ESP Class."""
 
@@ -33,21 +33,21 @@ class ESP:
     client: MQTTClient
     area: str = ""
 
-    mqtt_dev: MQTTDevice = attrs.field(
-        factory=lambda: MQTTDevice(
+    mqtt_dev: MQTTDevice = field(
+        default_factory=lambda: MQTTDevice(
             identifiers=[""],
             components={},
             manufacturer="EskomSePush API",
         )
     )
 
-    state: dict[str, Any] = attrs.field(factory=dict)
+    state: dict[str, Any] = field(default_factory=dict)
     """State of the area."""
-    statefile: Path = attrs.field(init=False)
+    statefile: Path = field(init=False)
     """Persistent storage for the area's state."""
-    sensors: list[ESPSensor] = attrs.field(factory=list)
+    sensors: list[ESPSensor] = field(default_factory=list)
 
-    def __attrs_post_init__(self) -> None:
+    def __post_init__(self) -> None:
         """Init."""
         self.statefile = (
             hass_share_path(ADDON_SLUG, True) / f"esp_{slug(self.area_id)}.json"
@@ -128,12 +128,12 @@ class ESP:
             await sen.get_state(self)
 
 
-@attrs.define(slots=True)
+@dataclass
 class ESPSensor:
     """Base class for ESP sensors."""
 
-    name: str = attrs.field()
-    entity: MQTTSensorEntity = attrs.field(init=False)
+    name: str = field()
+    entity: MQTTSensorEntity = field(init=False)
 
     def init_entity(self, dev: MQTTDevice, ha_prefix: str) -> None:
         """Init entity."""
@@ -153,18 +153,20 @@ class ESPSensor:
         raise NotImplementedError
 
 
-@attrs.define(slots=True)
+@dataclass(slots=True)
 class JMESSensor(ESPSensor):
     """JMES Sensor."""
 
-    state_expr: str = attrs.field()
-    attr_expr: str = attrs.field()
+    state_expr: str = field()
+    attr_expr: str = field()
 
     async def get_state(self, esp: ESP) -> Any:
         """Get state from ESP state."""
         val = search(self.state_expr, esp.state)
         await self.entity.send_state(esp.client, val, retain=True)
         atr = search(self.attr_expr, esp.state)
+        if not isinstance(atr, dict):
+            atr = {"value": atr}
         _LOG.debug("Attributes %s = %s", self.name, json.dumps(atr))
         try:
             await self.entity.send_json_attributes(esp.client, atr)
@@ -173,7 +175,7 @@ class JMESSensor(ESPSensor):
         return val
 
 
-@attrs.define(slots=True)
+@dataclass(slots=True)
 class AllowanceSensor(ESPSensor):
     """Allowance Sensor."""
 

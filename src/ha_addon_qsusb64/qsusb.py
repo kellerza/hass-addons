@@ -2,10 +2,10 @@
 
 import logging
 from collections.abc import Callable
+from dataclasses import dataclass, field
 from typing import Any
 
-import attrs
-import hid  # type: ignore[]
+import hid  # type: ignore[import-not-found]
 from colorama import Fore
 
 from .qwikswitch import QsMsg, l2s
@@ -15,14 +15,14 @@ type QsWrite = Callable[[QsMsg], None]
 _LOG = logging.getLogger(__name__)
 
 
-@attrs.define()
+@dataclass
 class QsUsb:
     """Connect to the QsUsb device."""
 
-    dev: Any = attrs.field(init=False, repr=False)
+    dev: Any = field(init=False, repr=False)
     vid_pid: tuple[int, int] = (0x04D8, 0x2005)
 
-    def __attrs_post_init__(self) -> None:
+    def __post_init__(self) -> None:
         """Connect."""
         self.dev = hid.device()
         try:

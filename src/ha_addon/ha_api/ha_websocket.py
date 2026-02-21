@@ -14,10 +14,10 @@ import asyncio
 import inspect
 import json
 from collections.abc import Callable, Coroutine
+from dataclasses import dataclass, field
 from typing import Any, TypeIs, cast
 from urllib.parse import urljoin
 
-import attrs
 from aiohttp import ClientWebSocketResponse, WSMsgType
 
 from .base import HaApiBase
@@ -33,28 +33,30 @@ type StrOrMsgCallback = (
 )
 
 
-@attrs.define()
+@dataclass
 class HaWebsocketApi(HaApiBase):
     """Home Assistant Websocket API wrapper."""
 
-    _ws: ClientWebSocketResponse = attrs.field(init=False, default=None)
+    _ws: ClientWebSocketResponse = field(init=False)
     _ws_id: int = -1  # no auth
-    running_tasks: list[asyncio.Task] = attrs.field(
-        factory=list, init=False, repr=False
+    running_tasks: list[asyncio.Task] = field(
+        default_factory=list, init=False, repr=False
     )
-    ws_msg_handlers: dict[str, MsgCallback] = attrs.field(
-        factory=dict, init=False, repr=False
+    ws_msg_handlers: dict[str, MsgCallback] = field(
+        default_factory=dict, init=False, repr=False
     )
-    ws_event_handlers: dict[int, MsgCallback] = attrs.field(
-        factory=dict, init=False, repr=False
+    ws_event_handlers: dict[int, MsgCallback] = field(
+        default_factory=dict, init=False, repr=False
     )
     _log_prefix = "HA WS: "
-    _ha_authenticated: asyncio.Event = attrs.field(
-        factory=asyncio.Event, init=False, repr=False
+    _ha_authenticated: asyncio.Event = field(
+        default_factory=asyncio.Event, init=False, repr=False
     )
 
-    def __attrs_post_init__(self) -> Any:
+    def __post_init__(self) -> Any:
         """Post initialization."""
+        super().__post_init__()
+        self._ws = None  # type: ignore[assignment]
         self.ws_msg_handlers.update(
             {
                 "event": self.handle_event,
