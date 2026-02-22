@@ -1,7 +1,7 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-ARG UV_VERSION=0.9.5
+ARG UV_VERSION=0.10.2
 
 LABEL maintainer="Johann Kellerman <kellerza@gmail.com>"
 
