@@ -15,12 +15,14 @@ RUN apk add --no-cache --virtual .build-deps \
       build-base \
       eudev-dev \
       eudev-libs \
-      hidapi=0.15.0-r0 \
+      hidapi \
       libffi-dev \
       libusb-dev \
       libusb \
       openssl-dev \
       zlib-dev
+
+    # =0.15.0-r0 \
 
     #   eudev-dev=3.2.14-r5 \
     #   eudev-libs=3.2.14-r5 \
