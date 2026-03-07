@@ -1,7 +1,7 @@
 ---
 name: Sunsynk or Deye Inverter add-on (dev-edge)
 description: Add-on for a Sunsynk/Deye branded Inverter
-version: "0140e3e"
+version: "f60431b"
 slug: hass-addon-sunsynk-edge
 image: ghcr.io/kellerza/hass-addon-sunsynk-multi
 url: "https://kellerza.github.io/sunsynk"
@@ -83,3 +83,5 @@ schema:
   MQTT_PASSWORD: password?
   DEBUG: int(0,5)?
   DEBUG_DEVICE: device(subsystem=tty)?
+  MUTE_LOGS:
+    - match(^[0-9]+:[0-5][0-9]$)?
