@@ -56,7 +56,7 @@ jobs:
       - name: Install Requirements
         run: uv sync --frozen --all-extras
       - name: Run zuban
-        run: uv run zuban check
+        run: uv run zuban check src
 
   pytest:
     name: Run tests Python ${{ matrix.python-version }}
