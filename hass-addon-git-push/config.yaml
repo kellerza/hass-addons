@@ -7,11 +7,8 @@ description: Simple git push backup local configuration
 url: https://github.com/kellerza/sunsynk
 advanced: true
 arch:
-  - armhf
-  - armv7
   - aarch64
   - amd64
-  - i386
 boot: manual
 #hassio_api: true
 #hassio_role: homeassistant

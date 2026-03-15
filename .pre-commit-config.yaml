@@ -2,8 +2,8 @@ repos:
   - repo: local
     hooks:
       - id: uv lock
-        name: uv sync --upgrade --all-extras
-        entry: uv lock
+        name: uv sync && upgrade
+        entry: uv sync --upgrade --all-extras
         language: system
         pass_filenames: false
 
@@ -39,7 +39,7 @@ repos:
 
       - id: zuban
         name: zuban
-        entry: uv run zuban check
+        entry: uv run zuban check src
         language: system
         pass_filenames: false
 
