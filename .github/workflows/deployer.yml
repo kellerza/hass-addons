@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       architectures: ${{ steps.information.outputs.architectures }}
-      build: ${{ steps.information.outputs.build }}
+      #build: ${{ steps.information.outputs.build }}
       description: ${{ steps.information.outputs.description }}
       environment: ${{ steps.release.outputs.environment }}
       name: ${{ steps.information.outputs.name }}
@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v6
       - name: 🚀 Run add-on information
         id: information
-        uses: frenck/action-addon-information@v1.4
+        uses: home-assistant/actions/helpers/info@master
         with:
           path: ./${{ inputs.addon-slug }}
       - name: ℹ️ Gather version and environment
