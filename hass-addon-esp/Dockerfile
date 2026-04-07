@@ -1,5 +1,4 @@
-ARG BUILD_FROM
-FROM ${BUILD_FROM}
+FROM ghcr.io/home-assistant/base-python:3.14-alpine3.23
 
 ARG UV_VERSION=0.10.2
 

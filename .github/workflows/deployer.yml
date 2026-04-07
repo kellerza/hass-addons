@@ -97,12 +97,13 @@ jobs:
           fi
           echo "${{ needs.information.outputs.version }}" >> ${{ inputs.addon-slug }}/VERSION
 
-      - name: Set up the correct base image based on platform
-        run: | # previous 3.13-alpine3.22
-          case "${{ matrix.platform }}" in
-            linux/amd64)  echo "BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.14-alpine3.23" >> $GITHUB_ENV ;;
-            linux/arm64)  echo "BUILD_FROM=ghcr.io/home-assistant/aarch64-base-python:3.14-alpine3.23" >> $GITHUB_ENV ;;
-          esac
+      # multi-platform base images
+      # - name: Set up the correct base image based on platform
+      #   run: | # previous 3.13-alpine3.22
+      #     case "${{ matrix.platform }}" in
+      #       linux/amd64)  echo "BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.14-alpine3.23" >> $GITHUB_ENV ;;
+      #       linux/arm64)  echo "BUILD_FROM=ghcr.io/home-assistant/aarch64-base-python:3.14-alpine3.23" >> $GITHUB_ENV ;;
+      #     esac
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
