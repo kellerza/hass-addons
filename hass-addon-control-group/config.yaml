@@ -10,7 +10,7 @@ hassio_api: true
 hassio_role: homeassistant
 homeassistant_api: true
 init: false
-apparmor: true
+#apparmor: true
 arch:
   - aarch64
   - amd64
