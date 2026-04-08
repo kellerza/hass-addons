@@ -18,7 +18,7 @@ jobs:
     uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     permissions:
-      contents: read
+      contents: write
       id-token: write
       packages: write
     with:
