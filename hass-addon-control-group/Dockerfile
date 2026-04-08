@@ -10,7 +10,6 @@ COPY ha_addon .
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -x \
-    #&& curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh \
     && uv sync --locked --no-dev
 
 COPY rootfs /
