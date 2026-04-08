@@ -63,7 +63,7 @@ jobs:
 
 
   build:
-    name: 👷 Build & Deploy ${{ matrix.platform }} ${{ needs.information.outputs.environment }}/${{ needs.information.outputs.version }}
+    name: 👷 Build & Deploy ${{ matrix.platform }} ${{ needs.prepare.outputs.environment }}/${{ needs.prepare.outputs.version }}
     needs: prepare
     runs-on: ${{ matrix.os }}
     permissions:
@@ -108,7 +108,7 @@ jobs:
           version: ${{ needs.prepare.outputs.version }}
 
   manifest:
-    name: Publish multi-arch manifest
+    name: 🆕 Publish multi-arch manifest
     needs: [prepare, build]
     if: inputs.publish
     runs-on: ubuntu-latest
@@ -151,14 +151,14 @@ jobs:
           # Pull latest changes with rebase strategy
           git pull --rebase origin main
 
-          # Make the version updates
-          sed -i 's/version:.*/version: "${{ needs.pr.information.outputs.version }}"/g' ${{ inputs.app-edge }}/config.yaml
-          if [[ "${{ needs.information.outputs.environment }}" == "stable" ]]; then
-            sed -i 's/version:.*/version: "${{ needs.information.outputs.version }}"/g' ${{ inputs.app }}/config.yaml
+          sed -i 's/version:.*/version: "${{ needs.prepare.outputs.version }}"/g' ${{ inputs.app-edge }}/config.yaml
+          git add ${{ inputs.app-edge }}/config.yaml
+
+          if [[ "${{ needs.prepare.outputs.environment }}" == "stable" ]]; then
+            sed -i 's/version:.*/version: "${{ needs.prepare.outputs.version }}"/g' ${{ inputs.app }}/config.yaml
+            git add ${{ inputs.app }}/config.yaml
           fi
 
-          # Stage and commit changes
-          git add ${{ inputs.app-edge }}/config.yaml ${{ inputs.app }}/config.yaml
           git commit -m "Update addon version to ${{ needs.prepare.outputs.version }} [no ci]" || echo "No changes to commit"
 
       - name: Push changes
