@@ -18,9 +18,9 @@ fi
 echo "Preparing build for '$ADDON' with version '$VER'"
 
 mkdir -p $ADDON/$PACKAGE
-cp MANIFEST.in LICENSE README.md uv.lock $ADDON/$PACKAGE/
+cp pyproject.toml MANIFEST.in LICENSE README.md uv.lock $ADDON/$PACKAGE/
 cp -r ./src $ADDON/$PACKAGE/
 
 # update version in pyproject.toml
-sed "s/version =.*/version = \"$VER\"/g" pyproject.toml > $ADDON/$PACKAGE/pyproject.toml
+# sed "s/version =.*/version = \"$VER\"/g" pyproject.toml > $ADDON/$PACKAGE/pyproject.toml
 echo "$VER" > $ADDON/VERSION

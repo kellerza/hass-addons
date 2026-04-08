@@ -1,4 +1,4 @@
-name: Deploy local addons to ghcr.io
+name: Deploy local addons to ghcr.io [cgroup, qsusb64, esp]
 
 on:
   workflow_run:

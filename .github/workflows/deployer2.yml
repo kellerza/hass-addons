@@ -11,7 +11,7 @@ on:
         required: true
         type: boolean
 
-name: Deploy addon to ghcr.io
+name: Deploy addon to ghcr.io [new]
 
 jobs:
   prepare:

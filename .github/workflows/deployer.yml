@@ -14,7 +14,7 @@ on:
         required: true
         type: string
 
-name: Deploy addon to ghcr.io
+name: Deploy addon to ghcr.io [old]
 
 jobs:
   information:
