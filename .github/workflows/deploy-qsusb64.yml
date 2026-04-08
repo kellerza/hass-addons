@@ -15,10 +15,8 @@ on:
 
 jobs:
   deployer:
-    uses: kellerza/hass-addons/.github/workflows/deployer.yml@main
+    uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     with:
-      addon-slug: hass-addon-qsusb64
-      addon-slug-edge: hass-addon-qsusb64
-      pkg-name: ha_addon
-      registry-image: ghcr.io/${{ github.repository_owner }}/hass-addon-qsusb64
+      app: hass-addon-qsusb64
+      app-edge: hass-addon-qsusb64

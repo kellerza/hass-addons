@@ -87,6 +87,7 @@ jobs:
             ./build_prep.sh "${{ inputs.app }}" "${{ needs.prepare.outputs.version }}"
           else
             echo "No build_prep.sh found, skipping file preparation step."
+          fi
 
       - name: Build image
         uses: home-assistant/builder/actions/build-image@2026.03.2
