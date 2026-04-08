@@ -128,7 +128,7 @@ jobs:
 
   publish_addon:
     name: 🆕 Update addon version to ${{ needs.prepare.outputs.version }}
-    needs: [prepare, build, merge]
+    needs: [prepare, build, manifest]
     # branches: [main] - restrict?
     permissions:
       contents: write
