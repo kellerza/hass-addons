@@ -10,6 +10,6 @@ COPY ha_addon .
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -x \
-    && uv sync --locked --no-dev --index-strategy unsafe-best-match
+    && uv sync --locked --no-dev
 
 COPY rootfs /
