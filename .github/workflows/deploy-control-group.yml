@@ -20,4 +20,4 @@ jobs:
     with:
       app: hass-addon-control-group
       app-edge: hass-addon-control-group
-      registry-image: ghcr.io/${{ github.repository_owner }}/hass-addon-control-group
+      #registry-image: ghcr.io/${{ github.repository_owner }}/hass-addon-control-group
