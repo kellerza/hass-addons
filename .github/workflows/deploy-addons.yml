@@ -53,7 +53,7 @@ jobs:
 
   deploy_cgroup:
     needs: [check]
-    if: needs.check.outputs.changed_cgroup
+    if: ${{ needs.check.outputs.changed_cgroup }}
     uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     with:
@@ -67,7 +67,7 @@ jobs:
 
   deploy_esp:
     needs: [check]
-    if: needs.check.outputs.changed_esp
+    if: ${{ needs.check.outputs.changed_esp }}
     uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     with:
@@ -81,7 +81,7 @@ jobs:
 
   deploy_qsusb64:
     needs: [check]
-    if: needs.check.outputs.changed_qsusb64
+    if: ${{ needs.check.outputs.changed_qsusb64 }}
     uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     with:
