@@ -1,8 +1,6 @@
 FROM ghcr.io/home-assistant/base-python:3.14-alpine3.23
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# ARG UV_VERSION=0.10.9
-
 LABEL maintainer="Johann Kellerman <kellerza@gmail.com>"
 
 # Add uv to the PATH
