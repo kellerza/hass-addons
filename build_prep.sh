@@ -15,6 +15,8 @@ if [ ! -f "$ADDON/config.yaml" ]; then
   exit 1
 fi
 
+echo "Preparing build for '$ADDON' with version '$VER'"
+
 mkdir -p $ADDON/$PACKAGE
 cp MANIFEST.in LICENSE README.md uv.lock $ADDON/$PACKAGE/
 cp -r ./src $ADDON/$PACKAGE/
