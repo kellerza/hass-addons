@@ -27,6 +27,7 @@ jobs:
       registry_prefix: ${{ steps.normalize.outputs.registry_prefix }}
       # version: ${{ steps.normalize.outputs.version }}
       version: ${{ steps.release.outputs.version }}
+      environment: ${{ steps.release.outputs.environment }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v6.0.2
@@ -53,6 +54,35 @@ jobs:
           if [[ -n "$url" && "$url" != "null" ]]; then
             echo "url=${url}" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: ℹ️ Gather version and environment
+        id: release
+        run: |
+          sha="${{ github.sha }}"
+
+          # Default values
+          environment="edge"
+          version="${sha:0:7}"
+
+          # Check if it's a release event
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            version="${{ github.event.release.tag_name }}"  # Lowercase the tag name
+            version="${version#v}"  # Remove 'v' prefix if present
+
+            environment="stable"
+
+            # Set environment to beta if it's a prerelease
+            if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
+              environment="beta"
+            fi
+          fi
+
+          # Output the environment and version
+          echo "environment=${environment}" >> "$GITHUB_OUTPUT"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+          # Log the outputs
+          cat "$GITHUB_OUTPUT" >> $GITHUB_STEP_SUMMARY
 
       - name: Prepare build matrix
         id: matrix
