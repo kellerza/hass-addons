@@ -1,6 +1,6 @@
 FROM ghcr.io/home-assistant/base-python:3.14-alpine3.23
 
-ARG UV_VERSION=0.10.2
+ARG UV_VERSION=0.10.9
 
 LABEL maintainer="Johann Kellerman <kellerza@gmail.com>"
 
