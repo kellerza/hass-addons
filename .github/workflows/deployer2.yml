@@ -7,9 +7,9 @@ on:
       app-edge:
         required: true
         type: string
-      # registry-image:
-      #   required: true
-      #   type: string
+      publish:
+        required: true
+        type: boolean
 
 name: Deploy addon to ghcr.io
 
@@ -130,12 +130,13 @@ jobs:
   publish_addon:
     name: 🆕 Update addon version to ${{ needs.prepare.outputs.version }}
     needs: [prepare, build, manifest]
+    if: inputs.publish
     # branches: [main] - restrict?
     permissions:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
           ref: main
