@@ -8,6 +8,10 @@ ENV PATH="/root/.local/bin/:$PATH"
 
 COPY ha_addon .
 
+RUN cat ~/.config/uv/uv.toml \
+    && uv config show \
+    && rm -rf ~/.config/uv/uv.toml
+
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -x \
     && uv sync --locked --no-dev
