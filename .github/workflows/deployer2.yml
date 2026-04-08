@@ -25,7 +25,8 @@ jobs:
       description: ${{ steps.normalize.outputs.description }}
       url: ${{ steps.normalize.outputs.url }}
       registry_prefix: ${{ steps.normalize.outputs.registry_prefix }}
-      version: ${{ steps.normalize.outputs.version }}
+      # version: ${{ steps.normalize.outputs.version }}
+      version: ${{ steps.release.outputs.version }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v6.0.2

@@ -35,6 +35,6 @@ COPY ha_addon .
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -x \
-    && uv sync --locked --no-dev --extra hidapi --index-strategy unsafe-best-match
+    && uv sync --no-dev --index https://pypi.org/simple
 
 COPY rootfs /
