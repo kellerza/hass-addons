@@ -1,3 +1,9 @@
+hass-addon-control-group/ha_addon
+hass-addon-control-group/VERSION
+hass-addon-esp/ha_addon
+hass-addon-esp/VERSION
+hass-addon-qsusb64/ha_addon
+
 **/.*.json
 **/.*.yaml
 .data/*

@@ -15,10 +15,9 @@ on:
 
 jobs:
   deployer:
-    uses: kellerza/hass-addons/.github/workflows/deployer.yml@main
+    uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     with:
-      addon-slug: hass-addon-control-group
-      addon-slug-edge: hass-addon-control-group
-      pkg-name: ha_addon
+      app: hass-addon-control-group
+      app-edge: hass-addon-control-group
       registry-image: ghcr.io/${{ github.repository_owner }}/hass-addon-control-group
