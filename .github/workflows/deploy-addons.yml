@@ -19,6 +19,9 @@ jobs:
       pull-requests: read
     #secrets: inherit
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v6.0.2
+
       - name: Get all test, doc and src files that have changed
         id: changed
         uses: tj-actions/changed-files@v47
