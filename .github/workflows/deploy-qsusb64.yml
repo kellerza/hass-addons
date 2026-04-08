@@ -17,6 +17,10 @@ jobs:
   deployer:
     uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
     with:
       app: hass-addon-qsusb64
       app-edge: hass-addon-qsusb64

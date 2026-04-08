@@ -20,3 +20,7 @@ jobs:
     with:
       app: hass-addon-esp
       app-edge: hass-addon-esp
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
