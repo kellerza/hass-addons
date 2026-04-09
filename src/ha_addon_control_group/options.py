@@ -51,8 +51,13 @@ class Options(MQTTOptions):
         """Init addon options."""
         await super().init_addon()
 
+        haconfig = Path("/haconfig/control_groups")
+        await haconfig.mkdir(exist_ok=True, parents=True)
+
+        files = [p async for p in haconfig.glob("group*.yml")]
+
         # Load others from files
-        async for path in Path("/config").glob("group*.yml"):
+        for path in files:
             _LOG.info("Loading group config from %s", path)
             try:
                 fbytes = await path.read_bytes()

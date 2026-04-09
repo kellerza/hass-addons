@@ -29,26 +29,21 @@ class FileOptions:
     uuid: str = ""
     groups: dict[str, FileGroupOption] = field(default_factory=dict)
 
-    def file_path(self) -> Path:
-        """Get the configuration folder."""
-        cfg = Path("/config")
-        if not cfg.is_dir():
-            cfg = Path(".data/config")
-            assert cfg.is_dir(), "Create pytest folder"
-        return cfg / "state.json"
-
     def save_file(self) -> None:
         """Save options."""
         data = CONVERTER.unstructure(self)
-        opt = self.file_path()
+        opt = Path("/config/state.json")  # migrate to /data later
+        opt.parent.mkdir(exist_ok=True, parents=True)
         with opt.open("w") as f:
             json.dump(data, f, indent=2)
 
     def load_file(self) -> None:
         """Load options from the configuration files."""
-        pth = self.file_path()
+        paths = [Path("/data/state.json"), Path("/config/state.json")]
+        for pth in paths:
+            if not pth.exists():
+                continue
 
-        if pth.exists():
             _LOG.info("Loading persistent state from: %s", pth)
             with pth.open("r") as f:
                 data = json.load(f)
@@ -59,7 +54,7 @@ class FileOptions:
             self.groups = res.groups
 
         if not self.uuid:
-            _LOG.info("Creating a new UUID in options file: %s", pth)
+            _LOG.info("Creating a new UUID")
             self.uuid = str(uuid4())
             self.save_file()
 

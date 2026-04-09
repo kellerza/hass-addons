@@ -15,25 +15,19 @@ arch:
   - aarch64
   - amd64
 map:
-  - addon_config:rw
+  - type: addon_cfg
+    readonly: false
+  - type: homeassistant_config
+    readonly: false
+    path: /haconfig
+  - type: data
+    readonly: false
+    path: /data
 options:
   NAME: main
-  GROUPS:
-    - ID: cg1
-      ENTITIES: [light.my_light]
-      TEMPLATE: "{{ iif(is_state('light.other', 'on'), 'on,light other', 'off') }}"
 schema:
   NAME: str
-  GROUPS:
-    - ID: str
-      ENTITIES:
-        - str
-      TEMPLATE: str?
-      NAME: str?
-      CALL_SCRIPT: str?
 
-      TRIGGERS:
-        - str?
   HA_PREFIX: str?
 
   HA_API_URL: str?
