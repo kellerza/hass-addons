@@ -16,12 +16,12 @@ arch:
   - amd64
 map:
   - type: addon_cfg
-    readonly: false
+    read_only: false
   - type: homeassistant_config
-    readonly: false
+    read_only: false
     path: /haconfig
   - type: data
-    readonly: false
+    read_only: false
     path: /data
 options:
   NAME: main
