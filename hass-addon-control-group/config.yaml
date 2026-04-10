@@ -15,8 +15,9 @@ arch:
   - aarch64
   - amd64
 map:
-  - type: addon_cfg
+  - type: config
     read_only: false
+    path: /config
   - type: homeassistant_config
     read_only: false
     path: /haconfig
