@@ -15,7 +15,9 @@ boot: manual
 #image: homeassistant/{arch}-addon-git_pull
 init: false
 map:
-  - config:rw
+  - type: homeassistant_config
+    read_only: false
+    path: /config
 options:
   repository: null
   #git_branch: master
