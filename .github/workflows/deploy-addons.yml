@@ -22,7 +22,7 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v6.0.2
 
-      - name: Get all test, doc and src files that have changed
+      - name: Get all files that have changed
         id: changed
         uses: tj-actions/changed-files@v47
         with:
@@ -45,6 +45,15 @@ jobs:
               - "hass-addon-esp/**"
               - "src/ha_addon_esp/**"
               - "src/ha_addon/**"
+
+      - name: Summary changed files
+        run: |
+          echo "Changed files for cgroup:" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.changed.outputs.cgroup_changed_files }}" >> $GITHUB_STEP_SUMMARY
+          echo "Changed files for qsusb64:" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.changed.outputs.qsusb64_changed_files }}" >> $GITHUB_STEP_SUMMARY
+          echo "Changed files for esp:" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.changed.outputs.esp_changed_files }}" >> $GITHUB_STEP_SUMMARY
 
     outputs:
       changed_esp: ${{ steps.changed.outputs.esp_any_changed }}
