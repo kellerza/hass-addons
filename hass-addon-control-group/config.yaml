@@ -15,15 +15,9 @@ arch:
   - aarch64
   - amd64
 map:
-  - type: config
-    read_only: false
-    path: /config
-  - type: homeassistant_config
-    read_only: false
-    path: /haconfig
-  - type: data
-    read_only: false
-    path: /data
+  - addon_config:rw # as /config
+  - homeassistant_config:rw # as /homeassistant
+  - data:rw # as /data
 options:
   NAME: main
 schema:

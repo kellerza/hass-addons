@@ -51,10 +51,20 @@ class Options(MQTTOptions):
         """Init addon options."""
         await super().init_addon()
 
-        haconfig = Path("/haconfig/control_groups")
+        haconfig = Path("/homeassistant/control_groups")
+        if not await haconfig.parent.exists():
+            _LOG.warning("Home Assistant config folder not found, fallback to /config")
+            haconfig = Path("/config")
         await haconfig.mkdir(exist_ok=True, parents=True)
 
         files = [p async for p in haconfig.glob("group*.yml")]
+        _LOG.info(
+            "Found %d group config files (matching group*.yml): %s",
+            len(files),
+            ", ".join(p.name for p in files),
+        )
+        if not files:
+            _LOG.warning("No group config files found in %s", haconfig)
 
         # Load others from files
         for path in files:
