@@ -47,13 +47,13 @@ jobs:
               - "src/ha_addon/**"
 
     outputs:
-      changed_esp: ${{ steps.changed.outputs.esp_any_changed == 'true' }}
-      changed_cgroup: ${{ steps.changed.outputs.cgroup_any_changed == 'true' }}
-      changed_qsusb64: ${{ steps.changed.outputs.qsusb64_any_changed == 'true' }}
+      changed_esp: ${{ steps.changed.outputs.esp_any_changed }}
+      changed_cgroup: ${{ steps.changed.outputs.cgroup_any_changed }}
+      changed_qsusb64: ${{ steps.changed.outputs.qsusb64_any_changed }}
 
   deploy_cgroup:
     needs: [check]
-    if: ${{ needs.check.outputs.changed_cgroup }}
+    if: ${{ needs.check.outputs.changed_cgroup == 'true' }}
     uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     with:
@@ -67,7 +67,7 @@ jobs:
 
   deploy_esp:
     needs: [check]
-    if: ${{ needs.check.outputs.changed_esp }}
+    if: ${{ needs.check.outputs.changed_esp == 'true' }}
     uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     with:
@@ -81,7 +81,7 @@ jobs:
 
   deploy_qsusb64:
     needs: [check]
-    if: ${{ needs.check.outputs.changed_qsusb64 }}
+    if: ${{ needs.check.outputs.changed_qsusb64 == 'true' }}
     uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     with:
