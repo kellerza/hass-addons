@@ -17,7 +17,7 @@ arch:
 map:
   - addon_config:rw # as /config
   - homeassistant_config:rw # as /homeassistant
-  - data:rw # as /data
+  # - data:rw # as /data
 options:
   NAME: main
 schema:
