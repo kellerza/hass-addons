@@ -17,7 +17,6 @@ EXIT /B %ERRORLEVEL%
 
 :copy_addon
 CALL :print "Copy '%~1' to '%DEST%\%~1'"
-xcopy /Y /S /EXCLUDE:scripts\copyexclude.txt %~1 %DEST%\%~1
 
 set cf=%~1\config.localtest.yaml
 cp %~1\config.yaml %cf%
@@ -25,6 +24,9 @@ sed -i 's/image:/# image:/' %cf%
 sed -i 's/name: /name: A_LOCAL /' %cf%
 sed -i "s/version: \"/version: \"v%VER%_/" %cf%
 xcopy /Y %cf% %DEST%\%~1\config.yaml*
+
+xcopy /Y /S /EXCLUDE:scripts\copyexclude.txt %~1 %DEST%\%~1
+
 EXIT /B 0
 
 :print

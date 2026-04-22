@@ -44,9 +44,10 @@ class HaAllApis[T](LogBase):
             await asyncio.sleep(time)
 
         # Check WS API
-        self.ws.async_start_ws_loop()
-        await self.ws.wait_authenticated()
-        self.ws.ping(interval=10)
+        if not self.ws.connected:
+            self.ws.async_start_ws_loop()
+            await self.ws.wait_authenticated()
+            self.ws.ping(interval=10)
 
     async def close(self) -> None:
         """Close the API clients."""

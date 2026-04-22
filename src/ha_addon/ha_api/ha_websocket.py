@@ -15,12 +15,15 @@ import inspect
 import json
 from collections.abc import Callable, Coroutine
 from dataclasses import dataclass, field
+from inspect import iscoroutinefunction
 from typing import Any, TypeIs, cast
 from urllib.parse import urljoin
 
 from aiohttp import ClientWebSocketResponse, WSMsgType
+from mqtt_entity.options import CONVERTER
 
-from .base import HaApiBase
+from .base import _LOG, HaApiBase
+from .types import HAEntity
 
 type MsgCallback = Callable[[dict[str, Any]], Coroutine[None, None, None]]
 
@@ -34,7 +37,7 @@ type StrOrMsgCallback = (
 
 
 @dataclass
-class HaWebsocketApi(HaApiBase):
+class HaWebsocketBase(HaApiBase):
     """Home Assistant Websocket API wrapper."""
 
     _ws: ClientWebSocketResponse = field(init=False)
@@ -46,6 +49,9 @@ class HaWebsocketApi(HaApiBase):
         default_factory=dict, init=False, repr=False
     )
     ws_event_handlers: dict[int, MsgCallback] = field(
+        default_factory=dict, init=False, repr=False
+    )
+    ws_result_waiters: dict[int, asyncio.Future[dict[str, Any]]] = field(
         default_factory=dict, init=False, repr=False
     )
     _log_prefix = "HA WS: "
@@ -78,7 +84,11 @@ class HaWebsocketApi(HaApiBase):
         """Close the API session."""
         for task in self.running_tasks:
             task.cancel()
+        for waiter in self.ws_result_waiters.values():
+            if not waiter.done():
+                waiter.cancel()
         self.ws_event_handlers.clear()
+        self.ws_result_waiters.clear()
         self._ha_authenticated.clear()
         self.running_tasks.clear()
         await asyncio.sleep(0.1)  # Allow pending messages to be processed
@@ -155,8 +165,48 @@ class HaWebsocketApi(HaApiBase):
 
         HA-API: Unhandled websocket message type: result {'id': 4, 'type': 'result', 'success': True, 'result': None}
         """
+        m_id = cast(int, msg.get("id"))
+        waiter = self.ws_result_waiters.pop(m_id, None)
+        if waiter is not None and not waiter.done():
+            waiter.set_result(msg)
+            return
+
         if not msg.get("success", False):
             self.log_error(f"Error in websocket message: {msg}")
+
+    async def request_result(
+        self,
+        message_as_dict: dict[str, Any] | None = None,
+        /,
+        timeout: float = 10,  # noqa: ASYNC109
+        **msg: Any,
+    ) -> dict[str, Any] | None:
+        """Send a websocket command and wait for a `result` response."""
+        if message_as_dict:
+            msg.update(message_as_dict)
+        if not self.connected:
+            self.log_warn("Websocket is not connected %s", msg)
+            return None
+
+        self._ws_id += 1
+        msg_id = self._ws_id
+        msg["id"] = msg_id
+        data = json.dumps(msg)
+
+        loop = asyncio.get_running_loop()
+        waiter: asyncio.Future[dict[str, Any]] = loop.create_future()
+        self.ws_result_waiters[msg_id] = waiter
+
+        self.log_debug3("Sending websocket request-result message: %s", data)
+        await self._ws.send_str(data)
+
+        try:
+            return await asyncio.wait_for(waiter, timeout=timeout)
+        except TimeoutError:
+            self.log_error("Timeout waiting for websocket response to: %s", msg)
+            return None
+        finally:
+            self.ws_result_waiters.pop(msg_id, None)
 
     async def ws_loop(self) -> None:
         """Connect to Websocket.
@@ -293,7 +343,7 @@ class HaWebsocketApi(HaApiBase):
             if isStrCallback(result_callback):
                 param = []
 
-            if asyncio.iscoroutinefunction(result_callback):
+            if iscoroutinefunction(result_callback):
                 await result_callback(result, *param)
             else:
                 result_callback(result, *param)
@@ -324,6 +374,23 @@ class HaWebsocketApi(HaApiBase):
     async def unsubscribe_events(self, event_id: int) -> None:
         """Unsubscribe from websocket events."""
         await self.send(type="unsubscribe_events", event_id=event_id)
+
+
+@dataclass
+class HaWebsocketApi(HaWebsocketBase):
+    """Home Assistant Websocket API wrapper."""
+
+    async def get_entity_registry(self) -> list[HAEntity]:
+        """Get entity registry entries via websocket API."""
+        res = await self.request_result(type="config/entity_registry/list")
+        if not res or not res.get("success"):
+            return []
+
+        payload = res.get("result", [])
+        _LOG.info(payload[0])
+        if not isinstance(payload, list):
+            return []
+        return CONVERTER.structure(payload, list[HAEntity])
 
 
 def isStrCallback(

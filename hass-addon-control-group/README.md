@@ -1,6 +1,6 @@
 # Control group add-on
 
-The control group add-on allows you to automate entities, typically lights and switches, based on the result of a template.
+The control group add-on allows you to control the state of entities (e.g. lights and switches), based on the result of a template, or **template sensor** helper.
 
 This allows you to easily build motion or presence-based automations using the state of other entities:
 
@@ -17,8 +17,7 @@ Templates are standard Home Assistant [templates](https://www.home-assistant.io/
 
 A similar concept can be achieved using a combination of existing Home Assistant features:
 
-- You can use *template sensor* helpers to create the state and use an automation that syncs the value of this template sensor to the desired entity.
-In the past I've used automation blueprints to maintain this syncing capability. You end up with several entities that you need to manage and it's fairly cumbersome to debug.
+- You can use an automation or blueprint that syncs the value of this template sensor to the desired entity.
 
 - Home Assistant has [Template Triggers](https://www.home-assistant.io/docs/automation/trigger/#template-trigger) that can be used for automations, but unfortunately only when the template state changes from False to True. For some discussions see [PR#121451](https://github.com/home-assistant/core/pull/121451).
 
@@ -32,35 +31,54 @@ In the past I've used automation blueprints to maintain this syncing capability.
 
 ## Configuration
 
-Groups are configured under the **GROUPS** key in the configuration file.
+If you run on the HA OS, no configuration should be required. You can set the **NAME** of the control group and the **PREFIX** that will be used for created entities.
 
-When a group has a **TEMPLATE** defined, it will be rendered whenever the state changes in Home Assistant. The result of the template will be used to determine the state of the group. Template are discussed in detail in the next sections.
-
-Each group requires a unique **ID**. The ID can be a short string as it will include a uuid for the addon when used as identifiers for Home Assistant entities. If you change them you will get stale entities that you can delete from the frontend (after a restart!)
-
-You can add a **NAME**. If not provided the name will be a list of entities.
-
-The **ENTITIES** in a group can either be a name (light.x, switch.y), or a template that will be expanded when the addon starts.
-
-Example:
+and **HA_PREFIX** to your liking, but the default values should work fine. The addon will automatically discover your Home Assistant instance and connect to it.
 
 ```yaml
-GROUPS:
-- ID: abc
-  ENTITIES:
-    - light.fixed_light
-    - "{{ states.binary_sensor | map(attribute='entity_id') | select('is_state', 'on') | list }}"
-  CALL_SCRIPTS: script.do_something
+NAME: main
+HA_PREFIX: cgroup
 ```
 
-Using **CALL_SCRIPT** you can call a script when the result of the template changes. This is optional and the value of the template will be passed to the script as *msg*
+All other parameters are optional and will be populated automaticlally when you run on HA OS by the HA Supervisor.
 
-```yaml
-GROUPS:
-- ID: abc
-  ENTITIES: [...]
-  CALL_SCRIPT: script.do_something
-```
+> Example configuration for running the addon in a docker container:
+>
+> ```yaml
+> HA_API_URL: http://192.168.1.8:8123
+> HA_API_TOKEN: "***"
+> MQTT_HOST: 192.168.1.8
+> MQTT_PORT: 1883
+> MQTT_USERNAME: hass
+> MQTT_PASSWORD: password123
+> ```
+> The main task would be creating template helpers
+>
+
+## Template sensor helpers
+
+A **Template sensor helper** can be created in the UI under *Devices & services* --> *Helpers*.
+
+The template should return the state of the entity (on/off/0/1) and optionally a description, separated by a comma. The description helps you to debug your templates and understand why a certain entity is on or off.
+
+The name of the **Template sensor helper** determines which entity will be controlled. If you take the name of the template sensor helper and remove the *_state* suffix, you get the name of the entity that will be controlled. For example, if you create a template sensor helper with the name `sensor.porch_light_state`, the addon will search for entities without the *_state* suffix, i.e. `light.porch_light` and `switch.porch_light`.
+
+For a **Template sensor helper** to be considered, it needs to be labelled with **control group**.
+
+The following table shows the naming convention:
+
+| Template sensor helper   | Controlled entity | Mode selector            |
+|--------------------------|-------------------|--------------------------|
+| sensor.porch_light_state | light.porch_light | select.porch_light_state |
+| sensor.front_light_state | light.front_light | select.front_light_state |
+
+The **Controlled entity** is the entity that will be switched on/off based on the template sensor helper's state. The addon will automatically search for entities with the same name as the template sensor helper, but without the *_state* suffix. It will also search for both light and switch entities, so you can control either type of entity with the same template sensor helper.
+
+The **Mode selector** is a select entity that allows you to override the template sensor helper's mode of operation. It is automatically created by the addon. It has the following options:
+
+- *Enabled*, the state of the controlled entity will be controlled by the template sensor helper.
+- *Disabled*, the control group will be disabled and the state of the controlled entity will not be changed by the addon.
+- *On* / *Off*, the state of the controlled entity will be forced to on or off, regardless of the template sensor helper's state.
 
 ## How to build the templates
 
@@ -107,23 +125,9 @@ For more descriptive debug messages, it might be better to write the template as
 {% endif %}
 ```
 
-### How to debug the templates
-
-You can add the following card to your homeassistant frontend. It will use a markdown card to display all the entities being controlled, their state and the reason for the state (from the template!)
-
-This will allow you to quickly fine-tune your templates.
-
-```yaml
-type: markdown
-content: "{{ states('sensor.cgroup_debug') }}"
-title: Control group debug
-```
-
-The `sensor.cgroup_debug` entity will be added to your Home Assistant instance.
-
 ### Jinja recipes
 
-Here are some Jinja recipes that can be used in the `template` option of the group.
+Here are some Jinja recipes that can be used to construct the template.
 
 #### Movement detected (change in last x seconds)
 
@@ -149,7 +153,7 @@ Between 7:00 and 8:30 in the evening. Note how we use 24h time to differentiate 
 {{ set evening_timeslot = t >= '19:00:00' and t <= '20:30:00' }}
 ```
 
-## More Examples
+## Full Examples
 
 These examples combine the concepts discussed earlier. I have many of these, especially for security lights outside the house, where you want to ensure they are only on when needed and they are typically switched by individual sonoffs devices all around the house.
 
@@ -164,25 +168,21 @@ Here we control the light in the scullery, which is between the laundry and the 
 - If there has been motion in the scullery in the last 5 minutes (`ss<300`)
 - If there has been motion in the kitchen in the last 5 minutes, the motion timer in the scullery increases to 10 minutes (`sk<300 and ss<600`)
 
-```yaml
-GROUPS:
-  - ID: abc
-    ENTITIES: [light.scullery]
-    TEMPLATE: |
-      {%- if is_state("light.kitchen", "on") -%}
-        on,light kitchen
-      {%- elif is_state("light.laundry", "on") -%}
-        on,light laundry
-      {%- else -%}
-          {%- set n = as_timestamp(now()) -%}
-          {%- set sk = (n-(as_timestamp(states.binary_sensor.zone_kitchen_open.last_changed) or n)) -%}
-          {%- set ss = (n-(as_timestamp(states.binary_sensor.zone_scullery_open.last_changed) or n)) -%}
-          {%- if (sk<300 and ss <600) or (ss<300) -%}
-            on,movement kitchen/scullery
-          {%- else -%}
-            off
-          {%- endif -%}
-      {%- endif %}
+```jinja
+{%- if is_state("light.kitchen", "on") -%}
+  on,light kitchen
+{%- elif is_state("light.laundry", "on") -%}
+  on,light laundry
+{%- else -%}
+    {%- set n = as_timestamp(now()) -%}
+    {%- set sk = (n-(as_timestamp(states.binary_sensor.zone_kitchen_open.last_changed) or n)) -%}
+    {%- set ss = (n-(as_timestamp(states.binary_sensor.zone_scullery_open.last_changed) or n)) -%}
+    {%- if (sk<300 and ss <600) or (ss<300) -%}
+      on,movement kitchen/scullery
+    {%- else -%}
+      off
+    {%- endif -%}
+{%- endif %}
 ```
 
 ### Example 2
@@ -195,19 +195,15 @@ So the light will be on:
 - When the garage door has been opened/closed in the last 200 seconds (3m20s)
 - When the override is on (a press button toggling the sonoff's status led)
 
-```yaml
-GROUPS:
-  - ID: abc
-    ENTITIES: [light.garage]
-    TEMPLATE: |
-      {%- set n = as_timestamp(now()) -%}
-      {%- if 600 > (n-(as_timestamp(states.binary_sensor.zone_garage_pir_open.last_changed) or n)) -%}
-        on,garage movement
-      {%- elif 200 > (n-(as_timestamp(states.binary_sensor.zone_garage_huis_open.last_changed) or n)) -%}
-        on,garage door
-      {%- elif is_state("light.garage_status_led", "on") -%}
-        on,garage override
-      {%- else -%}
-        off
-      {%- endif %}
+```jinja2
+{%- set n = as_timestamp(now()) -%}
+{%- if 600 > (n-(as_timestamp(states.binary_sensor.zone_garage_pir_open.last_changed) or n)) -%}
+  on,garage movement
+{%- elif 200 > (n-(as_timestamp(states.binary_sensor.zone_garage_huis_open.last_changed) or n)) -%}
+  on,garage door
+{%- elif is_state("light.garage_status_led", "on") -%}
+  on,garage override
+{%- else -%}
+  off
+{%- endif %}
 ```

@@ -18,6 +18,10 @@ Requirements: [uv](https://docs.astral.sh/uv/getting-started/). uv can be used t
 
 When you run it on your local machine, it will use config from `<working-dir>/.data/options.yaml`. As a starting point you can copy the config under the **options:** key from [config.yaml](./hass-addon-qsusb64/config)
 
+```bash
+uv run -m ha_addon_control_group
+```
+
 ## Monitor logs from ssh
 
 ```bash

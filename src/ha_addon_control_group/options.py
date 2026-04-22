@@ -3,31 +3,15 @@
 import logging
 from dataclasses import dataclass, field
 
-from anyio import Path
-from mqtt_entity.options import CONVERTER, MQTTOptions
+from mqtt_entity.options import MQTTOptions
 from mqtt_entity.utils import slug
-from yaml import safe_load
 
 from ha_addon.all_apis import HaAllApis
+from ha_addon_control_group.options_discover import ControlGroupOptions
+
+from .options_discover import discover_control_groups
 
 _LOG = logging.getLogger(__name__)
-
-
-@dataclass
-class ControlGroupOptions:
-    """Options for a control group."""
-
-    id: str
-    name: str = ""
-    entities: list[str] = field(default_factory=list)
-    template: str = ""
-    call_script: str = ""
-
-    def __post_init__(self) -> None:
-        """Init."""
-        self.id = slug(self.id).lower()
-        if not self.id:
-            raise ValueError("Group ID cannot be empty.")
 
 
 @dataclass
@@ -47,35 +31,9 @@ class Options(MQTTOptions):
         if not self.ha_prefix:
             raise ValueError("HA prefix cannot be empty.")
 
-    async def init_addon(self) -> None:
-        """Init addon options."""
-        await super().init_addon()
-
-        haconfig = Path("/homeassistant/control_groups")
-        if not await haconfig.parent.exists():
-            _LOG.warning("Home Assistant config folder not found, fallback to /config")
-            haconfig = Path("/config")
-        await haconfig.mkdir(exist_ok=True, parents=True)
-
-        files = [p async for p in haconfig.glob("group*.yml")]
-        _LOG.info(
-            "Found %d group config files (matching group*.yml): %s",
-            len(files),
-            ", ".join(p.name for p in files),
-        )
-        if not files:
-            _LOG.warning("No group config files found in %s", haconfig)
-
-        # Load others from files
-        for path in files:
-            _LOG.info("Loading group config from %s", path)
-            try:
-                fbytes = await path.read_bytes()
-                data = safe_load(fbytes)
-                res = CONVERTER.structure(data, list[ControlGroupOptions])
-                self.groups.extend(res)
-            except Exception as ex:
-                _LOG.error("Error loading group config from %s: %s", path, ex)
+    async def discover_groups(self) -> None:
+        """Discover groups."""
+        self.groups = await discover_control_groups(API)
 
         ids = [g.id for g in self.groups]
         if "" in ids:  # check empty IDs

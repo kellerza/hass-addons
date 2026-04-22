@@ -138,3 +138,21 @@ class HaRestApi(HaApiBase):
             f"{domain}.turn_on" if state == "on" else f"{domain}.turn_off",
             {"entity_id": entity_id},
         )
+
+    async def get_config_entry_options(
+        self, config_entry_id: str
+    ) -> dict[str, Any] | None:
+        """Get the options for a config entry - /api/config/config_entries/entry/<entry_id>/options."""
+        res = await self.request(
+            "api/config/config_entries/options/flow",
+            {"handler": config_entry_id, "show_advanced_options": True},
+            method="POST",
+        )
+        return res
+
+    async def get_config_entry_template(self, config_entry_id: str) -> str:
+        """Get the template for a config entry - /api/config/config_entries/entry/<entry_id>/template."""
+        res = await self.get_config_entry_options(config_entry_id)
+        if res and (ds := res.get("data_schema")):
+            return ds[0].get("description", {}).get("suggested_value", "")
+        return ""

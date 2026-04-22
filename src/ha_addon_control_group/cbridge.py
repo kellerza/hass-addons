@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from ast import literal_eval
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -13,7 +12,8 @@ from mqtt_entity.utils import slug
 
 from ha_addon.helpers import onoff
 
-from .options import API, ControlGroupOptions
+from .options import API
+from .options_discover import ControlGroupOptions
 from .options_file import OPT_FILE, FileGroupOption
 
 _LOG = logging.getLogger(__name__)
@@ -76,12 +76,16 @@ class AddonState:
         entities = list[str]()
         for cg in self.cgs:
             entities.extend(cg.opt.entities)
+            entities.append(cg.opt.src_entity)
         triggers = [{"platform": "state", "entity_id": e} for e in set(entities)]
 
         async def _cb(msg: dict[str, Any]) -> None:
             eid = msg["variables"]["trigger"]["entity_id"]
             state = msg["variables"]["trigger"]["to_state"]["state"]
             for cg in self.cgs:
+                if eid == cg.opt.src_entity:
+                    await cg.on_render(state, msg)
+                    continue
                 if state == cg.state:
                     continue
                 if eid in cg.opt.entities:
@@ -101,7 +105,7 @@ class AddonState:
                 self.debug_sensor_state = tgtg_text
                 if len(self.debug_sensor_state) > 255:
                     self.debug_sensor_state = self.debug_sensor_state[:255]
-                await self.debug_sensor.send_state(API.mqtt, self.debug_sensor_state)
+                # await self.debug_sensor.send_state(API.mqtt, self.debug_sensor_state)
 
 
 STATE = AddonState()
@@ -141,7 +145,7 @@ class CGroupBridge:
     @property
     def mode(self) -> str:
         """Get the mode of the control group."""
-        return self.file_opt.mode
+        return self.file_opt.mode or MODE_OPTIONS[0]
 
     @mode.setter
     def mode(self, value: str) -> None:
@@ -197,32 +201,37 @@ class CGroupBridge:
 
     async def render_template(self) -> None:
         """Render template with REST API."""
-        template = await API.rest.render_template(self.opt.template)
-        if template:
-            return await self.on_render(template, msg={})
-        self.state_reason = "Template rendering failed"
+        state = await API.rest.get_state(self.opt.src_entity)
+        if state:
+            return await self.on_render(state.state, msg={})
+        self.state_reason = "Source entity state not found"
+
+    #     template = await API.rest.render_template(self.opt.template)
+    #     if template:
+    #         return await self.on_render(template, msg={})
+    #     self.state_reason = "Template rendering failed"
 
     async def register_ws(self) -> None:
         """Register the control group with the websocket."""
-        await API.ws.render_template(self.opt.template, self.on_render)
+        # await API.ws.render_template(self.opt.template, self.on_render)
 
-    async def expand_entities(self) -> None:
-        """Expand entities in the control group."""
-        for ent in list(self.opt.entities):
-            if "{{" in ent and "}}" in ent:
-                res = await API.rest.render_template(ent)
-                self.opt.entities.remove(ent)
-                try:
-                    if res:
-                        resl = literal_eval(res)
-                        self.opt.entities.extend(resl)
-                        _LOG.info(
-                            "CG %s: expand '%s' \nto '%s'", self.opt.id, ent, resl
-                        )
-                except Exception as e:
-                    _LOG.error(
-                        "CG %s: could not expand '%s': %s %s", self.opt.id, ent, e, res
-                    )
+    # async def expand_entities(self) -> None:
+    #     """Expand entities in the control group."""
+    #     for ent in list(self.opt.entities):
+    #         if "{{" in ent and "}}" in ent:
+    #             res = await API.rest.render_template(ent)
+    #             self.opt.entities.remove(ent)
+    #             try:
+    #                 if res:
+    #                     resl = literal_eval(res)  # from ast import literal_eval
+    #                     self.opt.entities.extend(resl)
+    #                     _LOG.info(
+    #                         "CG %s: expand '%s' \nto '%s'", self.opt.id, ent, resl
+    #                     )
+    #             except Exception as e:
+    #                 _LOG.error(
+    #                     "CG %s: could not expand '%s': %s %s", self.opt.id, ent, e, res
+    #                 )
 
     async def on_command_state(self, payload: str) -> None:
         """Handle state changes."""
@@ -239,7 +248,8 @@ class CGroupBridge:
         self.mode_entity = mq_dev.components[self.opt.id] = MQTTSelectEntity(
             name=f"{self.name} mode",
             unique_id=mq_dev.id + f"_{self.opt.id}",
-            default_entity_id=f"select.{API.opt.ha_prefix}_{slug(self.name).lower()}_mode",
+            # default_entity_id=f"select.{API.opt.ha_prefix}_{slug(self.name).lower()}_mode",
+            default_entity_id=f"select.{slug(self.name).lower()}",
             options=MODE_OPTIONS,
             state_topic=f"cg/{API.opt.ha_prefix}/{self.opt.id}",
             command_topic=f"cg/{API.opt.ha_prefix}/{self.opt.id}_set",
