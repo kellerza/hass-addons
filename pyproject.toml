@@ -15,7 +15,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-  "aiohttp>=3.12,<4",
+  "aiohttp>=3.14.0,<4",
   "anyio",
   "colorama",
   "colorlog",
