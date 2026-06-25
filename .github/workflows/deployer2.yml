@@ -30,7 +30,7 @@ jobs:
       environment: ${{ steps.release.outputs.environment }}
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7
 
       - name: Get app information
         id: info
@@ -86,7 +86,7 @@ jobs:
 
       - name: Prepare build matrix
         id: matrix
-        uses: home-assistant/builder/actions/prepare-multi-arch-matrix@2026.03.2
+        uses: home-assistant/builder/actions/prepare-multi-arch-matrix@2026.06.0
         with:
           architectures: ${{ steps.info.outputs.architectures }}
           image-name: ${{ steps.normalize.outputs.image_name }}
@@ -106,7 +106,7 @@ jobs:
       matrix: ${{ fromJSON(needs.prepare.outputs.build_matrix) }}
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -121,7 +121,7 @@ jobs:
           fi
 
       - name: Build image
-        uses: home-assistant/builder/actions/build-image@2026.03.2
+        uses: home-assistant/builder/actions/build-image@2026.06.0
         with:
           arch: ${{ matrix.arch }}
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
@@ -148,7 +148,7 @@ jobs:
       packages: write
     steps:
       - name: Publish multi-arch manifest
-        uses: home-assistant/builder/actions/publish-multi-arch-manifest@2026.03.2
+        uses: home-assistant/builder/actions/publish-multi-arch-manifest@2026.06.0
         with:
           architectures: ${{ needs.prepare.outputs.architectures }}
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
@@ -167,7 +167,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: main
