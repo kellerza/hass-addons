@@ -245,7 +245,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "aiohttp", specifier = ">=3.12,<4" },
+    { name = "aiohttp", specifier = ">=3.14.1,<4" },
     { name = "anyio" },
     { name = "colorama" },
     { name = "colorlog" },
