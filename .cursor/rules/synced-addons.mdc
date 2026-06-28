@@ -1,0 +1,42 @@
+---
+description: Which add-on folders are CI-synced mirrors (do not hand-edit) vs maintained here
+globs:
+alwaysApply: true
+---
+
+# Add-on repository layout (kellerza/hass-addons)
+
+This repo aggregates Home Assistant add-ons. Some folders are **maintained here**; others are
+**CI-mirrored from upstream repos** by `.github/workflows/sync-remotes.yml` and will have any manual
+edits **overwritten on the next sync**.
+
+## Do NOT hand-edit — CI-synced mirrors
+
+These folders are copied verbatim from another repo. Fix the problem in the **source repo**, not
+here:
+
+- **`hass-addon-sunsynk-edge/`**, **`hass-addon-sunsynk-multi/`**, **`hass-addon-mbusd/`** — synced
+  from **`kellerza/sunsynk`**. Edit those add-ons in the `sunsynk` repo (per its own rules: edge is
+  the dev add-on and Docker build source; multi is the stable/image-only release add-on).
+  `Dockerfile` and `rootfs/` are stripped from both folders on sync (image-only mirrors).
+- **`hass-addon-sma-em-edge/`** — synced from **`kellerza/hassio-sma-em`** (`sma-em-dev`; build
+  source). The `slug` is rewritten by CI; don't fix it here. `Dockerfile` and `rootfs/` are stripped
+  on sync (image-only mirror).
+
+If a task would touch any of the above, **redirect**: state that the folder is a sync target and the
+change belongs in the upstream repo (or in `sync-remotes.yml` if the sync logic itself is wrong).
+
+## Maintained here
+
+Manual work is welcome on the repo's own add-ons and their Python:
+
+- **`hass-addon-control-group/`** + **`src/ha_addon_control_group/`**
+- **`hass-addon-esp/`** + **`src/ha_addon_esp/`**
+- **`hass-addon-qsusb64/`** + **`src/ha_addon_qsusb64/`**
+- **`hass-addon-git-push/`** (shell/Docker only)
+- **`src/ha_addon/`** — shared HA API helpers (`ha_api/`) used across add-ons.
+
+Pattern: add-on **packaging** (`config.yaml`, `translations/`, `Dockerfile`, `rootfs/` s6 services)
+lives in the `hass-addon-*` folder; **behaviour** lives in the matching `src/ha_addon_*` package.
+Keep Supervisor options in sync between an add-on's `config.yaml`, its `translations/en.yaml`, and
+the `options.py` of its `src` package.

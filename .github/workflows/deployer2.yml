@@ -1,7 +1,7 @@
 on:
   workflow_call:
     inputs:
-      app:
+      app-stable:
         required: true
         type: string
       app-edge:
@@ -36,7 +36,7 @@ jobs:
         id: info
         uses: home-assistant/actions/helpers/info@master
         with:
-          path: "./${{ inputs.app }}"
+          path: "./${{ inputs.app-edge }}"
 
       - name: Normalize app information
         id: normalize
@@ -115,7 +115,7 @@ jobs:
           # if executable, run
           if [ -x "./build_prep.sh" ]; then
             echo "Running build_prep.sh to prepare files for the build..."
-            ./build_prep.sh "${{ inputs.app }}" "${{ needs.prepare.outputs.version }}"
+            ./build_prep.sh "${{ inputs.app-edge }}" "${{ needs.prepare.outputs.version }}"
           else
             echo "No build_prep.sh found, skipping file preparation step."
           fi
@@ -125,7 +125,7 @@ jobs:
         with:
           arch: ${{ matrix.arch }}
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
-          context: "./${{ inputs.app }}"
+          context: "./${{ inputs.app-edge }}"
           image: ${{ matrix.image }}
           image-tags: |
             ${{ needs.prepare.outputs.version }}
@@ -186,8 +186,8 @@ jobs:
           git add ${{ inputs.app-edge }}/config.yaml
 
           if [[ "${{ needs.prepare.outputs.environment }}" == "stable" ]]; then
-            sed -i 's/version:.*/version: "${{ needs.prepare.outputs.version }}"/g' ${{ inputs.app }}/config.yaml
-            git add ${{ inputs.app }}/config.yaml
+            sed -i 's/version:.*/version: "${{ needs.prepare.outputs.version }}"/g' ${{ inputs.app-stable }}/config.yaml
+            git add ${{ inputs.app-stable }}/config.yaml
           fi
 
           git commit -m "Update addon version to ${{ needs.prepare.outputs.version }} [no ci]" || echo "No changes to commit"

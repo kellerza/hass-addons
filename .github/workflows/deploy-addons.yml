@@ -66,7 +66,7 @@ jobs:
     uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     with:
-      app: hass-addon-control-group
+      app-stable: hass-addon-control-group
       app-edge: hass-addon-control-group
       publish: true
     permissions:
@@ -80,7 +80,7 @@ jobs:
     uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     with:
-      app: hass-addon-esp
+      app-stable: hass-addon-esp
       app-edge: hass-addon-esp
       publish: true
     permissions:
@@ -94,7 +94,7 @@ jobs:
     uses: kellerza/hass-addons/.github/workflows/deployer2.yml@main
     secrets: inherit
     with:
-      app: hass-addon-qsusb64
+      app-stable: hass-addon-qsusb64
       app-edge: hass-addon-qsusb64
       publish: true
     permissions:

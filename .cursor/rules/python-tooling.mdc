@@ -1,0 +1,25 @@
+---
+description: Python tooling for the add-on source — uv, ruff, pytest, Python 3.13
+globs:
+  - src/**/*.py
+  - pyproject.toml
+alwaysApply: false
+---
+
+# Python conventions (`src/`)
+
+- **Python 3.13 only** (`requires-python = ">=3.13,<3.14"`). Use 3.13 syntax freely; no backport
+  shims.
+- **uv** manages the env and runs code/tests. Run modules with `uv run -m <package>` (e.g.
+  `uv run -m ha_addon_control_group`) and tests with `uv run pytest`. Don't add deps by hand-editing
+  `uv.lock`; add to `pyproject.toml` and let uv resolve.
+- **Layout:** `pythonpath = src`. Packages are `ha_addon`, `ha_addon_control_group`, `ha_addon_esp`,
+  `ha_addon_qsusb64` (see `tool.uv.build-backend.module-name`). Shared HA REST/ websocket helpers
+  live in `src/ha_addon/ha_api/` — reuse them, don't re-implement an HA client.
+- **Lint/format:** ruff with a broad select (`A,ASYNC,B,D,E,F,G,I,PGH,PIE,PL,PTH,PYI,RUF,UP,W`).
+  Notable: `D` (docstrings) is on, `PTH` means prefer `pathlib` over `os.path`, line-ending is `lf`.
+  `max-args = 7`. Run `uv run ruff check` and `uv run ruff format` before finishing.
+- **Async:** code is async-first (`aiohttp`, `anyio`); pytest runs with `asyncio_mode = auto`, so
+  `async def test_*` needs no marker.
+- **Tests** live in `src/tests/<addon>/` and run with coverage. Per the ponytail rule, non-trivial
+  logic gets one small test here.

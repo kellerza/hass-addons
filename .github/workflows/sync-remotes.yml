@@ -44,7 +44,7 @@ jobs:
       - name: Sync sunsynk add-ons and commit changes
         run: |
           echo # Remove extra source files
-          rm -rf sunsynk/hass-addon-sunsynk-multi/rootfs sunsynk/hass-addon-sunsynk-multi/Dockerfile sunsynk/hass-addon-sunsynk-multi/build.yaml
+          rm -rf sunsynk/hass-addon-sunsynk-edge/rootfs sunsynk/hass-addon-sunsynk-edge/Dockerfile
 
           echo # Clean destination
           mkdir -p hass-addons/hass-addon-sunsynk-multi
@@ -80,6 +80,8 @@ jobs:
           echo # Clean destination
           mkdir -p hass-addons/hass-addon-sma-em-edge
           rm -rf hass-addons/hass-addon-sma-em-edge/*
+
+          rm -rf sma-em/sma-em-dev/rootfs sma-em/sma-em-dev/Dockerfile
 
           echo # Copy files from sma-em to hass-addons
           cp -r sma-em/sma-em-dev/* hass-addons/hass-addon-sma-em-edge
