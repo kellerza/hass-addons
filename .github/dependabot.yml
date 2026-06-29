@@ -9,6 +9,7 @@ updates:
         patterns:
           - "*"
 
+  # [dependency-groups] dev — bumped locally via uv sync in pre-commit
   - package-ecosystem: "uv"
     directory: "/"
     schedule:
