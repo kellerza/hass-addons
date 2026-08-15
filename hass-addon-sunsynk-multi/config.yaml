@@ -45,7 +45,7 @@ options:
   NUMBER_ENTITY_MODE: "auto"
   PROG_TIME_INTERVAL: 15
 schema:
-  DRIVER: list(pymodbus|umodbus|solarman)
+  DRIVER: list(pymodbus|solarman)
   INVERTERS:
     - SERIAL_NR: str
       HA_PREFIX: str

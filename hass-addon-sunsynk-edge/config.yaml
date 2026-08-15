@@ -1,7 +1,7 @@
 ---
 name: Sunsynk or Deye Inverter add-on (dev-edge)
 description: Add-on for a Sunsynk/Deye branded Inverter
-version: "d691c85"
+version: "3606ee9"
 slug: hass-addon-sunsynk-edge
 image: ghcr.io/kellerza/hass-addon-sunsynk-multi
 url: "https://kellerza.github.io/sunsynk"
@@ -18,7 +18,6 @@ map:
   - app_config:rw
   - share:rw
 options:
-  DRIVER: "pymodbus"
   INVERTERS:
     - SERIAL_NR: "007"
       HA_PREFIX: SS
@@ -48,14 +47,12 @@ options:
   PROG_TIME_INTERVAL: 15
   TIMEOUT: 10
 schema:
-  DRIVER: list(pymodbus|modbusrs|solarman)
   INVERTERS:
     - SERIAL_NR: str
       HA_PREFIX: str
       MODBUS_ID: int(1,16)
       DONGLE_SERIAL_NUMBER: str?
       PORT: str
-      DRIVER: list(pymodbus|modbusrs|solarman)?
   SENSOR_DEFINITIONS: list(single-phase|single-phase-16kw|three-phase|three-phase-hv)
   SENSOR_OVERRIDES:
     - "match(^[a-z0-9_]+(.[a-z]+)?=-?([0-9]*\\.)?[0-9]+$)?"
