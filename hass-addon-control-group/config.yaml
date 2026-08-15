@@ -15,7 +15,7 @@ arch:
   - aarch64
   - amd64
 map:
-  - addon_config:rw # as /config
+  - app_config:rw # as /config
   - homeassistant_config:rw # as /homeassistant
   # - data:rw # as /data
 options:

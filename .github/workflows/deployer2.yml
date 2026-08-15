@@ -129,7 +129,7 @@ jobs:
           image: ${{ matrix.image }}
           image-tags: |
             ${{ needs.prepare.outputs.version }}
-            latest
+            ${{ needs.prepare.outputs.environment }}
           labels: |
             io.hass.type=app
             io.hass.name=${{ needs.prepare.outputs.name }}
@@ -155,7 +155,7 @@ jobs:
           image-name: ${{ needs.prepare.outputs.image_name }}
           image-tags: |
             ${{ needs.prepare.outputs.version }}
-            latest
+            ${{ needs.prepare.outputs.environment }}
           registry-prefix: ${{ needs.prepare.outputs.registry_prefix }}
 
   publish_addon:
