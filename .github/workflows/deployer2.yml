@@ -28,6 +28,7 @@ jobs:
       # version: ${{ steps.normalize.outputs.version }}
       version: ${{ steps.release.outputs.version }}
       environment: ${{ steps.release.outputs.environment }}
+      channel_tags: ${{ steps.release.outputs.channel_tags }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v7
@@ -81,6 +82,17 @@ jobs:
           echo "environment=${environment}" >> "$GITHUB_OUTPUT"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
+          # Channel tags: stable also gets :latest
+          {
+            echo "channel_tags<<EOF"
+            echo "${version}"
+            echo "${environment}"
+            if [[ "${environment}" == "stable" ]]; then
+              echo "latest"
+            fi
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
           # Log the outputs
           cat "$GITHUB_OUTPUT" >> $GITHUB_STEP_SUMMARY
 
@@ -127,9 +139,7 @@ jobs:
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           context: "./${{ inputs.app-edge }}"
           image: ${{ matrix.image }}
-          image-tags: |
-            ${{ needs.prepare.outputs.version }}
-            ${{ needs.prepare.outputs.environment }}
+          image-tags: ${{ needs.prepare.outputs.channel_tags }}
           labels: |
             io.hass.type=app
             io.hass.name=${{ needs.prepare.outputs.name }}
@@ -153,9 +163,7 @@ jobs:
           architectures: ${{ needs.prepare.outputs.architectures }}
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image-name: ${{ needs.prepare.outputs.image_name }}
-          image-tags: |
-            ${{ needs.prepare.outputs.version }}
-            ${{ needs.prepare.outputs.environment }}
+          image-tags: ${{ needs.prepare.outputs.channel_tags }}
           registry-prefix: ${{ needs.prepare.outputs.registry_prefix }}
 
   publish_addon:

@@ -1,3 +1,0 @@
-include LICENSE README.md src/ha_addon/py.typed
-recursive-exclude * *.py[co]
-graft src
