@@ -186,19 +186,34 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
       - name: Update versions and commit changes
+        env:
+          EDGE: ${{ inputs.app-edge }}
+          STABLE: ${{ inputs.app-stable }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+          ENVIRONMENT: ${{ needs.prepare.outputs.environment }}
         run: |
-          # Pull latest changes with rebase strategy
           git pull --rebase origin main
 
-          sed -i 's/version:.*/version: "${{ needs.prepare.outputs.version }}"/g' ${{ inputs.app-edge }}/config.yaml
-          git add ${{ inputs.app-edge }}/config.yaml
+          sed -i "s/version:.*/version: \"${VERSION}\"/g" "${EDGE}/config.yaml"
+          git add "${EDGE}/config.yaml"
 
-          if [[ "${{ needs.prepare.outputs.environment }}" == "stable" ]]; then
-            sed -i 's/version:.*/version: "${{ needs.prepare.outputs.version }}"/g' ${{ inputs.app-stable }}/config.yaml
-            git add ${{ inputs.app-stable }}/config.yaml
+          if [[ "${ENVIRONMENT}" == "stable" ]]; then
+            # Copy edge config onto stable. Keep stable name; slug is $STABLE.
+            # Skip when they are the same add-on (local deployers).
+            if [[ "${EDGE}" != "${STABLE}" ]]; then
+              NAME=$(grep '^name:' "${STABLE}/config.yaml")
+              [ -n "${NAME}" ]
+              cp "${EDGE}/config.yaml" "${STABLE}/config.yaml"
+              sed -i \
+                -e "s|^name:.*|${NAME}|" \
+                -e "s|^slug:.*|slug: ${STABLE}|" \
+                "${STABLE}/config.yaml"
+            fi
+            sed -i "s/version:.*/version: \"${VERSION}\"/g" "${STABLE}/config.yaml"
+            git add "${STABLE}/config.yaml"
           fi
 
-          git commit -m "Update addon version to ${{ needs.prepare.outputs.version }} [no ci]" || echo "No changes to commit"
+          git commit -m "Update addon version to ${VERSION} [no ci]" || echo "No changes to commit"
 
       - name: Push changes
         run: |
