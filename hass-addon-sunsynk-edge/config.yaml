@@ -1,7 +1,7 @@
 ---
 name: Sunsynk or Deye Inverter add-on (dev-edge)
 description: Add-on for a Sunsynk/Deye branded Inverter
-version: "f2bb5bd"
+version: "1.1.1"
 slug: hass-addon-sunsynk-edge
 image: ghcr.io/kellerza/hass-addon-sunsynk-multi
 url: "https://kellerza.github.io/sunsynk"
@@ -66,7 +66,7 @@ schema:
   READ_ALLOW_GAP: int(1,50)
   READ_SENSORS_BATCH_SIZE: int(1,100)
   READ_MESSAGE_SPACING: float(0,2)?
-  TIMEOUT: int(1,10)?
+  TIMEOUT: int(1,15)?
   STALE_INVERTER_AFTER_SECONDS: int(1,1000)?
   STALE_INVERTER_SKIP_SECONDS: int(60,86400)?
   SCHEDULES:
