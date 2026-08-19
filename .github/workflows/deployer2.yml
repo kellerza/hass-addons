@@ -198,7 +198,7 @@ jobs:
           git add "${EDGE}/config.yaml"
 
           if [[ "${ENVIRONMENT}" == "stable" ]]; then
-            # Copy edge config onto stable. Keep stable name; slug is $STABLE.
+            # Copy edge packaging onto stable. Keep stable name; slug is $STABLE.
             # Skip when they are the same add-on (local deployers).
             if [[ "${EDGE}" != "${STABLE}" ]]; then
               NAME=$(grep '^name:' "${STABLE}/config.yaml")
@@ -208,6 +208,15 @@ jobs:
                 -e "s|^name:.*|${NAME}|" \
                 -e "s|^slug:.*|slug: ${STABLE}|" \
                 "${STABLE}/config.yaml"
+              if [[ -d "${EDGE}/translations" ]]; then
+                rm -rf "${STABLE}/translations"
+                cp -r "${EDGE}/translations" "${STABLE}/translations"
+                git add "${STABLE}/translations"
+              fi
+              if [[ -f "${EDGE}/apparmor.txt" ]]; then
+                cp "${EDGE}/apparmor.txt" "${STABLE}/apparmor.txt"
+                git add "${STABLE}/apparmor.txt"
+              fi
             fi
             sed -i "s/version:.*/version: \"${VERSION}\"/g" "${STABLE}/config.yaml"
             git add "${STABLE}/config.yaml"
