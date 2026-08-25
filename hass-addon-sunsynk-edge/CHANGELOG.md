@@ -2,8 +2,11 @@
 
 <https://github.com/kellerza/sunsynk/commits/>
 
-## Unreleased
+## Release 1.2.0
 
+All items below are changes since add-on **1.1.1** (stable release on GitHub `main`).
+
+- tmodbus 0.6.0 - improved re-synchronization logic for RTU-streams that got out of sync.
 - Prefix **`PORT`** with **`pymodbus-`** to use the pymodbus Modbus backend (e.g.
   `pymodbus-tcp://host:502`, `pymodbus-/dev/ttyUSB0`). Default is tmodbus.
   **`pymodbus-serial-udp://`** enables RTU-over-UDP (not supported on tmodbus).
@@ -21,7 +24,7 @@
 
 ## Release 1.1.1
 
-All items below are changes since add-on **1.1.0** (stable release on GitHub `main`).
+All items below are changes since add-on **1.1.0**.
 
 - Removed leftover `DRIVER` option from the add-on schema.
 
