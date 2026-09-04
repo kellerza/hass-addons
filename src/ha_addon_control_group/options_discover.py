@@ -41,7 +41,7 @@ async def discover_control_groups(
     states = await api.rest.get_states()
     registry = await api.ws.get_entity_registry()
 
-    _LOG.error(
+    _LOG.debug(
         [
             (t.entity_id, t.platform, t.labels)
             for t in registry
@@ -63,7 +63,17 @@ async def discover_control_groups(
 
     groups: list[ControlGroupOptions] = []
     for eid, reg in registry_map.items():
-        group = _to_group(state_map[eid])
+        state = state_map.get(eid)
+        if state is None:
+            detail = "disabled" if reg.disabled_by else "no state in Home Assistant"
+            _LOG.warning(
+                "Skipping helper '%s' (%s); re-enable the entity or remove the '%s' label.",
+                eid,
+                detail,
+                tag,
+            )
+            continue
+        group = _to_group(state)
         if not group:
             _LOG.warning("Skipping helper with invalid entity id: %s", eid)
             continue

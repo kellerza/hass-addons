@@ -58,7 +58,7 @@ class AddonState:
             cg.register_mqtt(self.dev)
 
         await API.mqtt.connect(API.opt)
-        API.mqtt.monitor_homeassistant_status()
+        await API.mqtt.monitor_homeassistant_status()
 
         await API.mqtt.wait_connected()
         await asyncio.sleep(0.2)

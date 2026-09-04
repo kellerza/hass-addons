@@ -21,7 +21,7 @@ dependencies = [
   "colorlog",
   "icecream",
   "jmespath",
-  "mqtt-entity[options]",
+  "mqtt-entity[options]>=1.2",
 ]
 optional-dependencies.hidapi = [ "hidapi==0.15" ]
 

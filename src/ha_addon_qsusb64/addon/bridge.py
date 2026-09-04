@@ -48,7 +48,7 @@ class HassBridge:
             origin_version="1.0.0",
         )
         await self.client.connect(OPT)
-        self.client.monitor_homeassistant_status()
+        await self.client.monitor_homeassistant_status()
 
     def find_ids(self, qid: str) -> Generator[tuple[MQTTBaseEntity, Bridge]]:
         """Find the entity by ID."""

@@ -44,7 +44,7 @@ async def main_loop() -> int:
     client.devs.extend([d.mqtt_dev for d in devs])
 
     await client.connect(opt)
-    client.monitor_homeassistant_status()
+    await client.monitor_homeassistant_status()
     _LOG.info("Connected to MQTT broker")
 
     # wait a bit for discovery
