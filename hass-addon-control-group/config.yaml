@@ -17,7 +17,6 @@ arch:
 map:
   - app_config:rw # as /config
   - homeassistant_config:rw # as /homeassistant
-  # - data:rw # as /data
 options:
   NAME: main
 schema:
