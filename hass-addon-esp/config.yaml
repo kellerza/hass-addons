@@ -16,7 +16,7 @@ map:
 options:
   AREAS:
     - API_KEY: "xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxxxxx"
-      AREA_ID: "jhbcitypower3-2-victorypark"
+      AREA_ID: "za_gt_jhb_victorypark_vp9v"
       HA_PREFIX: "eskom_vp"
 schema:
   AREAS:

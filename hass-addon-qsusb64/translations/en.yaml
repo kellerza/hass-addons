@@ -1,30 +1,86 @@
 configuration:
-  DRIVER:
-    name: Inverter Driver
-    description: "
-      The inverter driver to use.
-
-      *pymodbus* is recommended when connected via a RS485/TCP adapter.
-
-      With *solarman* you have to reduce the frequency that you read (see schedules)"
-  INVERTERS:
-    name: Inverters
+  PREFIX:
+    name: MQTT prefix
     description: '
-      Add one item per inverter.
+      Prefix for MQTT topics (entity state, commands, and availability).
 
-      HA_PREFIX should be unique for each inverter.
-
-      If PORT is a blank string "" the selected DEBUG_DEVICE will be used.
-
-      Only the solarman driver requires the DONGLE_SERIAL_NUMBER.
+      Default: qsusb
       '
-  SENSOR_DEFINITIONS:
-    name: Sensor definitions
-    description: ""
 
-  PROG_TIME_INTERVAL:
-    name: Program time interval
-    description: "
-      Set the program time interval in minutes for the selection list.
+  BUTTONS:
+    name: Button panels
+    description: '
+      One item per button panel (MQTT device triggers).
 
-      Warning: setting this to 5 minutes will result in a very long list to scroll through."
+      NAME is the Home Assistant device name. MODEL is optional.
+
+      BUTTONS is a list of QwikSwitch IDs (`@xxxxxx`). Append `:name` to set
+      the trigger name, otherwise they are numbered `button_1`, `button_2`, …
+      '
+
+  LIGHTS:
+    name: Lights
+    description: '
+      One MQTT light per QwikSwitch device.
+
+      ID is `@xxxxxx`. KIND is `rel` (on/off relay), `dim` (brightness), or
+      `imod`. NAME is the Home Assistant entity name.
+      '
+
+  SWITCHES:
+    name: Switches
+    description: '
+      One MQTT switch per QwikSwitch device.
+
+      ID is `@xxxxxx`. NAME is the Home Assistant entity name.
+      '
+
+  BINARY_SENSORS:
+    name: Binary sensors
+    description: '
+      MQTT binary sensors (on/off), typically iMod pulse/switch.
+
+      ID is `@xxxxxx`. KIND is optional. NAME is the Home Assistant entity name.
+
+      Leave ID and NAME empty to skip a placeholder row.
+      '
+
+  SENSORS:
+    name: Sensors
+    description: '
+      MQTT sensors that increment on each press (typically iMod pulse/switch).
+
+      ID is `@xxxxxx`. KIND is optional. NAME is the Home Assistant entity name.
+
+      Leave ID and NAME empty to skip a placeholder row.
+      '
+
+  IGNORE:
+    name: Ignore
+    description: '
+      QwikSwitch IDs to ignore (no entity, no unknown-device log).
+
+      ID is `@xxxxxx`. NAME and KIND are optional.
+
+      Leave ID empty to skip a placeholder row.
+      '
+
+  MQTT_HOST:
+    name: MQTT host
+    description: MQTT broker hostname. Leave empty to use Supervisor MQTT discovery.
+
+  MQTT_PORT:
+    name: MQTT port
+    description: MQTT broker port. Leave empty to use Supervisor MQTT discovery.
+
+  MQTT_USERNAME:
+    name: MQTT username
+    description: MQTT broker username. Leave empty to use Supervisor MQTT discovery.
+
+  MQTT_PASSWORD:
+    name: MQTT password
+    description: MQTT broker password. Leave empty to use Supervisor MQTT discovery.
+
+  DEBUG:
+    name: Debug level
+    description: Log verbosity from 0 (normal) to 5 (most detail).

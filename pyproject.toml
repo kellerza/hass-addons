@@ -15,13 +15,13 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-  "aiohttp>=3.14.3,<4",
+  "aiohttp>=3.14,<4",
   "anyio",
+  "cattrs",
   "colorama",
   "colorlog",
   "icecream",
-  "jmespath",
-  "mqtt-entity[options]>=1.2",
+  "mqtt-entity[options]>=1.2.8",
 ]
 optional-dependencies.hidapi = [ "hidapi==0.15" ]
 
@@ -34,8 +34,6 @@ dev = [
   "pytest-cov",
   "ruff",
   "types-colorama",
-  "types-jmespath",
-  "types-pyyaml",
   "zuban>=0.5.1",
 ]
 

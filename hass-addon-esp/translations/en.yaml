@@ -8,9 +8,9 @@ configuration:
       '
 
   SEARCH_AREA:
-    name: Search for an ESP area_id using text.
+    name: Search for a v3 area id using text.
     description: '
-      Search for an area.
+      Search for an area (v3 ids use underscores, e.g. za_gt_jhb_fourways_4pef).
 
       The result will be printed in the log on startup.
       '

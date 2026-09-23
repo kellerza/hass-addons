@@ -15,7 +15,9 @@ Features:
 
 A QwikSwitch device can also be configured as multiple HA entities (i.e. device trigger & sensor)
 
-This should cover a wide range of QwikSwitch relays, buttons and dimmers. No power measurement is supported. You are welcome to have a look at the code and enhance the **qs_decode** function to decode anything not supported.
+This should cover a wide range of QwikSwitch relays, buttons and dimmers. No power measurement is
+supported. You are welcome to have a look at the code and enhance the **qs_decode** function to
+decode anything not supported.
 
 ## Installation
 
@@ -27,15 +29,27 @@ This should cover a wide range of QwikSwitch relays, buttons and dimmers. No pow
 
 ## Motivation
 
-I originally built the Home Assistant QwikSwitch USB [integration](https://www.home-assistant.io/integrations/QwikSwitch/) back in 2016. It connects to the official QwikSwitch QSUSB software. A colleague published a Home Assistant [addon](https://github.com/nardusleroux/hassio-qsusb) that allows you to install QSUSB on the HA Operating System.
+I originally built the Home Assistant QwikSwitch USB
+[integration](https://www.home-assistant.io/integrations/QwikSwitch/) back in 2016. It connects to
+the official QwikSwitch QSUSB software. A colleague published a Home Assistant
+[addon](https://github.com/nardusleroux/hassio-qsusb) that allows you to install QSUSB on the HA
+Operating System.
 
-Unfortunately the QSUSB software is 32-bit only and attempts to build a 64-bit addon has not been successful. With Home Assistant deprecating 32-bit platform support, I decided to build a new addon that does not depend on the QSUSB software.
+Unfortunately the QSUSB software is 32-bit only and attempts to build a 64-bit addon has not been
+successful. With Home Assistant deprecating 32-bit platform support, I decided to build a new addon
+that does not depend on the QSUSB software.
 
-QwikSwitch devices are still widely available in South Africa, understood by local electricians, and used in several homes (including my own :wink:). I would definitely still consider using them for your smart home. They are reliable, easy to install and configure, and have a wide range of devices available.
+QwikSwitch devices are still widely available in South Africa, understood by local electricians, and
+used in several homes (including my own :wink:). I would definitely still consider using them for
+your smart home. They are reliable, easy to install and configure, and have a wide range of devices
+available.
 
-The intention is not to cover all function of the existing QSUSB software, or even all devices, but rather to cover my own use case to have a reliable way to control my QwikSwitch devices from Home Assistant. If you want to add support for another device, you are welcome to submit a PR.
+The intention is not to cover all function of the existing QSUSB software, or even all devices, but
+rather to cover my own use case to have a reliable way to control my QwikSwitch devices from Home
+Assistant. If you want to add support for another device, you are welcome to submit a PR.
 
-UPDATE (July 2025): QwikSwitch published a 64-bit application and the addon above was updated. I will continue using this add-on as it provides:
+UPDATE (July 2025): QwikSwitch published a 64-bit application and the addon above was updated. I
+will continue using this add-on as it provides:
 
 - More flexibility wrt HASS entities
 - Does not require a http long-poll for events - seems more responsive to button presses
@@ -43,20 +57,26 @@ UPDATE (July 2025): QwikSwitch published a 64-bit application and the addon abov
 
 ## Development
 
-You can test the addon locally by cloning the repository and running it in a Python 3.13+ virtual environment.
+You can test the addon locally by cloning the repository and running it in a Python 3.13+ virtual
+environment.
 
-Requirements: [uv](https://docs.astral.sh/uv/getting-started/). uv can be used to install Python and the required dependencies in a virtual environment.
+Requirements: [uv](https://docs.astral.sh/uv/getting-started/). uv can be used to install Python and
+the required dependencies in a virtual environment.
 
-The `hidapi` Python package works on Windows & Linux. In the addon it uses libudev & libusb to access the USB device.
+The `hidapi` Python package works on Windows & Linux. In the addon it uses libudev & libusb to
+access the USB device.
 
-Once you have cloned the repository, you can install the dependencies & run the addon from the working directory using the following commands:
+Once you have cloned the repository, you can install the dependencies & run the addon from the
+working directory using the following commands:
 
 ```bash
 uv sync
 uv run python -m qsusb64
 ```
 
-When you run it on your local machine, it will use config from `<working-dir>/.data/options.yaml`. As a starting point you can copy the config under the **options:** key from [config.yaml](./hass-addon-qsusb64/config)
+When you run it on your local machine, it will use config from `<working-dir>/.data/options.yaml`.
+As a starting point you can copy the config under the **options:** key from
+[config.yaml](./config.yaml)
 
 ## Monitor logs from ssh
 
