@@ -34,7 +34,7 @@ dev = [
   "pytest-cov",
   "ruff",
   "types-colorama",
-  "zuban>=0.5.1",
+  "zuban",
 ]
 
 [tool.uv]

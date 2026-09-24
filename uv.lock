@@ -264,7 +264,7 @@ dev = [
     { name = "pytest-cov" },
     { name = "ruff" },
     { name = "types-colorama" },
-    { name = "zuban", specifier = ">=0.5.1" },
+    { name = "zuban" },
 ]
 
 [[package]]
