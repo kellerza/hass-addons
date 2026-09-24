@@ -10,7 +10,7 @@ on:
       - "!.github/workflows/sync-remotes.yml"
       - "hass-addon-esp/**"
       - "hass-addon-qsusb64/**"
-      - "setup.*"
+      - "pyproject.toml"
       - "src/**"
   pull_request:
     paths:
@@ -18,7 +18,7 @@ on:
       - "!.github/workflows/sync-remotes.yml"
       - "hass-addon-esp/**"
       - "hass-addon-qsusb64/**"
-      - "setup.*"
+      - "pyproject.toml"
       - "src/**"
 
 env:
