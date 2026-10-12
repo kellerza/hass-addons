@@ -145,6 +145,7 @@ class HAEntity:
     modified_at: float = 0.0
     config_subentry_id: str = ""
     original_name: str = ""
+    next_name_part: str | None = None
     unique_id: str = ""
     icon: str = ""
     id: str = ""
