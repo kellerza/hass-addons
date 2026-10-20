@@ -6,6 +6,11 @@
 
 All items below are changes since add-on **1.3.0**.
 
+- Single-phase PV4: power 189, voltage 115, current 116. `pv_power` alone includes it. Select group
+  `pv4`.
+- Debounce `homeassistant/status` **online** by 3s before publishing discovery (fixes MQTT
+  integration reload without a preceding **offline**; #48). Each **online** restarts the timer so
+  subscribe races still publish once. [mqtt-entity]
 - Failed Modbus writes no longer update the local register cache. #692
 - Fix AsyncCallback checks. #693
 - Bump whenever to 0.11
