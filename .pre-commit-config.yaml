@@ -12,6 +12,7 @@ repos:
         name: uv sync && upgrade
         entry: uv sync --upgrade --all-extras
         language: system
+        files: ^pyproject\.toml$
         pass_filenames: false
         priority: 10
 
