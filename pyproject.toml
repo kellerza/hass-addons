@@ -33,6 +33,7 @@ dev = [
   "pytest-asyncio",
   "pytest-cov",
   "ruff",
+  "rumdl",
   "types-colorama",
   "zuban",
 ]
@@ -82,3 +83,32 @@ ini_options.asyncio_mode = "auto"
 
 [tool.zuban]
 warn_unreachable = false
+
+[tool.rumdl]
+include = [ "**/*.md", "**/*.mdc" ]
+exclude = [
+  ".git",
+  ".github",
+  "node_modules",
+  "vendor",
+  "dist",
+  "build",
+  "CHANGELOG.md",
+  "LICENSE.md",
+  "LICENSE",
+]
+extend-disable = [
+  "MD042",
+  "MD036", # Emphasis used instead of heading
+]
+extend-enable = [ "MD060" ]  # table formatting
+MD013.severity = "info"
+MD013.line-length = 100
+MD013.code_blocks = false
+MD013.tables = false
+MD013.reflow = true
+MD013.reflow-mode = "normalize"
+MD033.allowed-elements = [ "br", "i-mdi-dev-to" ]
+MD060.enabled = true
+MD060.style = "aligned"
+per-file-ignores."**/*.mdc" = [ "MD041" ]

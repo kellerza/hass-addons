@@ -76,7 +76,7 @@ uv run python -m qsusb64
 
 When you run it on your local machine, it will use config from `<working-dir>/.data/options.yaml`.
 As a starting point you can copy the config under the **options:** key from
-[config.yaml](./config.yaml)
+[config.yaml](./hass-addon-qsusb64/config)
 
 ## Monitor logs from ssh
 

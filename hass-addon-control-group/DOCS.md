@@ -1,25 +1,34 @@
 # Control group add-on
 
-The control group add-on allows you to control the state of entities (e.g. lights and switches), based on the result of a template, or **template sensor** helper.
+The control group add-on allows you to control the state of entities (e.g. lights and switches),
+based on the result of a template, or **template sensor** helper.
 
-This allows you to easily build motion or presence-based automations using the state of other entities:
+This allows you to easily build motion or presence-based automations using the state of other
+entities:
 
 - When did they last change (indicating movement for PIR, or binary_sensors)
 - When a button was pressed
 - The state of another switch, light or basically any entity's state or attribute.
 - During the evening, when the sun sets, or based on a specific time of the day
 
-The template can be as simple or as complex as you need it to be. You can add a reason to your desired state, which makes it really easy to debug and fine-tune your automations.
+The template can be as simple or as complex as you need it to be. You can add a reason to your
+desired state, which makes it really easy to debug and fine-tune your automations.
 
-Templates are standard Home Assistant [templates](https://www.home-assistant.io/docs/configuration/templating/). The sections below shows several examples.
+Templates are standard Home Assistant
+[templates](https://www.home-assistant.io/docs/configuration/templating/). The sections below shows
+several examples.
 
 ## Alternative options
 
 A similar concept can be achieved using a combination of existing Home Assistant features:
 
-- You can use an automation or blueprint that syncs the value of this template sensor to the desired entity.
+- You can use an automation or blueprint that syncs the value of this template sensor to the desired
+  entity.
 
-- Home Assistant has [Template Triggers](https://www.home-assistant.io/docs/automation/trigger/#template-trigger) that can be used for automations, but unfortunately only when the template state changes from False to True. For some discussions see [PR#121451](https://github.com/home-assistant/core/pull/121451).
+- Home Assistant has
+  [Template Triggers](https://www.home-assistant.io/docs/automation/trigger/#template-trigger) that
+  can be used for automations, but unfortunately only when the template state changes from False to
+  True. For some discussions see [PR#121451](https://github.com/home-assistant/core/pull/121451).
 
 ## Installation
 
@@ -31,16 +40,19 @@ A similar concept can be achieved using a combination of existing Home Assistant
 
 ## Configuration
 
-If you run on the HA OS, no configuration should be required. You can set the **NAME** of the control group and the **PREFIX** that will be used for created entities.
+If you run on the HA OS, no configuration should be required. You can set the **NAME** of the
+control group and the **PREFIX** that will be used for created entities.
 
-and **HA_PREFIX** to your liking, but the default values should work fine. The addon will automatically discover your Home Assistant instance and connect to it.
+and **HA_PREFIX** to your liking, but the default values should work fine. The addon will
+automatically discover your Home Assistant instance and connect to it.
 
 ```yaml
 NAME: main
 HA_PREFIX: cgroup
 ```
 
-All other parameters are optional and will be populated automaticlally when you run on HA OS by the HA Supervisor.
+All other parameters are optional and will be populated automaticlally when you run on HA OS by the
+HA Supervisor.
 
 > Example configuration for running the addon in a docker container:
 >
@@ -52,6 +64,7 @@ All other parameters are optional and will be populated automaticlally when you 
 > MQTT_USERNAME: hass
 > MQTT_PASSWORD: password123
 > ```
+>
 > The main task would be creating template helpers
 >
 
@@ -59,39 +72,54 @@ All other parameters are optional and will be populated automaticlally when you 
 
 A **Template sensor helper** can be created in the UI under *Devices & services* --> *Helpers*.
 
-The template should return the state of the entity (on/off/0/1) and optionally a description, separated by a comma. The description helps you to debug your templates and understand why a certain entity is on or off.
+The template should return the state of the entity (on/off/0/1) and optionally a description,
+separated by a comma. The description helps you to debug your templates and understand why a certain
+entity is on or off.
 
-The name of the **Template sensor helper** determines which entity will be controlled. If you take the name of the template sensor helper and remove the *_state* suffix, you get the name of the entity that will be controlled. For example, if you create a template sensor helper with the name `sensor.porch_light_state`, the addon will search for entities without the *_state* suffix, i.e. `light.porch_light` and `switch.porch_light`.
+The name of the **Template sensor helper** determines which entity will be controlled. If you take
+the name of the template sensor helper and remove the *_state* suffix, you get the name of the
+entity that will be controlled. For example, if you create a template sensor helper with the name
+`sensor.porch_light_state`, the addon will search for entities without the *_state* suffix, i.e.
+`light.porch_light` and `switch.porch_light`.
 
 For a **Template sensor helper** to be considered, it needs to be labelled with **control group**.
 
 The following table shows the naming convention:
 
 | Template sensor helper   | Controlled entity | Mode selector            |
-|--------------------------|-------------------|--------------------------|
+| ------------------------ | ----------------- | ------------------------ |
 | sensor.porch_light_state | light.porch_light | select.porch_light_state |
 | sensor.front_light_state | light.front_light | select.front_light_state |
 
-The **Controlled entity** is the entity that will be switched on/off based on the template sensor helper's state. The addon will automatically search for entities with the same name as the template sensor helper, but without the *_state* suffix. It will also search for both light and switch entities, so you can control either type of entity with the same template sensor helper.
+The **Controlled entity** is the entity that will be switched on/off based on the template sensor
+helper's state. The addon will automatically search for entities with the same name as the template
+sensor helper, but without the *_state* suffix. It will also search for both light and switch
+entities, so you can control either type of entity with the same template sensor helper.
 
-The **Mode selector** is a select entity that allows you to override the template sensor helper's mode of operation. It is automatically created by the addon. It has the following options:
+The **Mode selector** is a select entity that allows you to override the template sensor helper's
+mode of operation. It is automatically created by the addon. It has the following options:
 
 - *Enabled*, the state of the controlled entity will be controlled by the template sensor helper.
-- *Disabled*, the control group will be disabled and the state of the controlled entity will not be changed by the addon.
-- *On* / *Off*, the state of the controlled entity will be forced to on or off, regardless of the template sensor helper's state.
+- *Disabled*, the control group will be disabled and the state of the controlled entity will not be
+  changed by the addon.
+- *On* / *Off*, the state of the controlled entity will be forced to on or off, regardless of the
+  template sensor helper's state.
 
 ## How to build the templates
 
 ### Based on another entity's state
 
-The most simple use case is based on another entity's state. This can be a switch, light, or any other entity. You can use `is_state`, `state_attr` or any other templating function to check the state of another entity.
+The most simple use case is based on another entity's state. This can be a switch, light, or any
+other entity. You can use `is_state`, `state_attr` or any other templating function to check the
+state of another entity.
 
 ```jinja
 Is the light on? {{ is_state("light.courtyard_door", "on") }}
 What is the sun's elevation? {{ state_attr("sun.sun", "elevation") }}
 ```
 
-For the purpose of automating a control group, the template should return the state (and optionally a description, separated by a comma)
+For the purpose of automating a control group, the template should return the state (and optionally
+a description, separated by a comma)
 
 ```jinja
 {% if is_state("light.courtyard_door", "on") %}
@@ -113,7 +141,8 @@ You can even save it in a variable to use in more complex tests
 {% endif %}
 ```
 
-For more descriptive debug messages, it might be better to write the template as follows. In this case the switch is more important and will return first.
+For more descriptive debug messages, it might be better to write the template as follows. In this
+case the switch is more important and will return first.
 
 ```jinja
 {% if is_state("light.courtyard_door", "on") %}
@@ -131,7 +160,8 @@ Here are some Jinja recipes that can be used to construct the template.
 
 #### Movement detected (change in last x seconds)
 
-For detecting movement, you can use the last_changed attribute of a PIR (typically a binary_sensor) or even a door sensors (binary sensor indicating open/close)
+For detecting movement, you can use the last_changed attribute of a PIR (typically a binary_sensor)
+or even a door sensors (binary sensor indicating open/close)
 
 ```jinja
 {% set n = as_timestamp(now()) %}
@@ -141,7 +171,13 @@ Time since last change: {{ change_s }} seconds
 Movement in last 5 min: {{ change_s < 300 }}
 ```
 
-This is done by comparing the *timestamps* of the current time, returned by `as_timestamp(now())`, with the timestamp of the entity's last_changed. I prefer to save the current time in a variable, so that you can reuse it for multiple motion inputs. You will also see that I used it twice in the movement step, the second `or n` covers the case when there is no last_changed state. This helps with debugging, if you have the wrong entity name it will always be true. The side effect is that it will also trigger this particular motion when you restart Home Assistant. If you don't like this use `or 0` instead of `or n`. Not having `or <some-default>` will raise an error when it's unavailable.
+This is done by comparing the *timestamps* of the current time, returned by `as_timestamp(now())`,
+with the timestamp of the entity's last_changed. I prefer to save the current time in a variable, so
+that you can reuse it for multiple motion inputs. You will also see that I used it twice in the
+movement step, the second `or n` covers the case when there is no last_changed state. This helps
+with debugging, if you have the wrong entity name it will always be true. The side effect is that it
+will also trigger this particular motion when you restart Home Assistant. If you don't like this use
+`or 0` instead of `or n`. Not having `or <some-default>` will raise an error when it's unavailable.
 
 #### Time based
 
@@ -155,18 +191,23 @@ Between 7:00 and 8:30 in the evening. Note how we use 24h time to differentiate 
 
 ## Full Examples
 
-These examples combine the concepts discussed earlier. I have many of these, especially for security lights outside the house, where you want to ensure they are only on when needed and they are typically switched by individual sonoffs devices all around the house.
+These examples combine the concepts discussed earlier. I have many of these, especially for security
+lights outside the house, where you want to ensure they are only on when needed and they are
+typically switched by individual sonoffs devices all around the house.
 
-This allows them to be motion based (movement in that area), time based (early evening when we're awake), or have a quick override (when we are outside, the alarm went off, etc.)
+This allows them to be motion based (movement in that area), time based (early evening when we're
+awake), or have a quick override (when we are outside, the alarm went off, etc.)
 
 ### Example 1
 
-Here we control the light in the scullery, which is between the laundry and the kitchen. It should on when either:
+Here we control the light in the scullery, which is between the laundry and the kitchen. It should
+on when either:
 
 - The kitchen light is on
 - The laundry light is on
 - If there has been motion in the scullery in the last 5 minutes (`ss<300`)
-- If there has been motion in the kitchen in the last 5 minutes, the motion timer in the scullery increases to 10 minutes (`sk<300 and ss<600`)
+- If there has been motion in the kitchen in the last 5 minutes, the motion timer in the scullery
+  increases to 10 minutes (`sk<300 and ss<600`)
 
 ```jinja
 {%- if is_state("light.kitchen", "on") -%}
@@ -187,7 +228,9 @@ Here we control the light in the scullery, which is between the laundry and the 
 
 ### Example 2
 
-The following example is from the garage. It has a motion sensor and the light is controlled from a sonoff. The sonoff's status led can be toggled by pressing the button and this indicates an override state for the light relay on the sonoff.
+The following example is from the garage. It has a motion sensor and the light is controlled from a
+sonoff. The sonoff's status led can be toggled by pressing the button and this indicates an override
+state for the light relay on the sonoff.
 
 So the light will be on:
 
