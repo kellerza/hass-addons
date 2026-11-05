@@ -185,9 +185,84 @@ Between 7:00 and 8:30 in the evening. Note how we use 24h time to differentiate 
 
 ```jinja
 {% set t = now().strftime('%T') %}
-
-{{ set evening_timeslot = t >= '19:00:00' and t <= '20:30:00' }}
+{% set evening_timeslot = t >= '19:00:00' and t <= '20:30:00' %}
 ```
+
+#### Day / night and schedule attributes
+
+Instead of (or in addition to) sun elevation, a dedicated day/night binary sensor is often clearer.
+Custom attributes on that sensor can hold schedule flags (for example kitchen hours):
+
+```jinja
+{% set dark = is_state("binary_sensor.day", "off") %}
+{% set ktime = state_attr("binary_sensor.day", "kitchen") | bool(False) %}
+
+{% if dark %}
+  on,dark
+{% elif ktime %}
+  on,kitchen schedule
+{% else %}
+  off
+{% endif %}
+```
+
+#### Timeout multiplier (override extends motion windows)
+
+Use a button/switch as a temporary override that *lengthens* motion timeouts instead of forcing the
+light permanently on. `iif` picks the multiplier:
+
+```jinja
+{%- set x = iif(is_state("binary_sensor.garage_switch_1", "on"), 5, 1) -%}
+{%- set n = as_timestamp(now()) -%}
+{%- if 600*x > (n-(as_timestamp(states.binary_sensor.zone_garage_pir_open.last_changed) or n)) -%}
+  on,garage movement
+{%- else -%}
+  off
+{%- endif -%}
+```
+
+When the override is on, a 10-minute window becomes 50 minutes (`600*5`).
+
+#### Numeric brightness / level targets
+
+For dimmable lights or flood levels, return a number (`0` / `100`) instead of `on` / `off`. An
+`input_number` helper is a convenient manual override:
+
+```jinja
+{%- set lp = states("input_number.light_patio") | int(0) -%}
+{{ iif(lp, 100, 0) }}
+```
+
+Or combine with darkness and motion:
+
+```jinja
+{%- set dark = is_state("binary_sensor.day", "off") -%}
+{%- set n = as_timestamp(now()) -%}
+{%- set gate = 360 > (n-(as_timestamp(states.binary_sensor.gate_open.last_changed) or n)) -%}
+{{ iif(dark and gate, 100, 0) }}
+```
+
+#### Ignore ESPHome reconnect false triggers
+
+When an ESPHome device reconnects, every entity on that device gets a fresh `last_changed` even if
+nothing physically changed. If you treat a switch's `last_changed` as a button press, also require
+the device status entity to be older than the switch change:
+
+```jinja
+{%- set n = as_timestamp(now()) -%}
+{%- set btntv = int(n-(as_timestamp(states.binary_sensor.tv_switch_1.last_changed) or n)) -%}
+{%- set tvstatus = int(n-(as_timestamp(states.binary_sensor.tv_status.last_changed) or n)) -%}
+{%- set dark = is_state("binary_sensor.day", "off") -%}
+
+{%- if dark and btntv < 300 and tvstatus > (btntv + 30) -%}
+  on,BTNTV,btntv={{ btntv }},tvstatus={{ tvstatus }}
+{%- else -%}
+  off
+{%- endif -%}
+```
+
+On reconnect, `tvstatus ≈ btntv`, so the condition fails. A real switch press while the device has
+been online keeps `tvstatus` large and still fires.
 
 ## Full Examples
 
@@ -201,7 +276,7 @@ awake), or have a quick override (when we are outside, the alarm went off, etc.)
 ### Example 1
 
 Here we control the light in the scullery, which is between the laundry and the kitchen. It should
-on when either:
+be on when either:
 
 - The kitchen light is on
 - The laundry light is on
@@ -210,43 +285,45 @@ on when either:
   increases to 10 minutes (`sk<300 and ss<600`)
 
 ```jinja
-{%- if is_state("light.kitchen", "on") -%}
+{%- if is_state("light.db2_kitchen", "on") -%}
   on,light kitchen
-{%- elif is_state("light.laundry", "on") -%}
+{%- elif is_state("light.lt3_laundry", "on") -%}
   on,light laundry
 {%- else -%}
-    {%- set n = as_timestamp(now()) -%}
-    {%- set sk = (n-(as_timestamp(states.binary_sensor.zone_kitchen_open.last_changed) or n)) -%}
-    {%- set ss = (n-(as_timestamp(states.binary_sensor.zone_scullery_open.last_changed) or n)) -%}
-    {%- if (sk<300 and ss <600) or (ss<300) -%}
-      on,movement kitchen/scullery
-    {%- else -%}
-      off
-    {%- endif -%}
-{%- endif %}
+  {%- set n = as_timestamp(now()) -%}
+  {%- set sk = (n-(as_timestamp(states.binary_sensor.zone_kitchen_open.last_changed) or n)) -%}
+  {%- set ss = (n-(as_timestamp(states.binary_sensor.zone_scullery_open.last_changed) or n)) -%}
+  {%- if (sk<300 and ss <600) or (ss<300) -%}
+    on,movement kitchen/scullery
+  {%- else -%}
+    off
+  {%- endif -%}
+{%- endif -%}
 ```
 
 ### Example 2
 
-The following example is from the garage. It has a motion sensor and the light is controlled from a
-sonoff. The sonoff's status led can be toggled by pressing the button and this indicates an override
-state for the light relay on the sonoff.
+The following example is from the garage. Motion and door sensors drive the light, and a physical
+switch on the ESPHome device acts as a timeout multiplier (5×) rather than a hard on/off override.
 
 So the light will be on:
 
-- When there has been movement in the garage in the last 5 minutes
-- When the garage door has been opened/closed in the last 200 seconds (3m20s)
-- When the override is on (a press button toggling the sonoff's status led)
+- When there has been movement in the garage (10 min, or 50 min with override)
+- When the house garage door has changed (200 s, or ~17 min with override)
+- When garage door C or J has changed in the last 5 minutes
 
-```jinja2
-{%- set n = as_timestamp(now()) -%}
-{%- if 600 > (n-(as_timestamp(states.binary_sensor.zone_garage_pir_open.last_changed) or n)) -%}
+```jinja
+{%- set x = iif(is_state("binary_sensor.garage0_switch_1", "on"), 5, 1) -%}
+{% set n = as_timestamp(now()) -%}
+{%- if 600*x > (n-(as_timestamp(states.binary_sensor.zone_garage_pir_open.last_changed) or n)) -%}
   on,garage movement
-{%- elif 200 > (n-(as_timestamp(states.binary_sensor.zone_garage_huis_open.last_changed) or n)) -%}
+{%- elif 200*x > (n-(as_timestamp(states.binary_sensor.zone_garage_huis_open.last_changed) or n)) -%}
   on,garage door
-{%- elif is_state("light.garage_status_led", "on") -%}
-  on,garage override
+{%- elif 300 > (n-(as_timestamp(states.binary_sensor.zone_garage_c_open.last_changed) or n)) -%}
+  on,garage c
+{%- elif 300 > (n-(as_timestamp(states.binary_sensor.zone_garage_j_open.last_changed) or n)) -%}
+  on,garage j
 {%- else -%}
   off
-{%- endif %}
+{%- endif -%}
 ```
