@@ -15,7 +15,7 @@ arch:
   - aarch64
   - amd64
 map:
-  - app_config:rw # as /config
+  - app_config:rw # as /config folder
   - homeassistant_config:rw # as /homeassistant
 options:
   NAME: main
