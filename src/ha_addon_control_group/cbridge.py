@@ -86,11 +86,14 @@ class AddonState:
                 if eid == cg.opt.src_entity:
                     await cg.on_render(state, msg)
                     continue
+                # Disabled: leave target entities alone so they stay UI-operable.
+                if cg.mode == "disabled" or cg.state is None:
+                    continue
                 if state == cg.state:
                     continue
                 if eid in cg.opt.entities:
                     _LOG.info("CG %s: Reset %s to %s", cg.opt.id, eid, cg.state)
-                    await API.rest.set_entity_state(eid, cg.state or "off")
+                    await API.rest.set_entity_state(eid, cg.state)
 
         await API.ws.subscribe_triggers(trigger=triggers, callback=_cb)
 
@@ -162,10 +165,6 @@ class CGroupBridge:
 
     async def on_render(self, text: str, msg: dict[str, Any]) -> None:
         """Handle template rendered callback."""
-        if self.opt.call_script:
-            # await API.ws.call_service(self.opt.call_script, {"msg": msg})
-            await API.rest.call_service(self.opt.call_script, {"msg": text})
-
         state, _, self.state_reason = text.strip().partition(",")
         match self.mode:
             case "enabled":
@@ -180,11 +179,18 @@ class CGroupBridge:
                 self.state_reason = f"FORCED {self.state_reason}"
                 self.state = "off"
             case "disabled":
+                # Stop controlling targets; clear desired state so UI changes stick.
+                self.state = None
                 self.state_reason = f"DISABLED {self.state_reason}"
+                ACHANGE.set()
                 return
             case _:
                 _LOG.warning("CG %s: Unknown mode value '%s'", self.opt.id, self.mode)
                 return
+
+        if self.opt.call_script:
+            # await API.ws.call_service(self.opt.call_script, {"msg": msg})
+            await API.rest.call_service(self.opt.call_script, {"msg": text})
 
         # sync the state
         current_state = [await API.rest.get_state(e) for e in self.opt.entities]
@@ -236,6 +242,10 @@ class CGroupBridge:
     async def on_command_state(self, payload: str) -> None:
         """Handle state changes."""
         self.mode = payload.strip()
+        if self.mode == "disabled":
+            # Immediately release control; don't wait for a template re-render.
+            self.state = None
+            ACHANGE.set()
         await self.mode_entity.send_state(API.mqtt, payload)
         await self.render_template()
 
