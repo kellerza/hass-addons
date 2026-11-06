@@ -63,7 +63,9 @@ class AddonState:
         await API.mqtt.wait_connected()
         await asyncio.sleep(0.2)
         for cg in self.cgs:
-            await cg.mode_entity.send_state(API.mqtt, cg.file_opt.mode)
+            # Retain so HA keeps the mode across rediscovery / HA restarts
+            # (non-retained publishes leave the select as "unknown").
+            await cg.mode_entity.send_state(API.mqtt, cg.mode, retain=True)
 
     async def websocket_on_connect(self) -> None:
         """Render template on websocket.
@@ -246,7 +248,7 @@ class CGroupBridge:
             # Immediately release control; don't wait for a template re-render.
             self.state = None
             ACHANGE.set()
-        await self.mode_entity.send_state(API.mqtt, payload)
+        await self.mode_entity.send_state(API.mqtt, self.mode, retain=True)
         await self.render_template()
 
     def register_mqtt(self, mq_dev: MQTTDevice) -> None:
